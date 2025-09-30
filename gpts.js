@@ -10,6 +10,17 @@ const LANGUAGES = [
   { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
   { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
 ];
+// gpts.js
+window.GPTS = [
+  {
+    id: "demo",
+    name: "Sample GPT",
+    category: "Programming",
+    tags: ["code", "ai"],
+    url: "https://chat.openai.com/g/gpt-sample"
+  }
+];
+
 
 const GPTS = [
   { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
