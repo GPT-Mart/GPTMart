@@ -19,7 +19,10 @@
     <section id="languageIcons" class="language-icons"></section>
     <section id="grid" class="gpts-grid"></section>
   </div>
-  <script src="./data/gpts.js"></script>
-  <script src="./app.js"></script>
+
+  <!-- Load GPTS data first -->
+  <script src="./gpts.js" defer></script>
+  <!-- Then the app logic -->
+  <script src="./app.js" defer></script>
 </body>
 </html>
