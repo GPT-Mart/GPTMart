@@ -28,6 +28,18 @@
     </header>
     <section id="categories" class="categories"></section>
     <section id="languageIcons" class="language-icons"></section>
+    <section id="uploadForm" class="upload-form">
+  <h2>Add Custom GPT</h2>
+  <form id="gptForm">
+    <input type="text" id="gptTitle" placeholder="Title" required>
+    <input type="text" id="gptDesc" placeholder="Description" required>
+    <input type="url" id="gptUrl" placeholder="GPT Link (URL)" required>
+    <input type="url" id="gptIcon" placeholder="Icon URL" required>
+    <input type="text" id="gptCategories" placeholder="Categories (comma separated)" required>
+    <button type="submit">Add GPT</button>
+  </form>
+</section>
+
     <section id="grid" class="gpts-grid"></section>
   </div>
 
