@@ -4,7 +4,7 @@ const LANGUAGES = [
   { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
   { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
   { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
-  { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
+  { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/8/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
   { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
   { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
   { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
