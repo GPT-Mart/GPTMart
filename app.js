@@ -1,3 +1,6 @@
+// Safety: ensure GPTS/LANGUAGES exist so the page never blanks
+window.GPTS = Array.isArray(window.GPTS) ? window.GPTS : [];
+window.LANGUAGES = Array.isArray(window.LANGUAGES) ? window.LANGUAGES : [];
 // ---------- Safe access to data ----------
 function getArray(ref) {
   return Array.isArray(ref) ? ref : [];
