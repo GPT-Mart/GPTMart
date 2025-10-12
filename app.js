@@ -1,4 +1,19 @@
-// Helpers & state
+// ---------- Safe access to data ----------
+function getArray(ref) {
+  return Array.isArray(ref) ? ref : [];
+}
+const DATA = {
+  get GPTS() { return getArray(window.GPTS); },
+  set GPTS(v) { window.GPTS = getArray(v); },
+  get LANGUAGES() { return getArray(window.LANGUAGES); },
+  set LANGUAGES(v) { window.LANGUAGES = getArray(v); },
+};
+
+// If data didn't load, initialize to [] so UI doesn't crash
+if (!Array.isArray(window.GPTS)) window.GPTS = [];
+if (!Array.isArray(window.LANGUAGES)) window.LANGUAGES = [];
+
+// ---------- Helpers & state ----------
 const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
 const state = { q: '', cat: 'All' };
 
@@ -20,9 +35,9 @@ function gaEvent(name, params = {}) {
   }
 }
 
-// Rendering
+// ---------- Rendering ----------
 function renderCategories() {
-  const cats = ['All', ...new Set(GPTS.flatMap(x => x.categories || []))];
+  const cats = ['All', ...new Set(DATA.GPTS.flatMap(x => x.categories || []))];
   const wrap = document.getElementById('categories');
   wrap.innerHTML = cats
     .map(c => `<button class="category-btn ${state.cat === c ? 'active' : ''}" data-cat="${c}">${c}</button>`)
@@ -30,13 +45,7 @@ function renderCategories() {
   wrap.querySelectorAll('.category-btn').forEach(btn =>
     btn.addEventListener('click', () => {
       state.cat = btn.dataset.cat;
-
-      // GA: category selected
-      gaEvent('select_content', {
-        content_type: 'category',
-        item_id: state.cat
-      });
-
+      gaEvent('select_content', { content_type: 'category', item_id: state.cat });
       renderCategories();
       renderGrid();
     })
@@ -45,7 +54,7 @@ function renderCategories() {
 
 function renderLanguageIcons() {
   const el = document.getElementById('languageIcons');
-  el.innerHTML = LANGUAGES.map(l => `
+  el.innerHTML = DATA.LANGUAGES.map(l => `
     <a href="${l.url}" class="lang-icon" title="${l.name}" target="_blank" rel="noopener">
       <img src="${l.icon}" alt="${l.name}" onerror="this.src='./assets/fallback.svg'"/>
       <span>${l.name}</span>
@@ -54,7 +63,7 @@ function renderLanguageIcons() {
 }
 
 function cardHTML(g) {
-  const open = g.url && g.url !== '#' ? `<a href="${g.url}" target="_blank" rel="noopener">Open</a>` : '';
+  const open = g.url && g.url !== '#' ? `<a href="${g.url}" target="_blank" rel="noopener" data-track="open-link">Open</a>` : '';
   return `
     <article class="gpt-card">
       <div class="gpt-card-icon">
@@ -74,41 +83,46 @@ function cardHTML(g) {
 function renderGrid() {
   const grid = document.getElementById('grid');
   const q = state.q.trim();
-  const items = GPTS.filter(g =>
+  const items = DATA.GPTS.filter(g =>
     (state.cat === 'All' || (g.categories || []).includes(state.cat)) &&
     (!q || contains(g.title, q) || contains(g.desc, q) || (g.categories || []).some(c => contains(c, q)))
   );
   grid.innerHTML = items.map(cardHTML).join('');
+
+  // Track outbound opens
+  grid.querySelectorAll('a[data-track="open-link"]').forEach(a => {
+    a.addEventListener('click', () => {
+      gaEvent('select_content', { content_type: 'gpt', item_id: a.href });
+    });
+  });
 }
 
-// Boot
+// ---------- Boot ----------
 document.addEventListener('DOMContentLoaded', () => {
   // Merge built-ins + user's saved items
   window.CUSTOM_GPTS = loadCustom();
-  if (Array.isArray(CUSTOM_GPTS) && CUSTOM_GPTS.length) {
-    GPTS.push(...CUSTOM_GPTS);
+  if (Array.isArray(window.CUSTOM_GPTS) && window.CUSTOM_GPTS.length) {
+    DATA.GPTS.push(...window.CUSTOM_GPTS);
   }
 
   renderCategories();
   renderLanguageIcons();
   renderGrid();
 
-  // Search input + GA search event (debounced-ish)
+  // Search + GA
   const searchEl = document.getElementById('searchInput');
   let lastSearchSent = '';
   searchEl.addEventListener('input', e => {
     state.q = e.target.value;
     renderGrid();
-
     const term = state.q.trim();
-    // Avoid spamming identical events
     if (term && term !== lastSearchSent) {
       lastSearchSent = term;
       gaEvent('search', { search_term: term });
     }
   });
 
-  // Upload form handler + GA event
+  // Upload form
   const form = document.getElementById('gptForm');
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -125,45 +139,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const newItem = { title, desc, url, icon, categories };
 
-      // Update memory + UI
-      GPTS.push(newItem);
-      CUSTOM_GPTS.push(newItem);
-      saveCustom(CUSTOM_GPTS);
+      DATA.GPTS.push(newItem);
+      window.CUSTOM_GPTS.push(newItem);
+      saveCustom(window.CUSTOM_GPTS);
 
-      // GA: track add_gpt
       gaEvent('add_gpt', {
         value: 1,
         item_name: title,
         item_category: categories[0] || 'Uncategorized'
       });
 
-      // Refresh UI
       renderCategories();
       renderGrid();
-
-      // Reset
       form.reset();
     });
   }
 
-  // Clear only the user's locally added GPTs
+  // Clear local GPTs
   const clearBtn = document.getElementById('clearCustom');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-      if (!confirm('Remove all GPTs you added locally? This cannot be undone.')) return;
+      if (!confirm('Remove all GPTs you added locally?')) return;
 
-      // Remove from GPTS the items that are in CUSTOM_GPTS
-      const customSet = new Set(CUSTOM_GPTS.map(j => JSON.stringify(j)));
-      for (let i = GPTS.length - 1; i >= 0; i--) {
-        if (customSet.has(JSON.stringify(GPTS[i]))) GPTS.splice(i, 1);
+      const customSet = new Set(window.CUSTOM_GPTS.map(j => JSON.stringify(j)));
+      for (let i = DATA.GPTS.length - 1; i >= 0; i--) {
+        if (customSet.has(JSON.stringify(DATA.GPTS[i]))) DATA.GPTS.splice(i, 1);
       }
-
-      CUSTOM_GPTS = [];
-      saveCustom(CUSTOM_GPTS);
+      window.CUSTOM_GPTS = [];
+      saveCustom(window.CUSTOM_GPTS);
       renderCategories();
       renderGrid();
-
-      // GA: clear action
       gaEvent('clear_custom_gpts', { value: 1 });
     });
   }
