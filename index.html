@@ -1,62 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GPTMart</title>
-
-  <!-- Google tag (gtag.js) -->
-  <script>
-    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99';
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', window.GA_MEASUREMENT_ID);
-  </script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <div class="container">
-    <header class="header">
-      <h1 class="logo">GPTMart<span>.</span></h1>
-      <div class="search-bar">
-        <input id="searchInput" type="text" placeholder="Search high-quality GPTs...">
-      </div>
-    </header>
-
-    <section id="categories" class="categories"></section>
-    <section id="languageIcons" class="language-icons"></section>
-
-    <!-- Upload form (same screen) -->
-    <section id="uploadForm" class="upload-form">
-      <h2>Add Custom GPT</h2>
-      <form id="gptForm" autocomplete="off">
-        <div class="form-row">
-          <input type="text" id="gptTitle" placeholder="Title" required />
-          <input type="url" id="gptUrl" placeholder="GPT Link (URL)" required />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPTMart</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="logo">GPTMart<span>.</span></h1>
+        <div class="search-bar">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search high-quality GPTs..."
+          />
         </div>
-        <div class="form-row">
-          <input type="url" id="gptIcon" placeholder="Icon URL (square works best)" required />
-          <input type="text" id="gptCategories" placeholder="Categories (comma separated)" required />
-        </div>
-        <textarea id="gptDesc" rows="3" placeholder="Short description…" required></textarea>
-        <div class="form-actions">
-          <button type="submit" class="btn-primary">Add GPT</button>
-          <button type="button" id="clearCustom" class="btn-ghost">Clear my added GPTs</button>
-        </div>
-        <p class="tiny-hint">New GPTs are saved locally (in your browser) so they persist after refresh.</p>
-      </form>
-    </section>
-
-    <section id="grid" class="gpts-grid"></section>
-  </div>
-
-  <!-- Load app only; it will fetch gpts.js from the right place -->
-  <script src="./app.js?v=6"></script>
-</body>
+      </header>
+      <section id="categories" class="categories"></section>
+      <section id="languageIcons" class="language-icons"></section>
+      <section id="grid" class="gpts-grid"></section>
+    </div>
+    <script src="./data/gpts.js"></script>
+    <script src="./app.js"></script>
+  </body>
 </html>
