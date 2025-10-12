@@ -1,16 +1,18 @@
+// Language shortcuts
 const LANGUAGES = [
   { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
   { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
   { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
   { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
   { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
-  { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/8/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
+  { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
   { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
   { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
   { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
   { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
 ];
 
+// Built-in GPTs
 const GPTS = [
   { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
   { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
@@ -55,8 +57,9 @@ const GPTS = [
   { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
   { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
   { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
-   { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
-    // --- NEW GPTS FROM IMAGE ---
+  { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
+
+  /* === NEW: Humor/Tools additions === */
   { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
   { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
   { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
