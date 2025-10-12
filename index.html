@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  // Your Measurement ID
-  gtag('config', 'G-ZNB9MWLE99');
-</script>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GPTMart</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script>
+    // Set your GA Measurement ID once here:
+    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99'; /* ← change here if needed */
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    // Use the centralized ID (avoids mismatches)
+    gtag('config', window.GA_MEASUREMENT_ID);
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -26,26 +30,35 @@
         <input id="searchInput" type="text" placeholder="Search high-quality GPTs...">
       </div>
     </header>
+
     <section id="categories" class="categories"></section>
     <section id="languageIcons" class="language-icons"></section>
+
+    <!-- Upload form (same screen) -->
     <section id="uploadForm" class="upload-form">
-  <h2>Add Custom GPT</h2>
-  <form id="gptForm">
-    <input type="text" id="gptTitle" placeholder="Title" required>
-    <input type="text" id="gptDesc" placeholder="Description" required>
-    <input type="url" id="gptUrl" placeholder="GPT Link (URL)" required>
-    <input type="url" id="gptIcon" placeholder="Icon URL" required>
-    <input type="text" id="gptCategories" placeholder="Categories (comma separated)" required>
-    <button type="submit">Add GPT</button>
-  </form>
-</section>
+      <h2>Add Custom GPT</h2>
+      <form id="gptForm" autocomplete="off">
+        <div class="form-row">
+          <input type="text" id="gptTitle" placeholder="Title" required />
+          <input type="url" id="gptUrl" placeholder="GPT Link (URL)" required />
+        </div>
+        <div class="form-row">
+          <input type="url" id="gptIcon" placeholder="Icon URL (square works best)" required />
+          <input type="text" id="gptCategories" placeholder="Categories (comma separated)" required />
+        </div>
+        <textarea id="gptDesc" rows="3" placeholder="Short description…" required></textarea>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Add GPT</button>
+          <button type="button" id="clearCustom" class="btn-ghost" title="Remove your locally added GPTs">Clear my added GPTs</button>
+        </div>
+        <p class="tiny-hint">New GPTs are saved locally (in your browser) so they persist after refresh.</p>
+      </form>
+    </section>
 
     <section id="grid" class="gpts-grid"></section>
   </div>
 
-  <!-- Load GPTS data first -->
-  <script src="./gpts.js" defer></script>
-  <!-- Then the app logic -->
-  <script src="./app.js" defer></script>
+  <script src="./data/gpts.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
