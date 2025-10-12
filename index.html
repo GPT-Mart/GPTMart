@@ -7,7 +7,7 @@
 
   <!-- Google tag (gtag.js) -->
   <script>
-    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99'; /* change if needed */
+    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99';
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
   <script>
@@ -47,7 +47,7 @@
         <textarea id="gptDesc" rows="3" placeholder="Short description…" required></textarea>
         <div class="form-actions">
           <button type="submit" class="btn-primary">Add GPT</button>
-          <button type="button" id="clearCustom" class="btn-ghost" title="Remove your locally added GPTs">Clear my added GPTs</button>
+          <button type="button" id="clearCustom" class="btn-ghost">Clear my added GPTs</button>
         </div>
         <p class="tiny-hint">New GPTs are saved locally (in your browser) so they persist after refresh.</p>
       </form>
@@ -56,37 +56,7 @@
     <section id="grid" class="gpts-grid"></section>
   </div>
 
-  <!-- Load data first -->
-  <script>
-    // Try primary location
-    const dataScript = document.createElement('script');
-    dataScript.src = './data/gpts.js'; // original location:contentReference[oaicite:2]{index=2}
-    dataScript.onload = boot;
-    dataScript.onerror = () => {
-      // Fallback to root (if you uploaded gpts.js at project root)
-      const fallback = document.createElement('script');
-      fallback.src = './gpts.js';
-      fallback.onload = boot;
-      fallback.onerror = () => {
-        console.error('Could not load gpts.js from ./data/ or project root.');
-        // Still boot so the page works (empty grid, form usable)
-        boot();
-      };
-      document.body.appendChild(fallback);
-    };
-    document.body.appendChild(dataScript);
-
-    function boot() {
-      const app = document.createElement('script');
-      app.src = './app.js';
-      document.body.appendChild(app);
-    }
-  </script>
-    <!-- put these just before </body> -->
-  <script src="./gpts.js?v=3"></script>
-  <script src="./app.js?v=3"></script>
-</body>
-</html>
-
+  <!-- Load app only; it will fetch gpts.js from the right place -->
+  <script src="./app.js?v=6"></script>
 </body>
 </html>
