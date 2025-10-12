@@ -7,15 +7,13 @@
 
   <!-- Google tag (gtag.js) -->
   <script>
-    // Set your GA Measurement ID once here:
-    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99'; /* ← change here if needed */
+    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99'; /* change if needed */
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    // Use the centralized ID (avoids mismatches)
     gtag('config', window.GA_MEASUREMENT_ID);
   </script>
 
@@ -58,7 +56,31 @@
     <section id="grid" class="gpts-grid"></section>
   </div>
 
-  <script src="./data/gpts.js"></script>
-  <script src="./app.js"></script>
+  <!-- Load data first -->
+  <script>
+    // Try primary location
+    const dataScript = document.createElement('script');
+    dataScript.src = './data/gpts.js'; // original location:contentReference[oaicite:2]{index=2}
+    dataScript.onload = boot;
+    dataScript.onerror = () => {
+      // Fallback to root (if you uploaded gpts.js at project root)
+      const fallback = document.createElement('script');
+      fallback.src = './gpts.js';
+      fallback.onload = boot;
+      fallback.onerror = () => {
+        console.error('Could not load gpts.js from ./data/ or project root.');
+        // Still boot so the page works (empty grid, form usable)
+        boot();
+      };
+      document.body.appendChild(fallback);
+    };
+    document.body.appendChild(dataScript);
+
+    function boot() {
+      const app = document.createElement('script');
+      app.src = './app.js';
+      document.body.appendChild(app);
+    }
+  </script>
 </body>
 </html>
