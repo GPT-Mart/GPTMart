@@ -1,18 +1,41 @@
 /***********************
+ * User & Storage Management
+ ***********************/
+function getUserId() {
+    let userId = localStorage.getItem('gptdeck_user_id');
+    if (!userId) {
+        // crypto.randomUUID() is a modern, secure way to generate a unique ID
+        userId = crypto.randomUUID();
+        localStorage.setItem('gptdeck_user_id', userId);
+    }
+    return userId;
+}
+
+// Generate a unique storage key for each user, sandboxing their custom GPTs.
+const USER_ID = getUserId();
+const STORAGE_KEY = `gptdeck_custom_gpts_${USER_ID}`;
+
+const loadCustom = () => {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+        return [];
+    }
+};
+
+const saveCustom = (items) => {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items || []));
+    } catch {
+        // Fails silently if storage is full or disabled
+    }
+};
+
+/***********************
  * State & Utilities
  ***********************/
 const state = { q: '', cat: 'All' };
 const contains = (text, query) => (text || '').toLowerCase().includes((query || '').toLowerCase());
-const STORAGE_KEY = 'gptdeck_custom_gpts_v2';
-
-const loadCustom = () => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } 
-    catch { return []; }
-};
-const saveCustom = (items) => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items || [])); } 
-    catch {}
-};
 
 /***********************
  * Rendering
@@ -97,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Load Data
     window.GPTS = window.GPTS || [];
     window.LANGUAGES = window.LANGUAGES || [];
-    window.CUSTOM_GPTS = loadCustom();
+    window.CUSTOM_GPTS = loadCustom(); // This now loads from the user-specific key
     if (Array.isArray(window.CUSTOM_GPTS) && window.CUSTOM_GPTS.length) {
         // Prevent duplicates on page refresh
         const existingTitles = new Set(window.GPTS.map(g => g.title));
@@ -152,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.GPTS.push(newItem);
         window.CUSTOM_GPTS.push(newItem);
-        saveCustom(window.CUSTOM_GPTS);
+        saveCustom(window.CUSTOM_GPTS); // This now saves to the user-specific key
 
         renderCategories();
         renderGrid();
@@ -174,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.GPTS = window.GPTS.filter(g => !customGptTitles.has(g.title));
         
         window.CUSTOM_GPTS = [];
-        saveCustom([]);
+        saveCustom([]); // This now clears the user-specific key
         
         renderCategories();
         renderGrid();
