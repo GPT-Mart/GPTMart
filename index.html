@@ -21,6 +21,110 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css" />
+    <section id="hero" class="hero-section">
+  <div class="hero-content">
+    <h1>Discover, Build & Launch <span>Powerful Custom GPTs</span></h1>
+    <p>Curated AI mentors, tools, and assistants — built for coders, creators, and innovators.</p>
+    <div class="hero-buttons">
+      <a href="#gpts" class="btn primary">Explore GPTs</a>
+      <a href="#upload" class="btn secondary">Create Your GPT</a>
+    </div>
+  </div>
+  <div class="hero-bg"></div>
+</section>
+
+<style>
+.hero-section {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(circle at top, #0b0f19, #000);
+  overflow: hidden;
+}
+
+.hero-content {
+  z-index: 2;
+  color: white;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #fff;
+}
+
+.hero-content h1 span {
+  background: linear-gradient(90deg, #00b4d8, #90e0ef, #caf0f8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.hero-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn.primary {
+  background: #00b4d8;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #0077b6;
+}
+
+.btn.secondary {
+  border: 2px solid #00b4d8;
+  color: #00b4d8;
+}
+
+.btn.secondary:hover {
+  background: #00b4d8;
+  color: white;
+}
+
+/* Animated background */
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 90deg at 50% 50%, #00b4d8, transparent, #0077b6, transparent);
+  animation: rotate 10s linear infinite;
+  opacity: 0.05;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
+
   </head>
   <body>
     <div class="container">
