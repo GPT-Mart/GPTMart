@@ -575,5 +575,31 @@
   // quick open submit panel
   $('#btnSubmitOpen').addEventListener('click', ()=>{ location.hash = '#public'; window.scrollTo({top:0,behavior:'smooth'}); });
   </script>
+  <script>
+  // Gentle deterrents only — not security.
+  // Disable context menu
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Block common key combos (Ctrl+U, Ctrl+S, Ctrl+Shift+I/C, F12, etc.)
+  document.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (
+      // View source
+      (ctrl && k === 'u') ||
+      // Save
+      (ctrl && k === 's') ||
+      // Devtools
+      (k === 'f12') ||
+      (ctrl && e.shiftKey && (k === 'i' || k === 'c' || k === 'j')) ||
+      // Print
+      (ctrl && k === 'p')
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+</script>
+
 </body>
 </html>
