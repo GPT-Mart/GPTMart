@@ -1,181 +1,185 @@
-* { box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPTMart</title>
 
-body {
-  background: #121212;
-  color: #fff;
-  font-family: "Inter", sans-serif;
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
-}
+    <!-- Google Analytics -->
+    <script>
+      window.GA_MEASUREMENT_ID = "G-ZNB7MWLE99";
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", window.GA_MEASUREMENT_ID);
+    </script>
 
-/* ===== HEADER ===== */
-.main-header {
-  background: rgba(18, 18, 18, 0.9);
-  backdrop-filter: blur(10px);
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #222;
-}
+    <!-- Fonts & Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
 
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 15px 20px;
-}
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+      <div class="header-container">
+        <h1 class="logo">GPTMart<span>.</span></h1>
 
-.logo {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
-}
-.logo span { color: #007bff; }
+        <nav class="nav-menu">
+          <a href="#hero">Home</a>
+          <a href="#categories">Categories</a>
+          <a href="#grid">Explore</a>
+          <a href="#upload">Create GPT</a>
+          <a href="#contact">Contact</a>
+        </nav>
 
-.nav-menu a {
-  color: #ccc;
-  margin: 0 15px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-.nav-menu a:hover { color: #007bff; }
+        <div class="header-actions">
+          <input id="searchInput" type="text" class="search-input" placeholder="Search GPTs..." />
+          <a href="#login" class="login-btn">Login</a>
+          <a href="#signup" class="signup-btn">Sign Up</a>
+        </div>
+      </div>
+    </header>
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    <!-- ===== HERO SECTION (Above the Fold) ===== -->
+    <section id="hero" class="hero-section">
+      <canvas id="particles"></canvas>
+      <div class="hero-content">
+        <h1>Discover, Build & Launch <span>Powerful Custom GPTs</span></h1>
+        <p>Where AI Creators Meet Opportunity</p>
+        <div class="hero-buttons">
+          <a href="#grid" class="btn primary">Explore GPTs</a>
+          <a href="#upload" class="btn secondary">Create Your GPT</a>
+        </div>
+      </div>
+      <div class="hero-bg"></div>
+    </section>
 
-.search-input {
-  background: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: #fff;
-  font-size: 0.9rem;
-}
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+      <section id="categories" class="categories"></section>
+      <section id="languageIcons" class="language-icons"></section>
+      <section id="grid" class="gpts-grid"></section>
+    </div>
 
-.login-btn,
-.signup-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <p>© 2025 GPTMart — All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
 
-.login-btn {
-  color: #00b4d8;
-  border: 1px solid #00b4d8;
-}
+    <!-- Scripts -->
+    <script src="./data/gpts.js"></script>
+    <script src="./app.js"></script>
 
-.signup-btn {
-  background: #007bff;
-  color: #fff;
-}
-.signup-btn:hover { background: #0056b3; }
+    <!-- ===== PARTICLE ANIMATION ===== -->
+    <script>
+      const canvas = document.getElementById("particles");
+      const ctx = canvas.getContext("2d");
 
-/* ===== HERO SECTION ===== */
-.hero-section {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  overflow: hidden;
-  background: radial-gradient(circle at top, #0b0f19, #000);
-  padding-top: 80px;
-}
-.hero-section::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 180deg at 50% 50%, #007bff, #6f42c1, #00b4d8, #007bff);
-  animation: rotate 12s linear infinite;
-  opacity: 0.08;
-}
-@keyframes rotate { to { transform: rotate(360deg); } }
+      function heroHeight() {
+        return document.querySelector(".hero-section").offsetHeight;
+      }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 800px;
-  padding: 0 20px;
-}
-.hero-content h1 {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-.hero-content h1 span {
-  background: linear-gradient(90deg, #00b4d8, #90e0ef, #caf0f8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hero-content p {
-  color: #ccc;
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-.hero-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = heroHeight();
+      }
 
-.btn {
-  text-decoration: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-.btn.primary { background: #007bff; color: #fff; }
-.btn.primary:hover { background: #0056b3; }
-.btn.secondary { border: 2px solid #00b4d8; color: #00b4d8; }
-.btn.secondary:hover { background: #00b4d8; color: #fff; }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
 
-/* ===== PARTICLE CANVAS ===== */
-#particles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const PARTICLE_COUNT = prefersReducedMotion ? 50 : 120;
+      const INFLUENCE_RADIUS = 140;
+      const ATTRACT_STRENGTH = 0.015;
+      const BASE_DRIFT = 0.35;
+      const PARALLAX = 0.02;
 
-/* ===== MAIN CONTENT ===== */
-.container {
-  width: 95%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-top: 60px;
-}
+      const pointer = { x: canvas.width / 2, y: canvas.height / 2, active: false, px: 0.5, py: 0.5 };
+      const updatePointer = (x, y) => {
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = x - rect.left;
+        pointer.y = y - rect.top;
+        pointer.px = pointer.x / canvas.width;
+        pointer.py = pointer.y / canvas.height;
+        pointer.active = true;
+      };
 
-/* ===== FOOTER ===== */
-.footer {
-  text-align: center;
-  margin-top: 80px;
-  padding: 40px 0;
-  border-top: 1px solid #222;
-  color: #aaa;
-}
-.footer-links a {
-  color: #007bff;
-  margin: 0 10px;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-.footer-links a:hover { text-decoration: underline; }
+      window.addEventListener("mousemove", (e) => updatePointer(e.clientX, e.clientY));
+      window.addEventListener("touchmove", (e) => {
+        const t = e.touches[0];
+        if (t) updatePointer(t.clientX, t.clientY);
+      }, { passive: true });
+      window.addEventListener("mouseleave", () => (pointer.active = false));
+      window.addEventListener("touchend", () => (pointer.active = false));
+
+      class Particle {
+        constructor() { this.reset(true); }
+        reset(randomY = false) {
+          this.x = Math.random() * canvas.width;
+          this.y = randomY ? Math.random() * canvas.height : canvas.height * Math.random();
+          this.size = Math.random() * 2 + 0.8;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = BASE_DRIFT * (0.4 + Math.random() * 0.8);
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed;
+          this.alpha = Math.random() * 0.7 + 0.3;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+
+          if (pointer.active) {
+            const dx = pointer.x - this.x;
+            const dy = pointer.y - this.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < INFLUENCE_RADIUS) {
+              const f = ((INFLUENCE_RADIUS - dist) / INFLUENCE_RADIUS) * ATTRACT_STRENGTH;
+              this.vx += dx * f;
+              this.vy += dy * f;
+            }
+          } else {
+            const cx = canvas.width * 0.5, cy = canvas.height * 0.5;
+            this.vx += (cx - this.x) * 0.00002;
+            this.vy += (cy - this.y) * 0.00002;
+          }
+
+          if (this.x < -10) this.x = canvas.width + 10;
+          if (this.x > canvas.width + 10) this.x = -10;
+          if (this.y < -10) this.y = canvas.height + 10;
+          if (this.y > canvas.height + 10) this.y = -10;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          const hue = 200 + (this.y / canvas.height) * 60;
+          ctx.fillStyle = `hsla(${hue}, 100%, 60%, ${this.alpha})`;
+          ctx.fill();
+        }
+      }
+
+      const particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+
+      function animate() {
+        const px = (pointer.px - 0.5) * PARALLAX * canvas.width;
+        const py = (pointer.py - 0.5) * PARALLAX * canvas.height;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(px, py);
+        for (const p of particles) { p.update(); p.draw(); }
+        ctx.restore();
+        requestAnimationFrame(animate);
+      }
+      animate();
+    </script>
+  </body>
+</html>
