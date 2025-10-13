@@ -1,185 +1,457 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPTMart</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GPTMart — Curated Custom GPTs</title>
+  <meta name="description" content="Discover, filter, and add the best custom GPTs. Clean, fast, single‑file app." />
+  <meta property="og:title" content="GPTMart — Curated Custom GPTs" />
+  <meta property="og:description" content="Discover, filter, and add the best custom GPTs. Clean, fast, single‑file app." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0f172a" />
 
-    <!-- Google Analytics -->
-    <script>
-      window.GA_MEASUREMENT_ID = "G-ZNB7MWLE99";
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag("js", new Date());
-      gtag("config", window.GA_MEASUREMENT_ID);
-    </script>
+  <!-- Global Analytics: keep a single source of truth for GA ID -->
+  <script>
+    window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', window.GA_MEASUREMENT_ID);
+  </script>
 
-    <!-- Fonts & Styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css" />
-  </head>
+  <style>
+    :root{
+      --bg:#0b0f19; --panel:#111827; --muted:#9ca3af; --text:#e5e7eb; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1f2937;
+      --card:#0f172a; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
+    body{background:linear-gradient(180deg,#090d16 0%,#0c1222 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    .container{width:95%;max-width:1100px;margin:0 auto}
 
-  <body>
-    <!-- ===== HEADER ===== -->
-    <header class="main-header">
-      <div class="header-container">
-        <h1 class="logo">GPTMart<span>.</span></h1>
+    /* Hero (Above the Fold) */
+    .hero{position:relative;padding:72px 0 36px}
+    .hero .bg-blob{position:absolute;inset:-120px -40px auto auto;filter:blur(70px);opacity:.35;pointer-events:none;background:radial-gradient(650px 320px at 80% 10%,rgba(59,130,246,.45),transparent 60%),radial-gradient(500px 260px at 20% 10%,rgba(99,102,241,.35),transparent 60%);width:100%;height:100%}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+    .logo .dot{color:var(--brand)}
+    .top-actions{display:flex;gap:8px}
+    .btn{background:#111827;border:1px solid var(--stroke);padding:10px 14px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+    .btn:hover{border-color:#2b3446}
+    .btn.brand{background:var(--brand);border-color:var(--brand);color:white}
+    .btn.brand:hover{background:var(--brand-600);border-color:var(--brand-600)}
 
-        <nav class="nav-menu">
-          <a href="#hero">Home</a>
-          <a href="#categories">Categories</a>
-          <a href="#grid">Explore</a>
-          <a href="#upload">Create GPT</a>
-          <a href="#contact">Contact</a>
-        </nav>
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;margin-top:36px}
+    @media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
 
-        <div class="header-actions">
-          <input id="searchInput" type="text" class="search-input" placeholder="Search GPTs..." />
-          <a href="#login" class="login-btn">Login</a>
-          <a href="#signup" class="signup-btn">Sign Up</a>
-        </div>
-      </div>
-    </header>
+    .headline{font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0 0 12px;font-weight:900}
+    .sub{color:var(--muted);font-size:clamp(14px,2.4vw,16px);max-width:56ch;margin:0 0 18px}
 
-    <!-- ===== HERO SECTION (Above the Fold) ===== -->
-    <section id="hero" class="hero-section">
-      <canvas id="particles"></canvas>
-      <div class="hero-content">
-        <h1>Discover, Build & Launch <span>Powerful Custom GPTs</span></h1>
-        <p>Where AI Creators Meet Opportunity</p>
-        <div class="hero-buttons">
-          <a href="#grid" class="btn primary">Explore GPTs</a>
-          <a href="#upload" class="btn secondary">Create Your GPT</a>
-        </div>
-      </div>
-      <div class="hero-bg"></div>
-    </section>
+    .search-wrap{display:flex;gap:8px;flex-wrap:wrap}
+    .search{flex:1;min-width:260px;max-width:520px;border:1px solid var(--stroke);background:#0a1222;border-radius:12px;padding:12px 14px;color:var(--text)}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .chip{border:1px solid var(--stroke);background:#0b1426;color:#c7d2fe;border-radius:999px;padding:6px 10px;font-size:12px}
 
-    <!-- ===== MAIN CONTENT ===== -->
+    .hero-card{background:linear-gradient(180deg,#0f172a, #0b1224);border:1px solid var(--stroke);border-radius:var(--radius);padding:18px}
+    .hero-card h3{margin:0 0 8px}
+    .row{display:flex;gap:10px;align-items:center}
+    .row input,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text)}
+
+    /* Languages */
+    .langs{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:22px 0}
+    .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
+    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;transition:transform .15s}
+    .lang:hover img{transform:scale(1.06)}
+    .lang span{font-size:12px;color:#cbd5e1}
+
+    /* Categories */
+    .categories{display:flex;flex-wrap:wrap;gap:8px}
+    .category{padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:#0b1324;color:#cbd5e1;cursor:pointer}
+    .category.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+    /* Grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:22px 0 70px}
+    .card{background:var(--card);border:1px solid var(--stroke);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:transform .15s}
+    .card:hover{transform:translateY(-3px)}
+    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324}
+    .icon img{width:100%;height:100%;object-fit:cover}
+    .title{font-weight:800;margin:0}
+    .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
+    .tags{display:flex;gap:6px;flex-wrap:wrap}
+    .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe}
+    .actions{margin-top:auto;display:flex;gap:8px}
+    .link{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;border:1px solid var(--brand);padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .ghost{background:#0b1426;color:#e5e7eb;border:1px solid var(--stroke)}
+
+    /* Footer */
+    footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
+
+    /* Modal */
+    dialog{border:none;border-radius:16px;background:#0b1426;color:var(--text);width:min(680px,96%);padding:0;box-shadow:0 20px 70px rgba(0,0,0,.5)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--stroke)}
+    .modal-body{padding:16px;display:grid;gap:12px}
+    .modal-body .row{gap:8px}
+    .modal-body input, .modal-body textarea{border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text);width:100%}
+    .modal-body textarea{min-height:90px;resize:vertical}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px;border-top:1px solid var(--stroke)}
+
+    /* A11y + motion */
+    @media (prefers-reduced-motion: reduce){.card:hover,.lang:hover img{transform:none}}
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="bg-blob" aria-hidden="true"></div>
     <div class="container">
-      <section id="categories" class="categories"></section>
-      <section id="languageIcons" class="language-icons"></section>
-      <section id="grid" class="gpts-grid"></section>
-    </div>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-      <p>© 2025 GPTMart — All rights reserved.</p>
-      <div class="footer-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms</a>
-        <a href="#">Contact</a>
+      <div class="nav" role="navigation">
+        <div class="logo" aria-label="GPTMart">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#3b82f6"/></svg>
+          <span>GPTMart</span><span class="dot">.</span>
+        </div>
+        <div class="top-actions">
+          <button id="addBtn" class="btn" aria-label="Add your GPT">＋ Add GPT</button>
+          <a class="btn brand" id="browseBtn" href="#grid">Browse</a>
+        </div>
       </div>
-    </footer>
 
-    <!-- Scripts -->
-    <script src="./data/gpts.js"></script>
-    <script src="./app.js"></script>
+      <div class="hero-grid">
+        <div>
+          <h1 class="headline">Find, filter, and launch the best <span style="color:var(--brand)">Custom GPTs</span></h1>
+          <p class="sub">Lightning‑fast search, clean categories, and a one‑click form to add yours. No clutter. No framework. Just copy‑paste this file and deploy.</p>
+          <div class="search-wrap">
+            <input id="q" class="search" type="search" placeholder="Search GPTs, tags, categories… (⌘/Ctrl + K)" aria-label="Search" />
+            <select id="cat" class="search" style="max-width:220px" aria-label="Filter by category">
+              <option value="All">All categories</option>
+            </select>
+            <button class="btn brand" id="clearFilters">Reset</button>
+          </div>
+          <div class="chips" id="activeChips" aria-live="polite"></div>
+        </div>
+        <div class="hero-card" aria-label="Quick Add">
+          <h3>Quick Add (local)</h3>
+          <div class="row"><input id="qaTitle" placeholder="Title"/></div>
+          <div class="row"><input id="qaUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)"/></div>
+          <div class="row"><input id="qaIcon" placeholder="Icon URL (PNG/PNG)"/></div>
+          <div class="row"><input id="qaCats" placeholder="Categories (comma‑separated)"/></div>
+          <div class="row"><input id="qaTags" placeholder="Tags (comma‑separated)"/></div>
+          <div class="row"><textarea id="qaDesc" placeholder="Short description"></textarea></div>
+          <div class="row" style="justify-content:flex-end"><button class="btn brand" id="qaAdd">Add to list</button></div>
+          <small style="color:#93c5fd">Saved only in your browser (localStorage). Export anytime.</small>
+        </div>
+      </div>
 
-    <!-- ===== PARTICLE ANIMATION ===== -->
-    <script>
-      const canvas = document.getElementById("particles");
-      const ctx = canvas.getContext("2d");
+      <!-- Language shortcuts -->
+      <div class="langs" id="langs" aria-label="Languages"></div>
 
-      function heroHeight() {
-        return document.querySelector(".hero-section").offsetHeight;
-      }
+      <!-- Categories row -->
+      <div class="categories" id="catsRow" aria-label="Categories"></div>
 
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = heroHeight();
-      }
+      <!-- Grid -->
+      <div id="grid" class="grid" role="list" aria-label="Results"></div>
+    </div>
+  </div>
 
-      window.addEventListener("resize", resizeCanvas);
-      resizeCanvas();
+  <footer>
+    Built with ♥ as a single HTML file. <span id="count"></span> GPTs loaded.
+  </footer>
 
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const PARTICLE_COUNT = prefersReducedMotion ? 50 : 120;
-      const INFLUENCE_RADIUS = 140;
-      const ATTRACT_STRENGTH = 0.015;
-      const BASE_DRIFT = 0.35;
-      const PARALLAX = 0.02;
+  <!-- Add/Edit Modal -->
+  <dialog id="gptModal">
+    <form method="dialog">
+      <div class="modal-head">
+        <strong id="modalTitle">Add GPT</strong>
+        <button class="btn" value="close" aria-label="Close">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="row"><input id="mTitle" placeholder="Title" required /></div>
+        <div class="row"><input id="mUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required /></div>
+        <div class="row"><input id="mIcon" placeholder="Icon URL" /></div>
+        <div class="row"><textarea id="mDesc" placeholder="Short description"></textarea></div>
+        <div class="row"><input id="mCats" placeholder="Categories (comma‑separated)" /></div>
+        <div class="row"><input id="mTags" placeholder="Tags (comma‑separated)" /></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="exportBtn" type="button">Export JSON</button>
+        <button class="btn brand" id="saveBtn" value="save">Save</button>
+      </div>
+    </form>
+  </dialog>
 
-      const pointer = { x: canvas.width / 2, y: canvas.height / 2, active: false, px: 0.5, py: 0.5 };
-      const updatePointer = (x, y) => {
-        const rect = canvas.getBoundingClientRect();
-        pointer.x = x - rect.left;
-        pointer.y = y - rect.top;
-        pointer.px = pointer.x / canvas.width;
-        pointer.py = pointer.y / canvas.height;
-        pointer.active = true;
-      };
+  <script>
+  /***********************
+   * DATA
+   ***********************/
+  // Starter data; can be replaced or merged. If window.GPTS is present (legacy), we merge that in.
+  const STARTER_GPTS = [
+    { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], tags:["roast","fun"], url:"https://chatgpt.com/g/g-xxxxx" },
+    { title:"Digital Therapist GPT", desc:"Kind, grounded support with coping tools.", icon:"https://cdn-icons-png.flaticon.com/512/384/384846.png", categories:["Wellness"], tags:["therapy","journaling"], url:"https://chatgpt.com/g/g-yyyyy" },
+    { title:"TaskMasterMind", desc:"Productivity ops: templates, prioritization, automations.", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828765.png", categories:["Productivity"], tags:["tasks","automation"], url:"https://chatgpt.com/g/g-zzzzz" },
+  ];
 
-      window.addEventListener("mousemove", (e) => updatePointer(e.clientX, e.clientY));
-      window.addEventListener("touchmove", (e) => {
-        const t = e.touches[0];
-        if (t) updatePointer(t.clientX, t.clientY);
-      }, { passive: true });
-      window.addEventListener("mouseleave", () => (pointer.active = false));
-      window.addEventListener("touchend", () => (pointer.active = false));
+  const LANGUAGES = [
+    { name:"Python", url:"https://chatgpt.com/gpts?tag=python", icon:"https://cdn-icons-png.flaticon.com/512/3098/3098090.png" },
+    { name:"JavaScript", url:"https://chatgpt.com/gpts?tag=javascript", icon:"https://cdn-icons-png.flaticon.com/512/5968/5968292.png" },
+    { name:"C++", url:"https://chatgpt.com/gpts?tag=cpp", icon:"https://cdn-icons-png.flaticon.com/512/6132/6132222.png" },
+    { name:"SQL", url:"https://chatgpt.com/gpts?tag=sql", icon:"https://cdn-icons-png.flaticon.com/512/4492/4492311.png" },
+  ];
 
-      class Particle {
-        constructor() { this.reset(true); }
-        reset(randomY = false) {
-          this.x = Math.random() * canvas.width;
-          this.y = randomY ? Math.random() * canvas.height : canvas.height * Math.random();
-          this.size = Math.random() * 2 + 0.8;
-          const angle = Math.random() * Math.PI * 2;
-          const speed = BASE_DRIFT * (0.4 + Math.random() * 0.8);
-          this.vx = Math.cos(angle) * speed;
-          this.vy = Math.sin(angle) * speed;
-          this.alpha = Math.random() * 0.7 + 0.3;
-        }
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
+  // localStorage keys
+  const LS_KEY = 'gptmart.v2.items';
+  const LS_DELETED = 'gptmart.v2.deleted';
 
-          if (pointer.active) {
-            const dx = pointer.x - this.x;
-            const dy = pointer.y - this.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < INFLUENCE_RADIUS) {
-              const f = ((INFLUENCE_RADIUS - dist) / INFLUENCE_RADIUS) * ATTRACT_STRENGTH;
-              this.vx += dx * f;
-              this.vy += dy * f;
-            }
-          } else {
-            const cx = canvas.width * 0.5, cy = canvas.height * 0.5;
-            this.vx += (cx - this.x) * 0.00002;
-            this.vy += (cy - this.y) * 0.00002;
-          }
+  /***********************
+   * UTIL
+   ***********************/
+  const contains = (t, q) => (t||'').toLowerCase().includes((q||'').toLowerCase());
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const uniq = arr => Array.from(new Set(arr));
+  const toCSV = a => (a||[]).join(', ');
+  const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
-          if (this.x < -10) this.x = canvas.width + 10;
-          if (this.x > canvas.width + 10) this.x = -10;
-          if (this.y < -10) this.y = canvas.height + 10;
-          if (this.y > canvas.height + 10) this.y = -10;
-        }
-        draw() {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          const hue = 200 + (this.y / canvas.height) * 60;
-          ctx.fillStyle = `hsla(${hue}, 100%, 60%, ${this.alpha})`;
-          ctx.fill();
-        }
-      }
+  function readLocal(){
+    try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch(e){ return []; }
+  }
+  function writeLocal(items){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
+  function readDeleted(){ try{ return new Set(JSON.parse(localStorage.getItem(LS_DELETED)||'[]')); }catch(e){ return new Set(); } }
+  function writeDeleted(set){ localStorage.setItem(LS_DELETED, JSON.stringify(Array.from(set))); }
 
-      const particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+  function exportJSON(){
+    const data = getAll();
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'gptmart-export.json';
+    a.click();
+  }
 
-      function animate() {
-        const px = (pointer.px - 0.5) * PARALLAX * canvas.width;
-        const py = (pointer.py - 0.5) * PARALLAX * canvas.height;
+  /***********************
+   * STATE
+   ***********************/
+  const state = {
+    q: new URLSearchParams(location.hash.slice(1)).get('q') || '',
+    cat: new URLSearchParams(location.hash.slice(1)).get('cat') || 'All',
+    tag: new URLSearchParams(location.hash.slice(1)).get('tag') || '',
+    editingIndex: null,
+  };
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-        ctx.translate(px, py);
-        for (const p of particles) { p.update(); p.draw(); }
-        ctx.restore();
-        requestAnimationFrame(animate);
-      }
-      animate();
-    </script>
-  </body>
+  function syncHash(){
+    const p = new URLSearchParams();
+    if(state.q) p.set('q', state.q);
+    if(state.cat && state.cat!=='All') p.set('cat', state.cat);
+    if(state.tag) p.set('tag', state.tag);
+    location.hash = p.toString();
+  }
+
+  /***********************
+   * DATA PIPELINE
+   ***********************/
+  function getAll(){
+    // Merge starter + legacy global + local, minus deleted
+    const deleted = readDeleted();
+    const legacy = Array.isArray(window.GPTS) ? window.GPTS : [];
+    const local = readLocal();
+    const merged = [...STARTER_GPTS, ...legacy, ...local];
+    // De-dup by title+url
+    const byKey = new Map();
+    merged.forEach(item=>{
+      const key = (item.title||'') + '|' + (item.url||'');
+      if(!deleted.has(key)) byKey.set(key, item);
+    });
+    return Array.from(byKey.values());
+  }
+
+  /***********************
+   * RENDER
+   ***********************/
+  const grid = $('#grid');
+  const qInput = $('#q');
+  const catSelect = $('#cat');
+  const chips = $('#activeChips');
+  const countEl = $('#count');
+
+  function renderLanguages(){
+    const wrap = $('#langs');
+    wrap.innerHTML = LANGUAGES.map(l => `
+      <a class="lang" href="${l.url}" target="_blank" rel="noopener">
+        <img loading="lazy" src="${l.icon}" alt="${l.name} icon" />
+        <span>${l.name}</span>
+      </a>`).join('');
+  }
+
+  function renderCategories(){
+    const items = getAll();
+    const cats = uniq(items.flatMap(x=>x.categories||[])).sort();
+    catSelect.innerHTML = '<option value="All">All categories</option>' + cats.map(c=>`<option ${state.cat===c?'selected':''}>${c}</option>`).join('');
+
+    const row = $('#catsRow');
+    row.innerHTML = ['All', ...cats].map(c=>`<button class="category ${state.cat===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
+    $$('.category', row).forEach(btn=> btn.addEventListener('click', ()=>{ state.cat = btn.dataset.cat; update(); }));
+  }
+
+  function cardTemplate(x){
+    const tags = (x.tags||[]).map(t=>`<span class="tag" data-tag="${t}">#${t}</span>`).join('');
+    return `
+      <article class="card" role="listitem" tabindex="0">
+        <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
+        <h3 class="title">${x.title||'Untitled GPT'}</h3>
+        <p class="desc">${x.desc||''}</p>
+        <div class="tags">${tags}</div>
+        <div class="actions">
+          <a class="link" href="${x.url}" target="_blank" rel="noopener">Open</a>
+          <button class="btn ghost" data-edit="1">Edit</button>
+          <button class="btn" data-del="1" title="Remove from this view">Remove</button>
+        </div>
+      </article>`;
+  }
+
+  function renderGrid(){
+    const items = getAll();
+    const filtered = items.filter(x=>{
+      const q = state.q.trim();
+      const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
+      const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
+      const inTag = !state.tag || (x.tags||[]).includes(state.tag);
+      return inQ && inCat && inTag;
+    });
+
+    countEl.textContent = items.length;
+    grid.innerHTML = filtered.map(cardTemplate).join('');
+
+    // tag chip clicks
+    $$('.tag', grid).forEach(el=> el.addEventListener('click', ()=>{ state.tag = el.dataset.tag; update(); }));
+
+    // edit/remove
+    $$('.card .btn', grid).forEach((b, idx)=>{
+      const card = b.closest('.card');
+      const title = card.querySelector('.title').textContent;
+      const url = card.querySelector('.actions .link').getAttribute('href');
+      const key = title + '|' + url;
+      if(b.dataset.edit){ b.addEventListener('click', ()=> openModalFor(title,url)); }
+      if(b.dataset.del){ b.addEventListener('click', ()=> removeItemKey(key)); }
+    });
+
+    renderChips();
+  }
+
+  function renderChips(){
+    chips.innerHTML = '';
+    const push = (label, onClear)=>{
+      const el = document.createElement('button');
+      el.className = 'chip';
+      el.innerHTML = label + ' ✕';
+      el.addEventListener('click', onClear);
+      chips.appendChild(el);
+    };
+    if(state.q) push(`q: ${state.q}`, ()=>{state.q=''; update();});
+    if(state.cat && state.cat!=='All') push(`cat: ${state.cat}`, ()=>{state.cat='All'; update();});
+    if(state.tag) push(`#${state.tag}`, ()=>{state.tag=''; update();});
+  }
+
+  function update(){
+    syncHash();
+    qInput.value = state.q;
+    renderCategories();
+    renderGrid();
+  }
+
+  /***********************
+   * MUTATIONS
+   ***********************/
+  function addItem(item){
+    const items = readLocal();
+    const clean = {
+      title: (item.title||'').trim(),
+      desc: (item.desc||'').trim(),
+      icon: (item.icon||'').trim(),
+      categories: (item.categories||[]).filter(Boolean),
+      tags: (item.tags||[]).filter(Boolean),
+      url: (item.url||'').trim(),
+    };
+    items.push(clean);
+    writeLocal(items);
+    gtag('event','add_gpt', {title: clean.title});
+    update();
+  }
+
+  function removeItemKey(key){
+    const del = readDeleted();
+    del.add(key);
+    writeDeleted(del);
+    gtag('event','remove_gpt');
+    update();
+  }
+
+  function openModalFor(title,url){
+    const all = getAll();
+    const found = all.find(x=>x.title===title && x.url===url);
+    state.editingIndex = found ? all.indexOf(found) : null;
+    $('#modalTitle').textContent = found ? 'Edit GPT' : 'Add GPT';
+    $('#mTitle').value = found?.title || '';
+    $('#mUrl').value = found?.url || '';
+    $('#mIcon').value = found?.icon || '';
+    $('#mDesc').value = found?.desc || '';
+    $('#mCats').value = toCSV(found?.categories);
+    $('#mTags').value = toCSV(found?.tags);
+    $('#gptModal').showModal();
+  }
+
+  function saveModal(){
+    const item = {
+      title: $('#mTitle').value,
+      url: $('#mUrl').value,
+      icon: $('#mIcon').value,
+      desc: $('#mDesc').value,
+      categories: fromCSV($('#mCats').value),
+      tags: fromCSV($('#mTags').value),
+    };
+    addItem(item);
+    $('#gptModal').close();
+  }
+
+  /***********************
+   * WIRING
+   ***********************/
+  // search inputs
+  qInput.value = state.q;
+  qInput.addEventListener('input', (e)=>{ state.q = e.target.value; update(); });
+  qInput.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); qInput.focus(); }});
+  catSelect.addEventListener('change', e=>{ state.cat = e.target.value; update(); });
+  $('#clearFilters').addEventListener('click', ()=>{ state.q=''; state.cat='All'; state.tag=''; update(); });
+
+  // quick add
+  $('#qaAdd').addEventListener('click', ()=>{
+    addItem({
+      title: $('#qaTitle').value,
+      url: $('#qaUrl').value,
+      icon: $('#qaIcon').value,
+      desc: $('#qaDesc').value,
+      categories: fromCSV($('#qaCats').value),
+      tags: fromCSV($('#qaTags').value),
+    });
+    ['qaTitle','qaUrl','qaIcon','qaDesc','qaCats','qaTags'].forEach(id=> $('#'+id).value='');
+  });
+
+  // modal
+  $('#addBtn').addEventListener('click', ()=> openModalFor());
+  $('#browseBtn').addEventListener('click', ()=> document.getElementById('grid').scrollIntoView({behavior:'smooth'}));
+  $('#saveBtn').addEventListener('click', saveModal);
+  $('#exportBtn').addEventListener('click', exportJSON);
+
+  // global tag hash sync (back/forward)
+  window.addEventListener('hashchange', ()=>{
+    const p = new URLSearchParams(location.hash.slice(1));
+    state.q = p.get('q')||''; state.cat = p.get('cat')||'All'; state.tag = p.get('tag')||''; update();
+  });
+
+  // boot
+  renderLanguages();
+  renderCategories();
+  renderGrid();
+  </script>
+</body>
 </html>
