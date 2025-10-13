@@ -150,7 +150,6 @@
       <h3>Admin sign-in</h3>
       <div class="row"><input id="pin" type="password" placeholder="Enter admin PIN"/></div>
       <div class="row" style="justify-content:flex-end"><button class="btn brand" id="pinGo">Enter</button></div>
-      <small style="color:#93c5fd">Default PIN: <code>0000</code> (change in Settings)</small>
     </div>
 
     <div id="adminDesk" class="hide">
@@ -246,10 +245,10 @@
   const LS_SETTINGS = 'gptmart.v3.settings';
   const SESSION_ADMIN = 'gptmart.v3.isAdmin';
 
-  /* ✅ STATE MUST BE DECLARED EARLY */
+  /* STATE declared early to avoid TDZ issues */
   const state = { q:'', cat:'All' };
 
-  // Your provided lists (LANGUAGES + GPTS). You can extend these.
+  // (Your prefilled lists of LANGUAGES + STARTER_GPTS kept the same)
   const LANGUAGES = [
     { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
     { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
@@ -283,41 +282,41 @@
     { title:"Spam & Scam Detector – Protect Your Inbox", desc:"Detect scams, spam, phishing in email/SMS/DMs. AI-powered protection.", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926715.png", categories:["Security","Tools"], url:"https://chatgpt.com/g/g-686522599f78819196f796d8f20dc5a7-spam-scam-detector-protect-your-inbox?model=gpt-4o"},
     { title:"Error Detector – Spot, Explain, Fix", desc:"Bugs in code, grammar flaws, logic errors, factual inaccuracies. Detect, explain, fix.", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055673.png", categories:["Tools"], url:"https://chatgpt.com/g/g-68651a7bd7a081919b9e95ed139b1d4c-error-detector-spot-explain-fix?model=gpt-4o"},
     { title:"Lisp/Scheme", desc:"Harness Lisp’s legendary power for AI and elegant computation.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/48/Lisp_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc6a389cc8191a9a54ed9633c8d9c-lisp-scheme"},
-    { title:"PowerShell", desc:"Scripting, Windows automation, admin tasks, WMI, AD — pro-grade helper.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a1/Powershell_128.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efc250595c81918bf818005ac8dded-powershell?model=gpt-5"},
-    { title:"Perl", desc:"Regex, parsing, automation, modules — for devs, analysts, and sysadmins.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/34/Perl-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc0f669848191bb17090ea0ac5aab-perl?model=gpt-4o"},
-    { title:"Bash", desc:"Automate tasks, scripts, terminal mastery — loops, cron, file ops.", icon:"https://upload.wikimedia.org/wikipedia/commons/5/52/Bash-tip.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efbf3da2048191b28d875c2c041130-bash?model=gpt-4o"},
-    { title:"MATLAB", desc:"Matrix math, simulations, analysis, toolboxes, debugging — for students and pros.", icon:"https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbdf8604c8191b48f2596faa7c13a-matlab"},
-    { title:"Julia", desc:"High-performance Julia for scientific computing and data science.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/ae/Julia_logo_circles.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbca1eb9481919f6d08d23dcdd14e-julia"},
-    { title:"TypeScript", desc:"Types, interfaces, generics, debugging. Ideal for React/Node/full-stack.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
-    { title:"Rust", desc:"Ownership, lifetimes, crates, zero-cost abstractions — fearless systems dev.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6d3bd4d081919fb3b0cec36e487a-rust"},
-    { title:"Kotlin", desc:"Android, backend, multiplatform. Coroutines, Jetpack, OOP, clean architecture.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Kotlin_icon_%282016-2021%29.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6bda03888191a399bb2ec8dddb80-kotlin"},
-    { title:"Ruby", desc:"Scripts, automation, web (Rails), debugging. For beginners to ninjas.", icon:"https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef69f3d4488191b55dd9d6fa0b5b4a-ruby"},
-    { title:"C#", desc:".NET, Unity, OOP, LINQ, async. Build games, apps, enterprise systems.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
-    { title:"C", desc:"Syntax, pointers, memory, performance — efficient low-level code.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/C_Programming_Language.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef67c3b83481918336d1c4ddfd5600-c"},
-    { title:"SQL", desc:"Queries, joins, indexing, optimization, schema design — beginner to pro.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Sql_data_base_with_logo.svg", categories:["Data"], url:"https://chatgpt.com/g/g-67ef62fdcdd081918ce75b1c878f43f4-sql"},
-    { title:"GO (Golang)", desc:"APIs, microservices, CLIs — fast, concurrent, idiomatic Go.", icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
-    { title:"R", desc:"Tidyverse, ggplot2, ML, research workflows — for analysts and researchers.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"},
-    { title:"Swift", desc:"Swift & SwiftUI for Apple platforms. Animations, APIs, UI design.", icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
-    { title:"Java", desc:"Clean OOP, Android/back-end systems, DSA, debugging.", icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
-    { title:"React", desc:"Build fast component-based UIs with hooks & state.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-67ef5d4d75a48191aa49f525af48e4d9-react"},
-    { title:"HTML&CSS", desc:"Responsive layouts, flexbox, grid, forms, animations — clean design help.", icon:"https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-67ef5b2d70bc81918d9a5c2877de14d7-html-css?model=gpt-4o"},
-    { title:"Python", desc:"Scripting, automation, data science, AI — clean code and real-world use cases.", icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", categories:["Languages","AI & Automation"], url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
-    { title:"JavaScript", desc:"Modern JS — ES6+, DOM, async, Node.js. Debugging & best practices.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
-    { title:"c++ cpp", desc:"Write, debug, and learn modern C++ with STL. Basics to advanced & competitive programming.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
-    { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
-    { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
-    { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
-    { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
-    { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
-    { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
-    { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
-    { title:"Code Horror Stories GPT", desc:"Tells creepy campfire stories about bugs.", icon:"https://cdn-icons-png.flaticon.com/512/1792/1792942.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac00c2b3481918393a8d577d44408-code-horror-stories-gpt"},
-    { title:"StackOverflow Parrot GPT", desc:"The sassiest dev bot alive. Ask it anything and get roasted like you're on StackOverflow...", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926725.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabe58efc88191b7b5340395c98de7-stackoverflow-parrot-gpt?model=gpt-5"},
+    { title:"PowerShell", desc:"Scripting, Windows automation, admin tasks, WMI, AD.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a1/Powershell_128.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efc250595c81918bf818005ac8dded-powershell?model=gpt-5"},
+    { title:"Perl", desc:"Regex, parsing, automation, modules.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/34/Perl-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc0f669848191bb17090ea0ac5aab-perl?model=gpt-4o"},
+    { title:"Bash", desc:"Automate tasks, scripts, terminal mastery.", icon:"https://upload.wikimedia.org/wikipedia/commons/5/52/Bash-tip.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efbf3da2048191b28d875c2c041130-bash?model=gpt-4o"},
+    { title:"MATLAB", desc:"Matrix math, simulations, analysis.", icon:"https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbdf8604c8191b48f2596faa7c13a-matlab"},
+    { title:"Julia", desc:"High-performance Julia for science/data.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/ae/Julia_logo_circles.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbca1eb9481919f6d08d23dcdd14e-julia"},
+    { title:"TypeScript", desc:"Types, generics, debugging.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
+    { title:"Rust", desc:"Ownership, lifetimes, crates.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6d3bd4d081919fb3b0cec36e487a-rust"},
+    { title:"Kotlin", desc:"Android, backend, multiplatform.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Kotlin_icon_%282016-2021%29.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6bda03888191a399bb2ec8dddb80-kotlin"},
+    { title:"Ruby", desc:"Scripts, automation, Rails.", icon:"https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef69f3d4488191b55dd9d6fa0b5b4a-ruby"},
+    { title:"C#", desc:".NET, Unity, OOP, LINQ, async.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
+    { title:"C", desc:"Pointers, memory, performance.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/C_Programming_Language.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef67c3b83481918336d1c4ddfd5600-c"},
+    { title:"SQL", desc:"Queries, joins, indexing.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Sql_data_base_with_logo.svg", categories:["Data"], url:"https://chatgpt.com/g/g-67ef62fdcdd081918ce75b1c878f43f4-sql"},
+    { title:"GO (Golang)", desc:"APIs, microservices, CLIs.", icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
+    { title:"R", desc:"Tidyverse, ggplot2, ML.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"},
+    { title:"Swift", desc:"Swift & SwiftUI for Apple.", icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
+    { title:"Java", desc:"Clean OOP, Android/back-end.", icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
+    { title:"React", desc:"Component UIs with hooks.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-67ef5d4d75a48191aa49f525af48e4d9-react"},
+    { title:"HTML&CSS", desc:"Responsive layouts, forms.", icon:"https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-67ef5b2d70bc81918d9a5c2877de14d7-html-css?model=gpt-4o"},
+    { title:"Python", desc:"Automation, data, AI.", icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", categories:["Languages","AI & Automation"], url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
+    { title:"JavaScript", desc:"ES6+, DOM, async, Node.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
+    { title:"c++ cpp", desc:"Modern C++ with STL.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
+    { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
+    { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
+    { title:"Task Master", desc:"Crush goals, zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
+    { title:"PHP", desc:"Modern backend helper.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
+    { title:"CS Roast Battle GPT", desc:"Roasts programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
+    { title:"Startup Pitch GPT", desc:"Turns code into pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
+    { title:"Haunted Compiler GPT", desc:"Like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
+    { title:"Code Horror Stories GPT", desc:"Creepy bug stories.", icon:"https://cdn-icons-png.flaticon.com/512/1792/1792942.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac00c2b3481918393a8d577d44408-code-horror-stories-gpt"},
+    { title:"StackOverflow Parrot GPT", desc:"Sassy dev bot.", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926725.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabe58efc88191b7b5340395c98de7-stackoverflow-parrot-gpt?model=gpt-5"},
     { title:"Meme Compiler GPT", desc:"Compiles errors into memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221596.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabd397b3c8191a464c3e7e6aa6cab-meme-compiler-gpt?model=gpt-5"},
-    { title:"Code Reviewer From Hell GPT", desc:"Roasts your code brutally but hilariously.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
-    { title:"Debug Dungeon GPT", desc:"Debugging turned into a text-based RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
-    { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
-    { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
+    { title:"Code Reviewer From Hell GPT", desc:"Brutally funny reviews.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
+    { title:"Debug Dungeon GPT", desc:"Debugging as a text RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
+    { title:"Code-to-Rap GPT", desc:"Explains code by rapping.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
+    { title:"Bug Meme GPT", desc:"Turns bugs into memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
   ];
 
   const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
@@ -342,14 +341,21 @@
   function pendings(){ return read(LS_PENDING, []); }
   function setPendings(v){ write(LS_PENDING, v); renderAll(); }
   function settings(){ return read(LS_SETTINGS, {title:'GPTMart Pro', ga:window.GA_MEASUREMENT_ID, pin:'0000'}); }
-  function setSettings(v){ write(LS_SETTINGS, v); $('#ftTitle').textContent = v.title || 'GPTMart Pro'; document.title = (v.title||'GPTMart Pro') + ' — Catalog & Admin'; window.GA_MEASUREMENT_ID = v.ga || window.GA_MEASUREMENT_ID; }
+  function setSettings(v){
+    write(LS_SETTINGS, v);
+    $('#ftTitle').textContent = v.title || 'GPTMart Pro';
+    document.title = (v.title||'GPTMart Pro') + ' — Catalog & Admin';
+    window.GA_MEASUREMENT_ID = v.ga || window.GA_MEASUREMENT_ID;
+  }
 
   /*************** PUBLIC RENDER ***************/
   const grid = $('#grid');
   const qInput = $('#q');
   const catSelect = $('#cat');
 
-  function renderLanguages(){ $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join(''); }
+  function renderLanguages(){
+    $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join('');
+  }
 
   function renderFeatured(){
     const f = items().filter(x=>x.featured && x.status==='live').slice(0,12);
@@ -388,8 +394,15 @@
   /*************** SUBMISSION ***************/
   $('#sSend').addEventListener('click', ()=>{
     const sub = {
-      title: $('#sTitle').value.trim(), url: $('#sUrl').value.trim(), icon: $('#sIcon').value.trim(), desc: $('#sDesc').value.trim(),
-      categories: fromCSV($('#sCats').value), tags: fromCSV($('#sTags').value), featured:false, status:'pending', createdAt: Date.now()
+      title: $('#sTitle').value.trim(),
+      url: $('#sUrl').value.trim(),
+      icon: $('#sIcon').value.trim(),
+      desc: $('#sDesc').value.trim(),
+      categories: fromCSV($('#sCats').value),
+      tags: fromCSV($('#sTags').value),
+      featured:false,
+      status:'pending',
+      createdAt: Date.now()
     };
     if(!sub.title || !sub.url){ alert('Title and URL are required.'); return; }
     const ps = pendings(); ps.push(sub); setPendings(ps);
@@ -404,6 +417,9 @@
 
   function isAdmin(){ return sessionStorage.getItem(SESSION_ADMIN)==='1'; }
   function requireAdmin(){ if(isAdmin()){ adminGate.classList.add('hide'); adminDesk.classList.remove('hide'); renderAdmin(); } }
+
+  // Enter key submits PIN
+  $('#pin').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#pinGo').click(); });
 
   $('#pinGo').addEventListener('click', ()=>{
     const ok = ($('#pin').value||'') === settings().pin;
@@ -420,24 +436,24 @@
     $('#kFeat').textContent = it.filter(x=>x.featured && x.status==='live').length;
     $('#kPending').textContent = p.length;
 
-    // Pending table
-    const rowsP = p.sort((a,b)=>b.createdAt-a.createdAt).map((x,i)=>`<tr>
+    // ✅ FIXED: use non-mutating sort and embed stable IDs (createdAt)
+    const rowsP = [...p].sort((a,b)=>b.createdAt-a.createdAt).map(x=>`<tr>
       <td>${x.title}</td><td>${x.desc||''}</td><td>${toCSV(x.categories)}</td><td>${toCSV(x.tags)}</td>
       <td>
-        <button class="btn brand" data-approve="${i}">Approve</button>
-        <button class="btn" data-reject="${i}">Reject</button>
+        <button class="btn brand" data-approve="${x.createdAt}">Approve</button>
+        <button class="btn" data-reject="${x.createdAt}">Reject</button>
       </td></tr>`).join('');
     $('#tPending').innerHTML = rowsP || '<tr><td colspan="5" style="color:#93c5fd">No pending items</td></tr>';
 
-    // All table
+    // All items table
     const q = ($('#aQ').value||'').trim();
     const st = $('#aStatus').value||'all';
     const filtered = it.filter(x=>{
       const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
       const inS = st==='all' || x.status===st; return inQ && inS; });
 
-    $('#tAll').innerHTML = filtered.map((x)=>{
-      const i = it.indexOf(x);
+    $('#tAll').innerHTML = filtered.map(x=>{
+      const i = it.indexOf(x); // index in canonical array
       return `<tr>
         <td>${x.title}</td>
         <td><small>${toCSV(x.categories)}</small><br><small style="color:#93c5fd">${toCSV(x.tags)}</small></td>
@@ -447,19 +463,36 @@
           <button class="btn" data-edit="${i}">Edit</button>
           <button class="btn" data-togglef="${i}">${x.featured?'Unfeature':'Feature'}</button>
           <button class="btn" data-toggleh="${i}">${x.status==='hidden'?'Unhide':'Hide'}</button>
-          <a class="btn brand" href="${x.url}" target="_blank">Open</a>
+          <a class="btn brand" href="${x.url}" target="_blank" rel="noopener">Open</a>
           <button class="btn" data-del="${i}" style="border-color:#2b2b2b">Delete</button>
         </td>
       </tr>`;
     }).join('');
 
-    // wire actions
+    // ✅ FIXED: wire actions by stable ID (createdAt)
     $$('#tPending [data-approve]').forEach(b=> b.addEventListener('click', ()=>{
-      const ps = pendings(); const x = ps.splice(+b.dataset.approve,1)[0];
-      const itms = items(); itms.push({...x,status:'live'}); setPendings(ps); setItems(itms);
+      const ps = pendings();
+      const idToApprove = +b.dataset.approve;
+      const idx = ps.findIndex(item => item.createdAt === idToApprove);
+      if(idx > -1){
+        const [approvedItem] = ps.splice(idx,1);
+        const itms = items();
+        itms.push({ ...approvedItem, status:'live' });
+        setPendings(ps);
+        setItems(itms);
+      }
     }));
-    $$('#tPending [data-reject]').forEach(b=> b.addEventListener('click', ()=>{ const ps = pendings(); ps.splice(+b.dataset.reject,1); setPendings(ps); }));
+    $$('#tPending [data-reject]').forEach(b=> b.addEventListener('click', ()=>{
+      const ps = pendings();
+      const idToReject = +b.dataset.reject;
+      const idx = ps.findIndex(item => item.createdAt === idToReject);
+      if(idx > -1){
+        ps.splice(idx,1);
+        setPendings(ps);
+      }
+    }));
 
+    // Other admin actions
     $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
     $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
     $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
@@ -480,7 +513,8 @@
   $('#importFile').addEventListener('change', (e)=>{
     const file = e.target.files[0]; if(!file) return;
     const reader = new FileReader(); reader.onload = ()=>{
-      try{ const data = JSON.parse(reader.result);
+      try{
+        const data = JSON.parse(reader.result);
         if(Array.isArray(data.items)) write(LS_ITEMS, data.items);
         if(Array.isArray(data.pending)) write(LS_PENDING, data.pending);
         if(data.settings) write(LS_SETTINGS, data.settings);
@@ -518,9 +552,14 @@
     $('#modal').showModal();
     $('#mSave').onclick = ()=>{
       const item = {
-        title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(),
-        desc: $('#mDescIn').value.trim(), categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value),
-        featured: $('#mFeatIn').checked, status: $('#mStatusIn').value
+        title: $('#mTitleIn').value.trim(),
+        url: $('#mUrlIn').value.trim(),
+        icon: $('#mIconIn').value.trim(),
+        desc: $('#mDescIn').value.trim(),
+        categories: fromCSV($('#mCatsIn').value),
+        tags: fromCSV($('#mTagsIn').value),
+        featured: $('#mFeatIn').checked,
+        status: $('#mStatusIn').value
       };
       if(!item.title || !item.url){ alert('Title and URL required.'); return; }
       if(editing){ itms[editIndex] = item; setItems(itms); }
