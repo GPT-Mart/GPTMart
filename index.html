@@ -7,7 +7,6 @@
   <meta name="description" content="Explore and launch my curated Custom GPTs. Fast search, filters, and featured picks." />
   <meta name="theme-color" content="#0f172a" />
 
-  <!-- Analytics (single source of truth) -->
   <script>
     window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
     window.dataLayer = window.dataLayer || [];
@@ -109,7 +108,6 @@
     </div>
   </div>
 
-  <!-- PUBLIC SECTION -->
   <section id="public" class="section container">
     <div class="two hero">
       <div>
@@ -133,7 +131,6 @@
         <div class="feature" id="featured"></div>
       </div>
 
-      <!-- Right panel (tips) -->
       <div class="panel">
         <h3>How to use</h3>
         <p class="desc">Click any card to open the GPT in ChatGPT. Use search, category, and sort to quickly find what you need.</p>
@@ -148,7 +145,6 @@
     <div class="grid" id="grid" role="list" aria-label="Results"></div>
   </section>
 
-  <!-- ADMIN (owner-only) -->
   <section id="admin" class="section container hide">
     <div id="adminGate" class="panel">
       <h3>Owner sign-in</h3>
@@ -202,7 +198,6 @@
 
   <footer>© <span id="ftTitle">GPTMart Pro</span> — curated Custom GPTs. No submissions.</footer>
 
-  <!-- Modal (Add/Edit) -->
   <dialog id="modal">
     <form method="dialog">
       <div class="panel" style="margin:0">
@@ -362,7 +357,7 @@
 
   function renderFeatured(){
     const f = items().filter(x=>x.featured && x.status==='live').slice(0,12);
-    $('#featured').innerHTML = f.map(x=>`<div class="chip"><div style="display:flex;gap:10px;align-items:center"><div class="icon"><img src="${x.icon||''}" alt="${x.title}"></div><div><strong>${x.title}</strong><div style="color:#a7b0c0;font-size:12px">${x.desc||''}</div></div></div></div>`).join('');
+    $('#featured').innerHTML = f.map(x=>`<div class="chip"><div style="display:flex;gap:10px;align-items:center"><div class="icon"><img src="${x.icon||''}" alt="${x.title}"></div><div><strong>${x.title}</strong><div style="color:#a7b0c0;font-size:12px">${x.desc||''}</div></div></div>`).join('');
   }
 
   function renderCategories(){
@@ -559,7 +554,6 @@
   showTab((location.hash||'#public').replace('#',''));
   </script>
 
-  <!-- Gentle deterrents (not real security) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
@@ -568,7 +562,7 @@
       if (
         (ctrl && k === 'u') || // view source
         (ctrl && k === 's') || // save
-        (k === 'f12')      ||  // devtools
+        (k === 'f12')     ||  // devtools
         (ctrl && e.shiftKey && (k === 'i' || k === 'c' || k === 'j')) ||
         (ctrl && k === 'p')    // print
       ) { e.preventDefault(); e.stopPropagation(); }
