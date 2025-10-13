@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GPTMart Pro — Catalog & Admin</title>
-  <meta name="description" content="Public catalog for many users + a sleek admin dashboard. Single-file, copy-paste deploy." />
+  <title>GPTMart Pro — Your Custom GPTs</title>
+  <meta name="description" content="Explore and launch my curated Custom GPTs. Fast search, filters, and featured picks." />
   <meta name="theme-color" content="#0f172a" />
 
   <!-- Analytics (single source of truth) -->
@@ -17,7 +17,7 @@
   <script> gtag('js', new Date()); gtag('config', window.GA_MEASUREMENT_ID); </script>
 
   <style>
-    :root{ --bg:#0b0f19; --panel:#0e1628; --muted:#9aa3b2; --text:#e6eaf0; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1c2435; --card:#0f172a; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --radius:14px }
+    :root{ --bg:#0b0f19; --panel:#0e1628; --muted:#9aa3b2; --text:#e6eaf0; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1c2435; --card:#0f172a; --radius:14px }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
     body{background:linear-gradient(180deg,#090d16 0%,#0c1222 100%);color:var(--text)}
@@ -70,15 +70,14 @@
     .feature{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
     .feature .chip{min-width:240px;background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
 
-    /* Submit form */
+    /* Panels */
     .panel{background:linear-gradient(180deg,#0f172a,#0b1224);border:1px solid var(--stroke);border-radius:14px;padding:16px}
     .panel h3{margin:0 0 8px}
     .row{display:flex;gap:10px;align-items:center}
-    .row input,.row textarea,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:#fff}
-    .row textarea{min-height:80px}
+    .row input,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text)}
 
     /* Admin dashboard */
-    .dash{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .dash{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     @media (max-width:900px){.dash{grid-template-columns:repeat(2,1fr)}}
     .kpi{background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
     .kpi h4{margin:0 0 6px}
@@ -98,14 +97,13 @@
     <div class="container row">
       <div class="logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#3b82f6"/></svg>
-        <span>GPTMart Pro</span>
+        <span id="siteLogo">GPTMart Pro</span>
       </div>
       <div class="tabs">
-        <a class="tab" id="tabPublic" href="#public">Catalog</a>
+        <a class="tab" id="tabPublic" href="#public">Explore</a>
         <a class="tab" id="tabAdmin" href="#admin">Admin</a>
       </div>
       <div>
-        <button class="btn" id="btnSubmitOpen">＋ Submit GPT</button>
         <a class="btn brand" href="#public">Browse</a>
       </div>
     </div>
@@ -115,64 +113,55 @@
   <section id="public" class="section container">
     <div class="two hero">
       <div>
-        <h1>Find, filter, and launch the best <span style="color:var(--brand)">Custom GPTs</span></h1>
-        <p>Built for many users. Lightning-fast filters, featured picks, and a clean submission flow.</p>
+        <h1>Explore my curated <span style="color:var(--brand)">Custom GPTs</span></h1>
+        <p>Fast search, neat filters, and hand-picked highlights. No submissions — just the good stuff.</p>
+
         <div class="searchbar">
-          <input id="q" class="input" type="search" placeholder="Search GPTs, tags, categories… (⌘/Ctrl + K)"/>
+          <input id="q" class="input" type="search" placeholder="Search by title, tag, or category… (⌘/Ctrl + K)"/>
           <select id="cat" class="input" style="max-width:220px">
             <option value="All">All categories</option>
           </select>
+          <select id="sort" class="input" style="max-width:220px">
+            <option value="featured">Featured first</option>
+            <option value="title">Title A→Z</option>
+            <option value="recent">Recently added</option>
+          </select>
           <button class="btn" id="reset">Reset</button>
         </div>
+
         <div class="langs" id="langs"></div>
         <div class="feature" id="featured"></div>
       </div>
+
+      <!-- Showcase-only: this side panel now gives quick tips instead of a submit form -->
       <div class="panel">
-        <h3>Submit your GPT</h3>
-        <p class="desc">Add your GPT to the catalog. Submissions are reviewed by the admin.</p>
-        <div class="row"><input id="sTitle" placeholder="Title"/></div>
-        <div class="row"><input id="sUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)"/></div>
-        <div class="row"><input id="sIcon" placeholder="Icon URL (PNG/JPG/SVG)"/></div>
-        <div class="row"><input id="sCats" placeholder="Categories (comma-separated)"/></div>
-        <div class="row"><input id="sTags" placeholder="Tags (comma-separated)"/></div>
-        <div class="row"><textarea id="sDesc" placeholder="Short description"></textarea></div>
-        <div class="row" style="justify-content:flex-end"><button class="btn brand" id="sSend">Submit</button></div>
-        <small style="color:#93c5fd">We store submissions locally for this demo. Wire your backend later.</small>
+        <h3>How to use</h3>
+        <p class="desc">Click any card to open the GPT in ChatGPT. Use search, category, and sort to quickly find what you need.</p>
+        <ul style="margin:10px 0 0; padding-left:18px; color:#a7b0c0; line-height:1.5">
+          <li>⌘/Ctrl + K focuses search</li>
+          <li>“Featured first” shows my top picks</li>
+          <li>Use the language icons for quick access</li>
+        </ul>
       </div>
     </div>
 
     <div class="grid" id="grid" role="list" aria-label="Results"></div>
   </section>
 
-  <!-- ADMIN SECTION -->
+  <!-- ADMIN (owner-only) -->
   <section id="admin" class="section container hide">
     <div id="adminGate" class="panel">
-      <h3>Admin sign-in</h3>
-      <div class="row"><input id="pin" type="password" placeholder="Enter admin PIN"/></div>
+      <h3>Owner sign-in</h3>
+      <div class="row"><input id="pin" type="password" placeholder="Enter owner PIN"/></div>
       <div class="row" style="justify-content:flex-end"><button class="btn brand" id="pinGo">Enter</button></div>
-      <!-- default PIN text removed -->
+      <!-- No default-pin hint shown -->
     </div>
 
     <div id="adminDesk" class="hide">
       <div class="dash">
         <div class="kpi"><h4>Live</h4><div id="kLive" style="font-size:22px;font-weight:800">0</div></div>
-        <div class="kpi"><h4>Pending</h4><div id="kPending" style="font-size:22px;font-weight:800">0</div></div>
         <div class="kpi"><h4>Featured</h4><div id="kFeat" style="font-size:22px;font-weight:800">0</div></div>
         <div class="kpi"><h4>Hidden</h4><div id="kHidden" style="font-size:22px;font-weight:800">0</div></div>
-      </div>
-
-      <div class="section">
-        <h3 style="margin:0 0 10px">Pending Submissions</h3>
-        <div class="panel">
-          <div style="overflow:auto">
-            <table>
-              <thead>
-                <tr><th>Title</th><th>Desc</th><th>Categories</th><th>Tags</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="tPending"></tbody>
-            </table>
-          </div>
-        </div>
       </div>
 
       <div class="section">
@@ -206,16 +195,15 @@
         <div class="panel">
           <div class="row"><input id="siteTitle" placeholder="Site Title (public)"/></div>
           <div class="row"><input id="gaId" placeholder="Google Analytics ID (e.g., G-XXXX)"/></div>
-          <!-- PIN field removed to keep owner-only lock -->
           <div class="row" style="justify-content:flex-end"><button class="btn brand" id="saveSettings">Save Settings</button></div>
         </div>
       </div>
     </div>
   </section>
 
-  <footer>© <span id="ftTitle">GPTMart Pro</span>. Single-file. Copy-paste. Build your backend later.</footer>
+  <footer>© <span id="ftTitle">GPTMart Pro</span> — curated Custom GPTs. No submissions.</footer>
 
-  <!-- Modal (reused) -->
+  <!-- Modal (Add/Edit) -->
   <dialog id="modal">
     <form method="dialog">
       <div class="panel" style="margin:0">
@@ -223,9 +211,9 @@
         <div class="row"><input id="mTitleIn" placeholder="Title" required></div>
         <div class="row"><input id="mUrlIn" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
         <div class="row"><input id="mIconIn" placeholder="Icon URL"></div>
-        <div class="row"><textarea id="mDescIn" placeholder="Short description"></textarea></div>
         <div class="row"><input id="mCatsIn" placeholder="Categories (comma-separated)"></div>
         <div class="row"><input id="mTagsIn" placeholder="Tags (comma-separated)"></div>
+        <div class="row"><input id="mDescIn" placeholder="Short description"></div>
         <div class="row">
           <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
           <select id="mStatusIn" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
@@ -239,19 +227,26 @@
   </dialog>
 
   <script>
-  /*************** DATA & STORAGE ***************/
-  const LS_ITEMS = 'gptmart.v3.items';
-  const LS_PENDING = 'gptmart.v3.pending';
-  const LS_SETTINGS = 'gptmart.v3.settings';
-  const SESSION_ADMIN = 'gptmart.v3.isAdmin';
+  /*************** KEYS & STATE ***************/
+  const LS_ITEMS    = 'gptmart.v4.items';
+  const LS_SETTINGS = 'gptmart.v4.settings';
+  const SESSION_ADMIN = 'gptmart.v4.isAdmin';
+  const ADMIN_PIN = '4545'; // owner-only access
 
-  /* ✅ STATE MUST BE DECLARED EARLY */
-  const state = { q:'', cat:'All' };
+  const state = { q:'', cat:'All', sort:'featured' };
 
-  /* 🔒 OWNER-ONLY ADMIN PIN */
-  const ADMIN_PIN = '4545';
+  /*************** HELPERS ***************/
+  const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
+  const $  = (s,el=document)=> el.querySelector(s);
+  const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
+  const uniq = arr => Array.from(new Set(arr));
+  const toCSV = a => (a||[]).join(', ');
+  const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
-  // Languages strip
+  function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
+  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+  /*************** DATA ***************/
   const LANGUAGES = [
     { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
     { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
@@ -265,58 +260,52 @@
     { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
   ];
 
-  // Starter GPTs (subset kept from your list)
+  // Curated GPTs (same structure you had; createdAt is added during init if missing)
   const STARTER_GPTS = [
-    { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", featured:true},
-    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
+    { title:"jQuery Tutor", desc:"Learn and master jQuery.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", featured:true},
+    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#).", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
     { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor", featured:true},
-    { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5"},
-    { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor"},
-    { title:"Gen AI Mentor", desc:"LLMs, diffusion/GANs, audio/video models.", icon:"https://miro.medium.com/v2/resize:fit:720/format:webp/1*vYurT8Cw7upWSOLJvUo0Mg.png", categories:["AI & Automation"], url:"https://chatgpt.com/g/g-68b6e5d5c7e08191ab8f644e7c87501f-gen-ai-mentor?model=gpt-5"},
-    { title:"SciPy Tutor", desc:"Optimization, linear algebra, signal processing.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b2/SCIPY_2.svg", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6e4f4f8d081918945af5baad8eb97-scipy-tutor"},
-    { title:"Cybersecurity Mentor", desc:"Network security, encryption, ethical hacking basics.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor"},
-    { title:"Data Science Mentor", desc:"NumPy, Pandas, Matplotlib, scikit-learn.", icon:"https://cdn-icons-png.flaticon.com/512/2967/2967262.png", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6a06e44e881919c09ff648d64b0f3-data-science-mentor"},
-    { title:"Introduction to Programming", desc:"Start coding from zero.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Learning","Languages"], url:"https://chatgpt.com/g/g-68b69ed77aec81919d3393e367baf046-introduction-to-programming"},
-    { title:"DSA Coach", desc:"Concepts, patterns, checklists.", icon:"https://cdn-icons-png.flaticon.com/512/5903/5903823.png", categories:["Learning","Interviews"], url:"https://chatgpt.com/g/g-68b69c9ea8d081918fb91d37f78ec3c3-dsa-coach"},
-    { title:"Responsive UI Coach (Bootstrap-ready)", desc:"Accessible components & pages.", icon:"https://cdn.iconscout.com/icon/free/png-256/bootstrap-226077.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b697b5913c81918e64a23a52138255-responsive-ui-coach-bootstrap-ready"},
-    { title:"Sedative", desc:"Talk to me to sleep. no cap.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Lifestyle"], url:"https://chatgpt.com/g/g-688363b4125c8191bb950c37778ab4d0-sedative?model=gpt-4o"},
+    { title:"Sass Tutor", desc:"Master Sass/SCSS.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5"},
+    { title:"Vue Tutor", desc:"Vue components & Composition API.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor"},
+    { title:"Gen AI Mentor", desc:"LLMs, diffusion/GANs, audio/video.", icon:"https://miro.medium.com/v2/resize:fit:720/format:webp/1*vYurT8Cw7upWSOLJvUo0Mg.png", categories:["AI & Automation"], url:"https://chatgpt.com/g/g-68b6e5d5c7e08191ab8f644e7c87501f-gen-ai-mentor?model=gpt-5"},
+    { title:"SciPy Tutor", desc:"Optimization & linear algebra.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b2/SCIPY_2.svg", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6e4f4f8d081918945af5baad8eb97-scipy-tutor"},
+    { title:"Cybersecurity Mentor", desc:"Practical security & basics.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor"},
+    { title:"Data Science Mentor", desc:"NumPy, Pandas, scikit-learn.", icon:"https://cdn-icons-png.flaticon.com/512/2967/2967262.png", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6a06e44e881919c09ff648d64b0f3-data-science-mentor"},
     { title:"Global Football Hub", desc:"News, tables, verified info.", icon:"https://cdn-icons-png.flaticon.com/512/280/280766.png", categories:["Sports"], url:"https://chatgpt.com/g/g-6878f74104908191b0ae0f9a513c392b-global-football-hub?model=gpt-4o"}
-    /* … keep the rest of your STARTER_GPTS here if you want full list … */
   ];
-
-  const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
-  const $ = (s,el=document)=> el.querySelector(s);
-  const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
-  const uniq = arr => Array.from(new Set(arr));
-  const toCSV = a => (a||[]).join(', ');
-  const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
-
-  function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
-  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
   function initData(){
     const have = read(LS_ITEMS, []);
-    if(!have || !have.length){ write(LS_ITEMS, STARTER_GPTS.map(x=>({...x,status:'live'}))); }
-    if(!read(LS_PENDING, null)) write(LS_PENDING, []);
+    if(!have || !have.length){
+      const seeded = STARTER_GPTS.map(x=>({
+        ...x,
+        status:'live',
+        createdAt: Date.now() - Math.floor(Math.random()*30)*86400000 // spread across ~month
+      }));
+      write(LS_ITEMS, seeded);
+    } else {
+      // Backfill createdAt if missing
+      write(LS_ITEMS, have.map(x=> x.createdAt? x : ({...x, createdAt: Date.now()})));
+    }
     if(!read(LS_SETTINGS, null)) write(LS_SETTINGS, { title:'GPTMart Pro', ga: window.GA_MEASUREMENT_ID });
   }
 
   function items(){ return read(LS_ITEMS, []); }
   function setItems(v){ write(LS_ITEMS, v); renderAll(); }
-  function pendings(){ return read(LS_PENDING, []); }
-  function setPendings(v){ write(LS_PENDING, v); renderAll(); }
   function settings(){ return read(LS_SETTINGS, {title:'GPTMart Pro', ga:window.GA_MEASUREMENT_ID}); }
   function setSettings(v){
     write(LS_SETTINGS, v);
     $('#ftTitle').textContent = v.title || 'GPTMart Pro';
-    document.title = (v.title||'GPTMart Pro') + ' — Catalog & Admin';
+    $('#siteLogo').textContent = v.title || 'GPTMart Pro';
+    document.title = (v.title||'GPTMart Pro') + ' — Your Custom GPTs';
     window.GA_MEASUREMENT_ID = v.ga || window.GA_MEASUREMENT_ID;
   }
 
-  /*************** PUBLIC RENDER ***************/
+  /*************** PUBLIC UI ***************/
   const grid = $('#grid');
   const qInput = $('#q');
   const catSelect = $('#cat');
+  const sortSelect = $('#sort');
 
   function renderLanguages(){
     $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join('');
@@ -343,6 +332,17 @@
     </article>`;
   }
 
+  function sortList(list){
+    if(state.sort==='title') return list.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||''));
+    if(state.sort==='recent') return list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+    // featured first (default): featured live to top, then title
+    return list.slice().sort((a,b)=>{
+      const af = a.featured?1:0, bf = b.featured?1:0;
+      if(bf!==af) return bf-af;
+      return (a.title||'').localeCompare(b.title||'');
+    });
+  }
+
   function renderGrid(){
     const list = items().filter(x=> x.status==='live');
     const q = (state.q||'').trim();
@@ -351,30 +351,11 @@
       const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
       return inQ && inCat;
     });
-    grid.innerHTML = filtered.map(cardTemplate).join('');
+    const ordered = sortList(filtered);
+    grid.innerHTML = ordered.map(cardTemplate).join('');
   }
 
-  /*************** SUBMISSION ***************/
-  $('#sSend').addEventListener('click', ()=>{
-    const sub = {
-      title: $('#sTitle').value.trim(),
-      url: $('#sUrl').value.trim(),
-      icon: $('#sIcon').value.trim(),
-      desc: $('#sDesc').value.trim(),
-      categories: fromCSV($('#sCats').value),
-      tags: fromCSV($('#sTags').value),
-      featured:false,
-      status:'pending',
-      createdAt: Date.now()
-    };
-    if(!sub.title || !sub.url){ alert('Title and URL are required.'); return; }
-    const ps = pendings(); ps.push(sub); setPendings(ps);
-    ['sTitle','sUrl','sIcon','sDesc','sCats','sTags'].forEach(id=> $('#'+id).value='');
-    gtag('event','submit_gpt', {title: sub.title});
-    alert('Submitted! Admin will review it.');
-  });
-
-  /*************** ADMIN ***************/
+  /*************** ADMIN (owner) ***************/
   const adminGate = $('#adminGate');
   const adminDesk = $('#adminDesk');
 
@@ -390,7 +371,6 @@
     }
   }
 
-  // Owner-only admin gate
   $('#pinGo').addEventListener('click', ()=>{
     const entered = ($('#pin').value||'').trim();
     const ok = entered === ADMIN_PIN;
@@ -398,25 +378,12 @@
     else alert('Access denied');
   });
 
-  // KPIs + tables
   function renderAdmin(){
     const it = items();
-    const p = pendings();
     $('#kLive').textContent = it.filter(x=>x.status==='live').length;
     $('#kHidden').textContent = it.filter(x=>x.status==='hidden').length;
     $('#kFeat').textContent = it.filter(x=>x.featured && x.status==='live').length;
-    $('#kPending').textContent = p.length;
 
-    // ✅ Pending table uses stable id (createdAt)
-    const rowsP = p.slice().sort((a,b)=>b.createdAt-a.createdAt).map(x=>`<tr>
-      <td>${x.title}</td><td>${x.desc||''}</td><td>${toCSV(x.categories)}</td><td>${toCSV(x.tags)}</td>
-      <td>
-        <button class="btn brand" data-approve="${x.createdAt}">Approve</button>
-        <button class="btn" data-reject="${x.createdAt}">Reject</button>
-      </td></tr>`).join('');
-    $('#tPending').innerHTML = rowsP || '<tr><td colspan="5" style="color:#93c5fd">No pending items</td></tr>';
-
-    // All table
     const q = ($('#aQ').value||'').trim();
     const st = $('#aStatus').value||'all';
     const filtered = it.filter(x=>{
@@ -441,45 +408,21 @@
       </tr>`;
     }).join('');
 
-    // ✅ Wire actions (approve/reject by ID, not index)
-    $$('#tPending [data-approve]').forEach(b=> b.addEventListener('click', ()=>{
-      const ps = pendings();
-      const id = +b.dataset.approve;
-      const index = ps.findIndex(item => item.createdAt === id);
-      if(index > -1){
-        const [approved] = ps.splice(index,1);
-        const itms = items(); itms.push({...approved, status:'live'});
-        setPendings(ps); setItems(itms);
-      }
-    }));
-    $$('#tPending [data-reject]').forEach(b=> b.addEventListener('click', ()=>{
-      const ps = pendings();
-      const id = +b.dataset.reject;
-      const index = ps.findIndex(item => item.createdAt === id);
-      if(index > -1){ ps.splice(index,1); setPendings(ps); }
-    }));
-
-    // All items actions
+    // actions
     $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
-    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{
-      const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);
-    }));
-    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{
-      const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);
-    }));
-    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{
-      const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);
-    }));
+    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
+    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
+    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);}));
   }
 
-  // Filters
+  // Filters (admin)
   $('#aQ').addEventListener('input', renderAdmin);
   $('#aStatus').addEventListener('change', renderAdmin);
   $('#aReset').addEventListener('click', ()=>{ $('#aQ').value=''; $('#aStatus').value='all'; renderAdmin(); });
 
   // Export / Import
   $('#exportBtn').addEventListener('click', ()=>{
-    const data = { items: items(), pending: pendings(), settings: settings() };
+    const data = { items: items(), settings: settings() };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gptmart-export.json'; a.click();
   });
@@ -489,8 +432,6 @@
       try{
         const data = JSON.parse(reader.result);
         if(Array.isArray(data.items)) write(LS_ITEMS, data.items);
-        if(Array.isArray(data.pending)) write(LS_PENDING, data.pending);
-        // Only apply title/ga from settings; ignore any imported PINs
         if(data.settings){
           const curr = settings();
           write(LS_SETTINGS, { title: data.settings.title || curr.title, ga: data.settings.ga || curr.ga });
@@ -500,7 +441,7 @@
     }; reader.readAsText(file);
   });
 
-  // Settings (no PIN change exposed)
+  // Settings (no PIN exposed)
   $('#saveSettings').addEventListener('click', ()=>{
     const s = settings();
     s.title = $('#siteTitle').value.trim() || s.title;
@@ -509,10 +450,8 @@
     alert('Settings saved');
   });
 
-  // Manual add
+  // Modal (add/edit)
   $('#addManual').addEventListener('click', ()=> openModal());
-
-  // Modal helpers
   function openModal(editIndex){
     const itms = items();
     const editing = typeof editIndex==='number'? itms[editIndex] : null;
@@ -535,7 +474,8 @@
         categories: fromCSV($('#mCatsIn').value),
         tags: fromCSV($('#mTagsIn').value),
         featured: $('#mFeatIn').checked,
-        status: $('#mStatusIn').value
+        status: $('#mStatusIn').value,
+        createdAt: editing?.createdAt || Date.now()
       };
       if(!item.title || !item.url){ alert('Title and URL required.'); return; }
       if(editing){ itms[editIndex] = item; setItems(itms); }
@@ -551,17 +491,14 @@
   // search wiring
   qInput.addEventListener('input', e=>{ state.q = e.target.value; renderGrid(); });
   qInput.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); qInput.focus(); }});
-  $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; renderGrid();});
+  $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; sortSelect.value='featured'; state.sort='featured'; renderGrid();});
   catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
+  sortSelect.addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
 
-  // tabs + admin routing
   function showTab(which){
     document.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
-    if(which==='admin'){
-      $('#tabAdmin').classList.add('active'); $('#public').classList.add('hide'); $('#admin').classList.remove('hide'); requireAdmin();
-    } else {
-      $('#tabPublic').classList.add('active'); $('#admin').classList.add('hide'); $('#public').classList.remove('hide');
-    }
+    if(which==='admin'){ $('#tabAdmin').classList.add('active'); $('#public').classList.add('hide'); $('#admin').classList.remove('hide'); requireAdmin(); }
+    else { $('#tabPublic').classList.add('active'); $('#admin').classList.add('hide'); $('#public').classList.remove('hide'); }
   }
   window.addEventListener('hashchange', ()=>{ const h = location.hash.replace('#','')||'public'; showTab(h); });
 
@@ -572,34 +509,22 @@
   renderAll();
   showTab((location.hash||'#public').replace('#',''));
 
-  // quick open submit panel
-  $('#btnSubmitOpen').addEventListener('click', ()=>{ location.hash = '#public'; window.scrollTo({top:0,behavior:'smooth'}); });
   </script>
+
+  <!-- Gentle deterrents (not real security) -->
   <script>
-  // Gentle deterrents only — not security.
-  // Disable context menu
-  document.addEventListener('contextmenu', e => e.preventDefault());
-
-  // Block common key combos (Ctrl+U, Ctrl+S, Ctrl+Shift+I/C, F12, etc.)
-  document.addEventListener('keydown', e => {
-    const k = e.key.toLowerCase();
-    const ctrl = e.ctrlKey || e.metaKey;
-    if (
-      // View source
-      (ctrl && k === 'u') ||
-      // Save
-      (ctrl && k === 's') ||
-      // Devtools
-      (k === 'f12') ||
-      (ctrl && e.shiftKey && (k === 'i' || k === 'c' || k === 'j')) ||
-      // Print
-      (ctrl && k === 'p')
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-</script>
-
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (
+        (ctrl && k === 'u') || // view source
+        (ctrl && k === 's') || // save
+        (k === 'f12')      ||  // devtools
+        (ctrl && e.shiftKey && (k === 'i' || k === 'c' || k === 'j')) ||
+        (ctrl && k === 'p')    // print
+      ) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+  </script>
 </body>
 </html>
