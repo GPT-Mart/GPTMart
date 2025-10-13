@@ -69,5 +69,35 @@ const GPTS = [
   { title:"Code Reviewer From Hell GPT", desc:"Roasts your code brutally but hilariously.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
   { title:"Debug Dungeon GPT", desc:"Debugging turned into a text-based RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
   { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
-  { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
+  { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"},
+
+  /* === OWNER'S DEFAULT GPTS === */
+  {
+    title: "API Architect",
+    desc: "Design, build, and document RESTful and GraphQL APIs. Best practices for versioning, security, and scalability.",
+    icon: "https://cdn-icons-png.flaticon.com/512/2165/2165603.png",
+    categories: ["Backend", "Tools", "Learning"],
+    url: "https://chatgpt.com/g/g-a1b2c3d4e5f6-api-architect"
+  },
+  {
+    title: "Docker & K8s Guide",
+    desc: "Containerize applications with Docker and orchestrate them with Kubernetes. From Dockerfiles to Helm charts.",
+    icon: "https://cdn-icons-png.flaticon.com/512/919/919851.png",
+    categories: ["DevOps", "Backend", "Tools"],
+    url: "https://chatgpt.com/g/g-b2c3d4e5f6g7-docker-k8s-guide"
+  },
+  {
+    title: "NoSQL Navigator",
+    desc: "Master MongoDB, Redis, and Cassandra. Learn data modeling, querying, and use cases for non-relational databases.",
+    icon: "https://cdn-icons-png.flaticon.com/512/888/888875.png",
+    categories: ["Data", "Backend", "Languages"],
+    url: "https://chatgpt.com/g/g-c3d4e5f6g7h8-nosql-navigator"
+  },
+  {
+    title: "Dev Portfolio Advisor",
+    desc: "Get feedback on your developer portfolio. Suggestions for project presentation, resume alignment, and personal branding.",
+    icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    categories: ["Careers", "Learning", "Interviews"],
+    url: "https://chatgpt.com/g/g-d4e5f6g7h8i9-dev-portfolio-advisor"
+  }
 ];
