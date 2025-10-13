@@ -3,80 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GPTMart — Curated Custom GPTs</title>
-  <meta name="description" content="Discover, filter, and add the best custom GPTs. Clean, fast, single‑file app." />
-  <meta property="og:title" content="GPTMart — Curated Custom GPTs" />
-  <meta property="og:description" content="Discover, filter, and add the best custom GPTs. Clean, fast, single‑file app." />
-  <meta property="og:type" content="website" />
+  <title>GPTMart Pro — Catalog & Admin</title>
+  <meta name="description" content="Public catalog for many users + a sleek admin dashboard. Single‑file, copy‑paste deploy." />
   <meta name="theme-color" content="#0f172a" />
 
-  <!-- Global Analytics: keep a single source of truth for GA ID -->
+  <!-- Analytics (single source of truth) -->
   <script>
     window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-  <script>
-    gtag('js', new Date());
-    gtag('config', window.GA_MEASUREMENT_ID);
-  </script>
+  <script> gtag('js', new Date()); gtag('config', window.GA_MEASUREMENT_ID); </script>
 
   <style>
-    :root{
-      --bg:#0b0f19; --panel:#111827; --muted:#9ca3af; --text:#e5e7eb; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1f2937;
-      --card:#0f172a; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --radius:14px;
-    }
+    :root{ --bg:#0b0f19; --panel:#0e1628; --muted:#9aa3b2; --text:#e6eaf0; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1c2435; --card:#0f172a; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444; --radius:14px }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
-    body{background:linear-gradient(180deg,#090d16 0%,#0c1222 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+    html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    body{background:linear-gradient(180deg,#090d16 0%,#0c1222 100%);color:var(--text)}
     a{color:inherit}
-    .container{width:95%;max-width:1100px;margin:0 auto}
+    .container{width:95%;max-width:1200px;margin:0 auto}
 
-    /* Hero (Above the Fold) */
-    .hero{position:relative;padding:72px 0 36px}
-    .hero .bg-blob{position:absolute;inset:-120px -40px auto auto;filter:blur(70px);opacity:.35;pointer-events:none;background:radial-gradient(650px 320px at 80% 10%,rgba(59,130,246,.45),transparent 60%),radial-gradient(500px 260px at 20% 10%,rgba(99,102,241,.35),transparent 60%);width:100%;height:100%}
-    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .logo .dot{color:var(--brand)}
-    .top-actions{display:flex;gap:8px}
-    .btn{background:#111827;border:1px solid var(--stroke);padding:10px 14px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+    /* Topbar */
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(9,13,22,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--stroke)}
+    .topbar .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .logo svg{filter:drop-shadow(0 4px 20px rgba(59,130,246,.35))}
+    .tabs{display:flex;gap:6px}
+    .tab{padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:#0b1426;color:#cbd5e1;text-decoration:none}
+    .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn{background:#0b1426;border:1px solid var(--stroke);padding:10px 14px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px}
     .btn:hover{border-color:#2b3446}
     .btn.brand{background:var(--brand);border-color:var(--brand);color:white}
-    .btn.brand:hover{background:var(--brand-600);border-color:var(--brand-600)}
+    .btn.brand:hover{background:var(--brand-600)}
 
-    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;margin-top:36px}
-    @media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
+    /* Layout */
+    .section{padding:26px 0}
+    .two{display:grid;grid-template-columns:1.1fr .9fr;gap:24px}
+    @media (max-width:980px){.two{grid-template-columns:1fr}}
 
-    .headline{font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0 0 12px;font-weight:900}
-    .sub{color:var(--muted);font-size:clamp(14px,2.4vw,16px);max-width:56ch;margin:0 0 18px}
+    /* Hero */
+    .hero h1{font-size:clamp(28px,4vw,40px);margin:0 0 10px}
+    .hero p{color:var(--muted)}
 
-    .search-wrap{display:flex;gap:8px;flex-wrap:wrap}
-    .search{flex:1;min-width:260px;max-width:520px;border:1px solid var(--stroke);background:#0a1222;border-radius:12px;padding:12px 14px;color:var(--text)}
-    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .chip{border:1px solid var(--stroke);background:#0b1426;color:#c7d2fe;border-radius:999px;padding:6px 10px;font-size:12px}
-
-    .hero-card{background:linear-gradient(180deg,#0f172a, #0b1224);border:1px solid var(--stroke);border-radius:var(--radius);padding:18px}
-    .hero-card h3{margin:0 0 8px}
-    .row{display:flex;gap:10px;align-items:center}
-    .row input,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text)}
-
-    /* Languages */
-    .langs{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:22px 0}
-    .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
-    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;transition:transform .15s}
-    .lang:hover img{transform:scale(1.06)}
-    .lang span{font-size:12px;color:#cbd5e1}
-
-    /* Categories */
-    .categories{display:flex;flex-wrap:wrap;gap:8px}
-    .category{padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:#0b1324;color:#cbd5e1;cursor:pointer}
-    .category.active{background:var(--brand);border-color:var(--brand);color:#fff}
-
-    /* Grid */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:22px 0 70px}
-    .card{background:var(--card);border:1px solid var(--stroke);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:transform .15s}
-    .card:hover{transform:translateY(-3px)}
+    /* Search + grid */
+    .searchbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .input{flex:1;min-width:240px;border:1px solid var(--stroke);background:#0a1222;border-radius:12px;padding:12px 14px;color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px}
+    .card{background:var(--card);border:1px solid var(--stroke);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
     .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324}
     .icon img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:800;margin:0}
@@ -84,431 +58,503 @@
     .tags{display:flex;gap:6px;flex-wrap:wrap}
     .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe}
     .actions{margin-top:auto;display:flex;gap:8px}
-    .link{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;border:1px solid var(--brand);padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
-    .ghost{background:#0b1426;color:#e5e7eb;border:1px solid var(--stroke)}
 
-    /* Footer */
+    /* Language strip */
+    .langs{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:18px 0}
+    .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
+    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;transition:transform .15s}
+    .lang:hover img{transform:scale(1.06)}
+    .lang span{font-size:12px;color:#cbd5e1}
+
+    /* Featured */
+    .feature{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
+    .feature .chip{min-width:240px;background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
+
+    /* Submit form */
+    .panel{background:linear-gradient(180deg,#0f172a,#0b1224);border:1px solid var(--stroke);border-radius:14px;padding:16px}
+    .panel h3{margin:0 0 8px}
+    .row{display:flex;gap:10px;align-items:center}
+    .row input,.row textarea,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text)}
+    .row textarea{min-height:80px}
+
+    /* Admin dashboard */
+    .dash{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    @media (max-width:900px){.dash{grid-template-columns:repeat(2,1fr)}}
+    .kpi{background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
+    .kpi h4{margin:0 0 6px}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{text-align:left;font-size:14px}
+    tbody tr{background:#0b1426}
+    tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
+    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
+    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px}
+
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
-
-    /* Modal */
-    dialog{border:none;border-radius:16px;background:#0b1426;color:var(--text);width:min(680px,96%);padding:0;box-shadow:0 20px 70px rgba(0,0,0,.5)}
-    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--stroke)}
-    .modal-body{padding:16px;display:grid;gap:12px}
-    .modal-body .row{gap:8px}
-    .modal-body input, .modal-body textarea{border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text);width:100%}
-    .modal-body textarea{min-height:90px;resize:vertical}
-    .modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px;border-top:1px solid var(--stroke)}
-
-    /* A11y + motion */
-    @media (prefers-reduced-motion: reduce){.card:hover,.lang:hover img{transform:none}}
+    .hide{display:none!important}
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="bg-blob" aria-hidden="true"></div>
-    <div class="container">
-      <div class="nav" role="navigation">
-        <div class="logo" aria-label="GPTMart">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#3b82f6"/></svg>
-          <span>GPTMart</span><span class="dot">.</span>
-        </div>
-        <div class="top-actions">
-          <button id="addBtn" class="btn" aria-label="Add your GPT">＋ Add GPT</button>
-          <a class="btn brand" id="browseBtn" href="#grid">Browse</a>
-        </div>
+  <div class="topbar">
+    <div class="container row">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#3b82f6"/></svg>
+        <span>GPTMart Pro</span>
       </div>
-
-      <div class="hero-grid">
-        <div>
-          <h1 class="headline">Find, filter, and launch the best <span style="color:var(--brand)">Custom GPTs</span></h1>
-          <p class="sub">Lightning‑fast search, clean categories, and a one‑click form to add yours. No clutter. No framework. Just copy‑paste this file and deploy.</p>
-          <div class="search-wrap">
-            <input id="q" class="search" type="search" placeholder="Search GPTs, tags, categories… (⌘/Ctrl + K)" aria-label="Search" />
-            <select id="cat" class="search" style="max-width:220px" aria-label="Filter by category">
-              <option value="All">All categories</option>
-            </select>
-            <button class="btn brand" id="clearFilters">Reset</button>
-          </div>
-          <div class="chips" id="activeChips" aria-live="polite"></div>
-        </div>
-        <div class="hero-card" aria-label="Quick Add">
-          <h3>Quick Add (local)</h3>
-          <div class="row"><input id="qaTitle" placeholder="Title"/></div>
-          <div class="row"><input id="qaUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)"/></div>
-          <div class="row"><input id="qaIcon" placeholder="Icon URL (PNG/PNG)"/></div>
-          <div class="row"><input id="qaCats" placeholder="Categories (comma‑separated)"/></div>
-          <div class="row"><input id="qaTags" placeholder="Tags (comma‑separated)"/></div>
-          <div class="row"><textarea id="qaDesc" placeholder="Short description"></textarea></div>
-          <div class="row" style="justify-content:flex-end"><button class="btn brand" id="qaAdd">Add to list</button></div>
-          <small style="color:#93c5fd">Saved only in your browser (localStorage). Export anytime.</small>
-        </div>
+      <div class="tabs">
+        <a class="tab" id="tabPublic" href="#public">Catalog</a>
+        <a class="tab" id="tabAdmin" href="#admin">Admin</a>
       </div>
-
-      <!-- Language shortcuts -->
-      <div class="langs" id="langs" aria-label="Languages"></div>
-
-      <!-- Categories row -->
-      <div class="categories" id="catsRow" aria-label="Categories"></div>
-
-      <!-- Grid -->
-      <div id="grid" class="grid" role="list" aria-label="Results"></div>
+      <div>
+        <button class="btn" id="btnSubmitOpen">＋ Submit GPT</button>
+        <a class="btn brand" href="#public">Browse</a>
+      </div>
     </div>
   </div>
 
-  <footer>
-    Built with ♥ as a single HTML file. <span id="count"></span> GPTs loaded.
+  <!-- PUBLIC SECTION -->
+  <section id="public" class="section container">
+    <div class="two hero">
+      <div>
+        <h1>Find, filter, and launch the best <span style="color:var(--brand)">Custom GPTs</span></h1>
+        <p>Built for many users. Lightning‑fast filters, featured picks, and a clean submission flow.</p>
+        <div class="searchbar">
+          <input id="q" class="input" type="search" placeholder="Search GPTs, tags, categories… (⌘/Ctrl + K)"/>
+          <select id="cat" class="input" style="max-width:220px">
+            <option value="All">All categories</option>
+          </select>
+          <button class="btn" id="reset">Reset</button>
+        </div>
+        <div class="langs" id="langs"></div>
+        <div class="feature" id="featured"></div>
+      </div>
+      <div class="panel">
+        <h3>Submit your GPT</h3>
+        <p class="desc">Add your GPT to the catalog. Submissions are reviewed by the admin.</p>
+        <div class="row"><input id="sTitle" placeholder="Title"/></div>
+        <div class="row"><input id="sUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)"/></div>
+        <div class="row"><input id="sIcon" placeholder="Icon URL (PNG/JPG/SVG)"/></div>
+        <div class="row"><input id="sCats" placeholder="Categories (comma‑separated)"/></div>
+        <div class="row"><input id="sTags" placeholder="Tags (comma‑separated)"/></div>
+        <div class="row"><textarea id="sDesc" placeholder="Short description"></textarea></div>
+        <div class="row" style="justify-content:flex-end"><button class="btn brand" id="sSend">Submit</button></div>
+        <small style="color:#93c5fd">We store submissions locally for this demo. Wire your backend later.</small>
+      </div>
+    </div>
+
+    <div class="grid" id="grid" role="list" aria-label="Results"></div>
+  </section>
+
+  <!-- ADMIN SECTION -->
+  <section id="admin" class="section container hide">
+    <div id="adminGate" class="panel">
+      <h3>Admin sign‑in</h3>
+      <div class="row"><input id="pin" type="password" placeholder="Enter admin PIN"/></div>
+      <div class="row" style="justify-content:flex-end"><button class="btn brand" id="pinGo">Enter</button></div>
+      <small style="color:#93c5fd">Default PIN: <code>0000</code> (change in Settings)</small>
+    </div>
+
+    <div id="adminDesk" class="hide">
+      <div class="dash">
+        <div class="kpi"><h4>Live</h4><div id="kLive" style="font-size:22px;font-weight:800">0</div></div>
+        <div class="kpi"><h4>Pending</h4><div id="kPending" style="font-size:22px;font-weight:800">0</div></div>
+        <div class="kpi"><h4>Featured</h4><div id="kFeat" style="font-size:22px;font-weight:800">0</div></div>
+        <div class="kpi"><h4>Hidden</h4><div id="kHidden" style="font-size:22px;font-weight:800">0</div></div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 10px">Pending Submissions</h3>
+        <div class="panel">
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr><th>Title</th><th>Desc</th><th>Categories</th><th>Tags</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="tPending"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 10px">All Items</h3>
+        <div class="panel">
+          <div class="row" style="margin-bottom:10px">
+            <input id="aQ" placeholder="Filter items…"/>
+            <select id="aStatus">
+              <option value="all">All</option>
+              <option value="live">Live</option>
+              <option value="hidden">Hidden</option>
+            </select>
+            <button class="btn" id="aReset">Reset</button>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn" id="exportBtn">Export JSON</button>
+              <label class="btn"><input id="importFile" type="file" accept="application/json" style="display:none">Import JSON</label>
+              <button class="btn brand" id="addManual">＋ New</button>
+            </div>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="tAll"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 10px">Settings</h3>
+        <div class="panel">
+          <div class="row"><input id="siteTitle" placeholder="Site Title (public)"/></div>
+          <div class="row"><input id="gaId" placeholder="Google Analytics ID (e.g., G-XXXX)"/></div>
+          <div class="row"><input id="pinSet" placeholder="New Admin PIN"/></div>
+          <div class="row" style="justify-content:flex-end"><button class="btn brand" id="saveSettings">Save Settings</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>© <span id="ftTitle">GPTMart Pro</span>. Single‑file. Copy‑paste. Build your backend later.
   </footer>
 
-  <!-- Add/Edit Modal -->
-  <dialog id="gptModal">
+  <!-- Modal (reused) -->
+  <dialog id="modal">
     <form method="dialog">
-      <div class="modal-head">
-        <strong id="modalTitle">Add GPT</strong>
-        <button class="btn" value="close" aria-label="Close">Close</button>
-      </div>
-      <div class="modal-body">
-        <div class="row"><input id="mTitle" placeholder="Title" required /></div>
-        <div class="row"><input id="mUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required /></div>
-        <div class="row"><input id="mIcon" placeholder="Icon URL" /></div>
-        <div class="row"><textarea id="mDesc" placeholder="Short description"></textarea></div>
-        <div class="row"><input id="mCats" placeholder="Categories (comma‑separated)" /></div>
-        <div class="row"><input id="mTags" placeholder="Tags (comma‑separated)" /></div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn ghost" id="exportBtn" type="button">Export JSON</button>
-        <button class="btn brand" id="saveBtn" value="save">Save</button>
+      <div class="panel" style="margin:0">
+        <h3 id="mTitle">Add / Edit GPT</h3>
+        <div class="row"><input id="mTitleIn" placeholder="Title" required></div>
+        <div class="row"><input id="mUrlIn" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
+        <div class="row"><input id="mIconIn" placeholder="Icon URL"></div>
+        <div class="row"><textarea id="mDescIn" placeholder="Short description"></textarea></div>
+        <div class="row"><input id="mCatsIn" placeholder="Categories (comma‑separated)"></div>
+        <div class="row"><input id="mTagsIn" placeholder="Tags (comma‑separated)"></div>
+        <div class="row">
+          <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
+          <select id="mStatusIn" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
+        </div>
+        <div class="row" style="justify-content:flex-end;gap:8px">
+          <button class="btn" value="cancel">Cancel</button>
+          <button class="btn brand" id="mSave" value="default">Save</button>
+        </div>
       </div>
     </form>
   </dialog>
 
   <script>
-  /***********************
-   * DATA
-   ***********************/
-  // Starter data; can be replaced or merged. If window.GPTS is present (legacy), we merge that in.
-  const STARTER_GPTS = [
-  { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
-  { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
-  { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor"},
-  { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5"},
-  { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor"},
-  { title:"Gen AI Mentor", desc:"LLMs, diffusion/GANs, audio/video models. Code, projects, and ethics — beginner to advanced.", icon:"https://miro.medium.com/v2/resize:fit:720/format:webp/1*vYurT8Cw7upWSOLJvUo0Mg.png", categories:["AI & Automation"], url:"https://chatgpt.com/g/g-68b6e5d5c7e08191ab8f644e7c87501f-gen-ai-mentor?model=gpt-5"},
-  { title:"SciPy Tutor", desc:"Optimization, linear algebra, signal processing, integration, interpolation, statistics — with examples.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b2/SCIPY_2.svg", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6e4f4f8d081918945af5baad8eb97-scipy-tutor"},
-  { title:"Cybersecurity Mentor", desc:"Network security, encryption, ethical hacking basics, malware, risk, and best practices. Lessons + simulations.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor"},
-  { title:"Data Science Mentor", desc:"NumPy, Pandas, Matplotlib, scikit-learn. Tutorials, datasets, projects — beginner to advanced.", icon:"https://cdn-icons-png.flaticon.com/512/2967/2967262.png", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6a06e44e881919c09ff648d64b0f3-data-science-mentor"},
-  { title:"Introduction to Programming", desc:"Start coding from zero. Variables, loops, functions. Python by default, C++/Java/JS optional.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Learning","Languages"], url:"https://chatgpt.com/g/g-68b69ed77aec81919d3393e367baf046-introduction-to-programming"},
-  { title:"DSA Coach", desc:"Concepts, patterns, checklists, complexities, tests, multiple approaches. Python/C++/Java/JS.", icon:"https://cdn-icons-png.flaticon.com/512/5903/5903823.png", categories:["Learning","Interviews"], url:"https://chatgpt.com/g/g-68b69c9ea8d081918fb91d37f78ec3c3-dsa-coach"},
-  { title:"Responsive UI Coach (Bootstrap-ready)", desc:"Accessible components & pages. v3/v4→v5, utilities, fixes, CDN or npm/Sass.", icon:"https://cdn.iconscout.com/icon/free/png-256/bootstrap-226077.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b697b5913c81918e64a23a52138255-responsive-ui-coach-bootstrap-ready"},
-  { title:"Sedative", desc:"Talk to me to sleep. no cap.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Lifestyle"], url:"https://chatgpt.com/g/g-688363b4125c8191bb950c37778ab4d0-sedative?model=gpt-4o"},
-  { title:"Global Football Hub", desc:"ESPN FC, UEFA, Transfermarkt, FIFA, FBref. News, tables, verified info.", icon:"https://cdn-icons-png.flaticon.com/512/280/280766.png", categories:["Sports"], url:"https://chatgpt.com/g/g-6878f74104908191b0ae0f9a513c392b-global-football-hub?model=gpt-4o"},
-  { title:"Freeware finder", desc:"Find quality free software/services fast.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Search","Tools"], url:"https://chatgpt.com/g/g-6873b6d56ae0819192702a6ab83a9006-freeware-finder?model=gpt-4o"},
-  { title:"Blasphemy -- Holy Heresy,Divine Rebellion", desc:"Explore controversial, sacred, and forbidden ideas — religion, philosophy, truth beyond tradition.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/41/Blasphemous_logo.png", categories:["Philosophy"], url:"https://chatgpt.com/g/g-68652a058b348191ba363415dda6bf23-blasphemy-holy-heresy-divine-rebellion?model=gpt-4o"},
-  { title:"Spam & Scam Detector – Protect Your Inbox", desc:"Detect scams, spam, phishing in email/SMS/DMs. AI-powered protection.", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926715.png", categories:["Security","Tools"], url:"https://chatgpt.com/g/g-686522599f78819196f796d8f20dc5a7-spam-scam-detector-protect-your-inbox?model=gpt-4o"},
-  { title:"Error Detector – Spot, Explain, Fix", desc:"Bugs in code, grammar flaws, logic errors, factual inaccuracies. Detect, explain, fix.", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055673.png", categories:["Tools"], url:"https://chatgpt.com/g/g-68651a7bd7a081919b9e95ed139b1d4c-error-detector-spot-explain-fix?model=gpt-4o"},
-  { title:"Lisp/Scheme", desc:"Harness Lisp’s legendary power for AI and elegant computation.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/48/Lisp_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc6a389cc8191a9a54ed9633c8d9c-lisp-scheme"},
-  { title:"PowerShell", desc:"Scripting, Windows automation, admin tasks, WMI, AD — pro-grade helper.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a1/Powershell_128.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efc250595c81918bf818005ac8dded-powershell?model=gpt-5"},
-  { title:"Perl", desc:"Regex, parsing, automation, modules — for devs, analysts, and sysadmins.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/34/Perl-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc0f669848191bb17090ea0ac5aab-perl?model=gpt-4o"},
-  { title:"Bash", desc:"Automate tasks, scripts, terminal mastery — loops, cron, file ops.", icon:"https://upload.wikimedia.org/wikipedia/commons/5/52/Bash-tip.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efbf3da2048191b28d875c2c041130-bash?model=gpt-4o"},
-  { title:"MATLAB", desc:"Matrix math, simulations, analysis, toolboxes, debugging — for students and pros.", icon:"https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbdf8604c8191b48f2596faa7c13a-matlab"},
-  { title:"Julia", desc:"High-performance Julia for scientific computing and data science.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/ae/Julia_logo_circles.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbca1eb9481919f6d08d23dcdd14e-julia"},
-  { title:"TypeScript", desc:"Types, interfaces, generics, debugging. Ideal for React/Node/full-stack.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
-  { title:"Rust", desc:"Ownership, lifetimes, crates, zero-cost abstractions — fearless systems dev.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6d3bd4d081919fb3b0cec36e487a-rust"},
-  { title:"Kotlin", desc:"Android, backend, multiplatform. Coroutines, Jetpack, OOP, clean architecture.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Kotlin_icon_%282016-2021%29.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6bda03888191a399bb2ec8dddb80-kotlin"},
-  { title:"Ruby", desc:"Scripts, automation, web (Rails), debugging. For beginners to ninjas.", icon:"https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef69f3d4488191b55dd9d6fa0b5b4a-ruby"},
-  { title:"C#", desc:".NET, Unity, OOP, LINQ, async. Build games, apps, enterprise systems.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
-  { title:"C", desc:"Syntax, pointers, memory, performance — efficient low-level code.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/C_Programming_Language.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef67c3b83481918336d1c4ddfd5600-c"},
-  { title:"SQL", desc:"Queries, joins, indexing, optimization, schema design — beginner to pro.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Sql_data_base_with_logo.svg", categories:["Data"], url:"https://chatgpt.com/g/g-67ef62fdcdd081918ce75b1c878f43f4-sql"},
-  { title:"GO (Golang)", desc:"APIs, microservices, CLIs — fast, concurrent, idiomatic Go.", icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
-  { title:"R", desc:"Tidyverse, ggplot2, ML, research workflows — for analysts and researchers.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"},
-  { title:"Swift", desc:"Swift & SwiftUI for Apple platforms. Animations, APIs, UI design.", icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
-  { title:"Java", desc:"Clean OOP, Android/back-end systems, DSA, debugging.", icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
-  { title:"React", desc:"Build fast component-based UIs with hooks & state.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-67ef5d4d75a48191aa49f525af48e4d9-react"},
-  { title:"HTML&CSS", desc:"Responsive layouts, flexbox, grid, forms, animations — clean design help.", icon:"https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-67ef5b2d70bc81918d9a5c2877de14d7-html-css?model=gpt-4o"},
-  { title:"Python", desc:"Scripting, automation, data science, AI — clean code and real-world use cases.", icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", categories:["Languages","AI & Automation"], url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
-  { title:"JavaScript", desc:"Modern JS — ES6+, DOM, async, Node.js. Debugging & best practices.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
-  { title:"c++ cpp", desc:"Write, debug, and learn modern C++ with STL. Basics to advanced & competitive programming.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
-  { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
-  { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
-  { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
-  { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
-  { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
-  { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
-  { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
-  { title:"Code Horror Stories GPT", desc:"Tells creepy campfire stories about bugs.", icon:"https://cdn-icons-png.flaticon.com/512/1792/1792942.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac00c2b3481918393a8d577d44408-code-horror-stories-gpt"},
-  { title:"StackOverflow Parrot GPT", desc:"The sassiest dev bot alive. Ask it anything and get roasted like you're on StackOverflow...", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926725.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabe58efc88191b7b5340395c98de7-stackoverflow-parrot-gpt?model=gpt-5"},
-  { title:"Meme Compiler GPT", desc:"Compiles errors into memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221596.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabd397b3c8191a464c3e7e6aa6cab-meme-compiler-gpt?model=gpt-5"},
-  { title:"Code Reviewer From Hell GPT", desc:"Roasts your code brutally but hilariously.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
-  { title:"Debug Dungeon GPT", desc:"Debugging turned into a text-based RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
-  { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
-  { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
-];
+  /*************** DATA & STORAGE ***************/
+  const LS_ITEMS = 'gptmart.v3.items';
+  const LS_PENDING = 'gptmart.v3.pending';
+  const LS_SETTINGS = 'gptmart.v3.settings';
+  const SESSION_ADMIN = 'gptmart.v3.isAdmin';
 
+  // Your provided lists (LANGUAGES + GPTS). You can extend these.
   const LANGUAGES = [
-  { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
-  { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
-  { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
-  { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
-  { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
-  { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
-  { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
-  { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
-  { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
-  { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
-];
+    { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
+    { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
+    { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
+    { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
+    { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
+    { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
+    { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
+    { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
+    { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
+    { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
+  ];
 
-  // localStorage keys
-  const LS_KEY = 'gptmart.v2.items';
-  const LS_DELETED = 'gptmart.v2.deleted';
+  const STARTER_GPTS = [
+    { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", featured:true},
+    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
+    { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor", featured:true},
+    { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5"},
+    { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor"},
+    { title:"Gen AI Mentor", desc:"LLMs, diffusion/GANs, audio/video models. Code, projects, and ethics — beginner to advanced.", icon:"https://miro.medium.com/v2/resize:fit:720/format:webp/1*vYurT8Cw7upWSOLJvUo0Mg.png", categories:["AI & Automation"], url:"https://chatgpt.com/g/g-68b6e5d5c7e08191ab8f644e7c87501f-gen-ai-mentor?model=gpt-5"},
+    { title:"SciPy Tutor", desc:"Optimization, linear algebra, signal processing, integration, interpolation, statistics — with examples.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b2/SCIPY_2.svg", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6e4f4f8d081918945af5baad8eb97-scipy-tutor"},
+    { title:"Cybersecurity Mentor", desc:"Network security, encryption, ethical hacking basics, malware, risk, and best practices. Lessons + simulations.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor"},
+    { title:"Data Science Mentor", desc:"NumPy, Pandas, Matplotlib, scikit-learn. Tutorials, datasets, projects — beginner to advanced.", icon:"https://cdn-icons-png.flaticon.com/512/2967/2967262.png", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6a06e44e881919c09ff648d64b0f3-data-science-mentor"},
+    { title:"Introduction to Programming", desc:"Start coding from zero. Variables, loops, functions. Python by default, C++/Java/JS optional.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Learning","Languages"], url:"https://chatgpt.com/g/g-68b69ed77aec81919d3393e367baf046-introduction-to-programming"},
+    { title:"DSA Coach", desc:"Concepts, patterns, checklists, complexities, tests, multiple approaches. Python/C++/Java/JS.", icon:"https://cdn-icons-png.flaticon.com/512/5903/5903823.png", categories:["Learning","Interviews"], url:"https://chatgpt.com/g/g-68b69c9ea8d081918fb91d37f78ec3c3-dsa-coach"},
+    { title:"Responsive UI Coach (Bootstrap-ready)", desc:"Accessible components & pages. v3/v4→v5, utilities, fixes, CDN or npm/Sass.", icon:"https://cdn.iconscout.com/icon/free/png-256/bootstrap-226077.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b697b5913c81918e64a23a52138255-responsive-ui-coach-bootstrap-ready"},
+    { title:"Sedative", desc:"Talk to me to sleep. no cap.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Lifestyle"], url:"https://chatgpt.com/g/g-688363b4125c8191bb950c37778ab4d0-sedative?model=gpt-4o"},
+    { title:"Global Football Hub", desc:"ESPN FC, UEFA, Transfermarkt, FIFA, FBref. News, tables, verified info.", icon:"https://cdn-icons-png.flaticon.com/512/280/280766.png", categories:["Sports"], url:"https://chatgpt.com/g/g-6878f74104908191b0ae0f9a513c392b-global-football-hub?model=gpt-4o"},
+    { title:"Freeware finder", desc:"Find quality free software/services fast.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Search","Tools"], url:"https://chatgpt.com/g/g-6873b6d56ae0819192702a6ab83a9006-freeware-finder?model=gpt-4o"},
+    { title:"Blasphemy -- Holy Heresy,Divine Rebellion", desc:"Explore controversial, sacred, and forbidden ideas — religion, philosophy, truth beyond tradition.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/41/Blasphemous_logo.png", categories:["Philosophy"], url:"https://chatgpt.com/g/g-68652a058b348191ba363415dda6bf23-blasphemy-holy-heresy-divine-rebellion?model=gpt-4o"},
+    { title:"Spam & Scam Detector – Protect Your Inbox", desc:"Detect scams, spam, phishing in email/SMS/DMs. AI-powered protection.", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926715.png", categories:["Security","Tools"], url:"https://chatgpt.com/g/g-686522599f78819196f796d8f20dc5a7-spam-scam-detector-protect-your-inbox?model=gpt-4o"},
+    { title:"Error Detector – Spot, Explain, Fix", desc:"Bugs in code, grammar flaws, logic errors, factual inaccuracies. Detect, explain, fix.", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055673.png", categories:["Tools"], url:"https://chatgpt.com/g/g-68651a7bd7a081919b9e95ed139b1d4c-error-detector-spot-explain-fix?model=gpt-4o"},
+    { title:"Lisp/Scheme", desc:"Harness Lisp’s legendary power for AI and elegant computation.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/48/Lisp_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc6a389cc8191a9a54ed9633c8d9c-lisp-scheme"},
+    { title:"PowerShell", desc:"Scripting, Windows automation, admin tasks, WMI, AD — pro-grade helper.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a1/Powershell_128.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efc250595c81918bf818005ac8dded-powershell?model=gpt-5"},
+    { title:"Perl", desc:"Regex, parsing, automation, modules — for devs, analysts, and sysadmins.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/34/Perl-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc0f669848191bb17090ea0ac5aab-perl?model=gpt-4o"},
+    { title:"Bash", desc:"Automate tasks, scripts, terminal mastery — loops, cron, file ops.", icon:"https://upload.wikimedia.org/wikipedia/commons/5/52/Bash-tip.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efbf3da2048191b28d875c2c041130-bash?model=gpt-4o"},
+    { title:"MATLAB", desc:"Matrix math, simulations, analysis, toolboxes, debugging — for students and pros.", icon:"https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbdf8604c8191b48f2596faa7c13a-matlab"},
+    { title:"Julia", desc:"High-performance Julia for scientific computing and data science.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/ae/Julia_logo_circles.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbca1eb9481919f6d08d23dcdd14e-julia"},
+    { title:"TypeScript", desc:"Types, interfaces, generics, debugging. Ideal for React/Node/full-stack.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
+    { title:"Rust", desc:"Ownership, lifetimes, crates, zero-cost abstractions — fearless systems dev.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6d3bd4d081919fb3b0cec36e487a-rust"},
+    { title:"Kotlin", desc:"Android, backend, multiplatform. Coroutines, Jetpack, OOP, clean architecture.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Kotlin_icon_%282016-2021%29.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6bda03888191a399bb2ec8dddb80-kotlin"},
+    { title:"Ruby", desc:"Scripts, automation, web (Rails), debugging. For beginners to ninjas.", icon:"https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef69f3d4488191b55dd9d6fa0b5b4a-ruby"},
+    { title:"C#", desc:".NET, Unity, OOP, LINQ, async. Build games, apps, enterprise systems.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
+    { title:"C", desc:"Syntax, pointers, memory, performance — efficient low-level code.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/C_Programming_Language.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef67c3b83481918336d1c4ddfd5600-c"},
+    { title:"SQL", desc:"Queries, joins, indexing, optimization, schema design — beginner to pro.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Sql_data_base_with_logo.svg", categories:["Data"], url:"https://chatgpt.com/g/g-67ef62fdcdd081918ce75b1c878f43f4-sql"},
+    { title:"GO (Golang)", desc:"APIs, microservices, CLIs — fast, concurrent, idiomatic Go.", icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
+    { title:"R", desc:"Tidyverse, ggplot2, ML, research workflows — for analysts and researchers.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"},
+    { title:"Swift", desc:"Swift & SwiftUI for Apple platforms. Animations, APIs, UI design.", icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
+    { title:"Java", desc:"Clean OOP, Android/back-end systems, DSA, debugging.", icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
+    { title:"React", desc:"Build fast component-based UIs with hooks & state.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-67ef5d4d75a48191aa49f525af48e4d9-react"},
+    { title:"HTML&CSS", desc:"Responsive layouts, flexbox, grid, forms, animations — clean design help.", icon:"https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-67ef5b2d70bc81918d9a5c2877de14d7-html-css?model=gpt-4o"},
+    { title:"Python", desc:"Scripting, automation, data science, AI — clean code and real-world use cases.", icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", categories:["Languages","AI & Automation"], url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
+    { title:"JavaScript", desc:"Modern JS — ES6+, DOM, async, Node.js. Debugging & best practices.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
+    { title:"c++ cpp", desc:"Write, debug, and learn modern C++ with STL. Basics to advanced & competitive programming.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
+    { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
+    { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
+    { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
+    { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
+    { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
+    { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
+    { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
+    { title:"Code Horror Stories GPT", desc:"Tells creepy campfire stories about bugs.", icon:"https://cdn-icons-png.flaticon.com/512/1792/1792942.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac00c2b3481918393a8d577d44408-code-horror-stories-gpt"},
+    { title:"StackOverflow Parrot GPT", desc:"The sassiest dev bot alive. Ask it anything and get roasted like you're on StackOverflow...", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926725.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabe58efc88191b7b5340395c98de7-stackoverflow-parrot-gpt?model=gpt-5"},
+    { title:"Meme Compiler GPT", desc:"Compiles errors into memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221596.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabd397b3c8191a464c3e7e6aa6cab-meme-compiler-gpt?model=gpt-5"},
+    { title:"Code Reviewer From Hell GPT", desc:"Roasts your code brutally but hilariously.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
+    { title:"Debug Dungeon GPT", desc:"Debugging turned into a text-based RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
+    { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
+    { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
+  ];
 
-  /***********************
-   * UTIL
-   ***********************/
-  const contains = (t, q) => (t||'').toLowerCase().includes((q||'').toLowerCase());
-  const $ = (sel, el=document) => el.querySelector(sel);
-  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
+  const $ = (s,el=document)=> el.querySelector(s);
+  const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
   const uniq = arr => Array.from(new Set(arr));
   const toCSV = a => (a||[]).join(', ');
   const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
 
-  function readLocal(){
-    try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch(e){ return []; }
-  }
-  function writeLocal(items){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
-  function readDeleted(){ try{ return new Set(JSON.parse(localStorage.getItem(LS_DELETED)||'[]')); }catch(e){ return new Set(); } }
-  function writeDeleted(set){ localStorage.setItem(LS_DELETED, JSON.stringify(Array.from(set))); }
+  function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
+  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-  function exportJSON(){
-    const data = getAll();
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'gptmart-export.json';
-    a.click();
+  function initData(){
+    const have = read(LS_ITEMS, []);
+    if(!have || !have.length){ write(LS_ITEMS, STARTER_GPTS.map(x=>({...x,status:'live'}))); }
+    if(!read(LS_PENDING, null)) write(LS_PENDING, []);
+    if(!read(LS_SETTINGS, null)) write(LS_SETTINGS, { title:'GPTMart Pro', ga: window.GA_MEASUREMENT_ID, pin:'0000' });
   }
 
-  /***********************
-   * STATE
-   ***********************/
-  const state = {
-    q: new URLSearchParams(location.hash.slice(1)).get('q') || '',
-    cat: new URLSearchParams(location.hash.slice(1)).get('cat') || 'All',
-    tag: new URLSearchParams(location.hash.slice(1)).get('tag') || '',
-    editingIndex: null,
-  };
+  function items(){ return read(LS_ITEMS, []); }
+  function setItems(v){ write(LS_ITEMS, v); renderAll(); }
+  function pendings(){ return read(LS_PENDING, []); }
+  function setPendings(v){ write(LS_PENDING, v); renderAll(); }
+  function settings(){ return read(LS_SETTINGS, {title:'GPTMart Pro', ga:window.GA_MEASUREMENT_ID, pin:'0000'}); }
+  function setSettings(v){ write(LS_SETTINGS, v); $('#ftTitle').textContent = v.title || 'GPTMart Pro'; document.title = (v.title||'GPTMart Pro') + ' — Catalog & Admin'; window.GA_MEASUREMENT_ID = v.ga || window.GA_MEASUREMENT_ID; }
 
-  function syncHash(){
-    const p = new URLSearchParams();
-    if(state.q) p.set('q', state.q);
-    if(state.cat && state.cat!=='All') p.set('cat', state.cat);
-    if(state.tag) p.set('tag', state.tag);
-    location.hash = p.toString();
-  }
-
-  /***********************
-   * DATA PIPELINE
-   ***********************/
-  function getAll(){
-    // Merge starter + legacy global + local, minus deleted
-    const deleted = readDeleted();
-    const legacy = Array.isArray(window.GPTS) ? window.GPTS : [];
-    const local = readLocal();
-    const merged = [...STARTER_GPTS, ...legacy, ...local];
-    // De-dup by title+url
-    const byKey = new Map();
-    merged.forEach(item=>{
-      const key = (item.title||'') + '|' + (item.url||'');
-      if(!deleted.has(key)) byKey.set(key, item);
-    });
-    return Array.from(byKey.values());
-  }
-
-  /***********************
-   * RENDER
-   ***********************/
+  /*************** PUBLIC RENDER ***************/
   const grid = $('#grid');
   const qInput = $('#q');
   const catSelect = $('#cat');
-  const chips = $('#activeChips');
-  const countEl = $('#count');
 
-  function renderLanguages(){
-    const wrap = $('#langs');
-    wrap.innerHTML = LANGUAGES.map(l => `
-      <a class="lang" href="${l.url}" target="_blank" rel="noopener">
-        <img loading="lazy" src="${l.icon}" alt="${l.name} icon" />
-        <span>${l.name}</span>
-      </a>`).join('');
+  function renderLanguages(){ $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join(''); }
+
+  function renderFeatured(){
+    const f = items().filter(x=>x.featured && x.status==='live').slice(0,12);
+    $('#featured').innerHTML = f.map(x=>`<div class="chip"><div style="display:flex;gap:10px;align-items:center"><div class="icon"><img src="${x.icon||''}" alt="${x.title}"></div><div><strong>${x.title}</strong><div style="color:#a7b0c0;font-size:12px">${x.desc||''}</div></div></div></div>`).join('');
   }
 
   function renderCategories(){
-    const items = getAll();
-    const cats = uniq(items.flatMap(x=>x.categories||[])).sort();
+    const cats = uniq(items().flatMap(x=>x.categories||[])).sort();
     catSelect.innerHTML = '<option value="All">All categories</option>' + cats.map(c=>`<option ${state.cat===c?'selected':''}>${c}</option>`).join('');
-
-    const row = $('#catsRow');
-    row.innerHTML = ['All', ...cats].map(c=>`<button class="category ${state.cat===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
-    $$('.category', row).forEach(btn=> btn.addEventListener('click', ()=>{ state.cat = btn.dataset.cat; update(); }));
   }
 
   function cardTemplate(x){
-    const tags = (x.tags||[]).map(t=>`<span class="tag" data-tag="${t}">#${t}</span>`).join('');
-    return `
-      <article class="card" role="listitem" tabindex="0">
-        <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
-        <h3 class="title">${x.title||'Untitled GPT'}</h3>
-        <p class="desc">${x.desc||''}</p>
-        <div class="tags">${tags}</div>
-        <div class="actions">
-          <a class="link" href="${x.url}" target="_blank" rel="noopener">Open</a>
-          <button class="btn ghost" data-edit="1">Edit</button>
-          <button class="btn" data-del="1" title="Remove from this view">Remove</button>
-        </div>
-      </article>`;
+    const tags = (x.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
+    return `<article class="card" role="listitem">
+      <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
+      <h3 class="title">${x.title||'Untitled GPT'}</h3>
+      <p class="desc">${x.desc||''}</p>
+      <div class="tags">${tags}</div>
+      <div class="actions">
+        <a class="btn brand" href="${x.url}" target="_blank" rel="noopener">Open</a>
+      </div>
+    </article>`;
   }
 
   function renderGrid(){
-    const items = getAll();
-    const filtered = items.filter(x=>{
+    const list = items().filter(x=> x.status==='live');
+    const filtered = list.filter(x=>{
       const q = state.q.trim();
       const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
       const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
-      const inTag = !state.tag || (x.tags||[]).includes(state.tag);
-      return inQ && inCat && inTag;
+      return inQ && inCat;
     });
-
-    countEl.textContent = items.length;
     grid.innerHTML = filtered.map(cardTemplate).join('');
-
-    // tag chip clicks
-    $$('.tag', grid).forEach(el=> el.addEventListener('click', ()=>{ state.tag = el.dataset.tag; update(); }));
-
-    // edit/remove
-    $$('.card .btn', grid).forEach((b, idx)=>{
-      const card = b.closest('.card');
-      const title = card.querySelector('.title').textContent;
-      const url = card.querySelector('.actions .link').getAttribute('href');
-      const key = title + '|' + url;
-      if(b.dataset.edit){ b.addEventListener('click', ()=> openModalFor(title,url)); }
-      if(b.dataset.del){ b.addEventListener('click', ()=> removeItemKey(key)); }
-    });
-
-    renderChips();
   }
 
-  function renderChips(){
-    chips.innerHTML = '';
-    const push = (label, onClear)=>{
-      const el = document.createElement('button');
-      el.className = 'chip';
-      el.innerHTML = label + ' ✕';
-      el.addEventListener('click', onClear);
-      chips.appendChild(el);
+  /*************** SUBMISSION ***************/
+  $('#sSend').addEventListener('click', ()=>{
+    const sub = {
+      title: $('#sTitle').value.trim(), url: $('#sUrl').value.trim(), icon: $('#sIcon').value.trim(), desc: $('#sDesc').value.trim(),
+      categories: fromCSV($('#sCats').value), tags: fromCSV($('#sTags').value), featured:false, status:'pending', createdAt: Date.now()
     };
-    if(state.q) push(`q: ${state.q}`, ()=>{state.q=''; update();});
-    if(state.cat && state.cat!=='All') push(`cat: ${state.cat}`, ()=>{state.cat='All'; update();});
-    if(state.tag) push(`#${state.tag}`, ()=>{state.tag=''; update();});
-  }
-
-  function update(){
-    syncHash();
-    qInput.value = state.q;
-    renderCategories();
-    renderGrid();
-  }
-
-  /***********************
-   * MUTATIONS
-   ***********************/
-  function addItem(item){
-    const items = readLocal();
-    const clean = {
-      title: (item.title||'').trim(),
-      desc: (item.desc||'').trim(),
-      icon: (item.icon||'').trim(),
-      categories: (item.categories||[]).filter(Boolean),
-      tags: (item.tags||[]).filter(Boolean),
-      url: (item.url||'').trim(),
-    };
-    items.push(clean);
-    writeLocal(items);
-    gtag('event','add_gpt', {title: clean.title});
-    update();
-  }
-
-  function removeItemKey(key){
-    const del = readDeleted();
-    del.add(key);
-    writeDeleted(del);
-    gtag('event','remove_gpt');
-    update();
-  }
-
-  function openModalFor(title,url){
-    const all = getAll();
-    const found = all.find(x=>x.title===title && x.url===url);
-    state.editingIndex = found ? all.indexOf(found) : null;
-    $('#modalTitle').textContent = found ? 'Edit GPT' : 'Add GPT';
-    $('#mTitle').value = found?.title || '';
-    $('#mUrl').value = found?.url || '';
-    $('#mIcon').value = found?.icon || '';
-    $('#mDesc').value = found?.desc || '';
-    $('#mCats').value = toCSV(found?.categories);
-    $('#mTags').value = toCSV(found?.tags);
-    $('#gptModal').showModal();
-  }
-
-  function saveModal(){
-    const item = {
-      title: $('#mTitle').value,
-      url: $('#mUrl').value,
-      icon: $('#mIcon').value,
-      desc: $('#mDesc').value,
-      categories: fromCSV($('#mCats').value),
-      tags: fromCSV($('#mTags').value),
-    };
-    addItem(item);
-    $('#gptModal').close();
-  }
-
-  /***********************
-   * WIRING
-   ***********************/
-  // search inputs
-  qInput.value = state.q;
-  qInput.addEventListener('input', (e)=>{ state.q = e.target.value; update(); });
-  qInput.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); qInput.focus(); }});
-  catSelect.addEventListener('change', e=>{ state.cat = e.target.value; update(); });
-  $('#clearFilters').addEventListener('click', ()=>{ state.q=''; state.cat='All'; state.tag=''; update(); });
-
-  // quick add
-  $('#qaAdd').addEventListener('click', ()=>{
-    addItem({
-      title: $('#qaTitle').value,
-      url: $('#qaUrl').value,
-      icon: $('#qaIcon').value,
-      desc: $('#qaDesc').value,
-      categories: fromCSV($('#qaCats').value),
-      tags: fromCSV($('#qaTags').value),
-    });
-    ['qaTitle','qaUrl','qaIcon','qaDesc','qaCats','qaTags'].forEach(id=> $('#'+id).value='');
+    if(!sub.title || !sub.url){ alert('Title and URL are required.'); return; }
+    const ps = pendings(); ps.push(sub); setPendings(ps);
+    ['sTitle','sUrl','sIcon','sDesc','sCats','sTags'].forEach(id=> $('#'+id).value='');
+    gtag('event','submit_gpt', {title: sub.title});
+    alert('Submitted! Admin will review it.');
   });
 
-  // modal
-  $('#addBtn').addEventListener('click', ()=> openModalFor());
-  $('#browseBtn').addEventListener('click', ()=> document.getElementById('grid').scrollIntoView({behavior:'smooth'}));
-  $('#saveBtn').addEventListener('click', saveModal);
-  $('#exportBtn').addEventListener('click', exportJSON);
+  /*************** ADMIN ***************/
+  const adminSec = $('#admin');
+  const adminGate = $('#adminGate');
+  const adminDesk = $('#adminDesk');
 
-  // global tag hash sync (back/forward)
-  window.addEventListener('hashchange', ()=>{
-    const p = new URLSearchParams(location.hash.slice(1));
-    state.q = p.get('q')||''; state.cat = p.get('cat')||'All'; state.tag = p.get('tag')||''; update();
+  function isAdmin(){ return sessionStorage.getItem(SESSION_ADMIN)==='1'; }
+  function requireAdmin(){ if(isAdmin()){ adminGate.classList.add('hide'); adminDesk.classList.remove('hide'); renderAdmin(); } }
+
+  $('#pinGo').addEventListener('click', ()=>{
+    const ok = ($('#pin').value||'') === settings().pin;
+    if(ok){ sessionStorage.setItem(SESSION_ADMIN,'1'); requireAdmin(); }
+    else alert('Wrong PIN');
   });
 
-  // boot
+  // KPIs + tables
+  function renderAdmin(){
+    const it = items();
+    const p = pendings();
+    $('#kLive').textContent = it.filter(x=>x.status==='live').length;
+    $('#kHidden').textContent = it.filter(x=>x.status==='hidden').length;
+    $('#kFeat').textContent = it.filter(x=>x.featured && x.status==='live').length;
+    $('#kPending').textContent = p.length;
+
+    // Pending table
+    const rowsP = p.sort((a,b)=>b.createdAt-a.createdAt).map((x,i)=>`<tr>
+      <td>${x.title}</td><td>${x.desc||''}</td><td>${toCSV(x.categories)}</td><td>${toCSV(x.tags)}</td>
+      <td>
+        <button class="btn brand" data-approve="${i}">Approve</button>
+        <button class="btn" data-reject="${i}">Reject</button>
+      </td></tr>`).join('');
+    $('#tPending').innerHTML = rowsP || '<tr><td colspan="5" style="color:#93c5fd">No pending items</td></tr>';
+
+    // All table
+    const q = ($('#aQ').value||'').trim();
+    const st = $('#aStatus').value||'all';
+    const filtered = it.filter(x=>{
+      const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
+      const inS = st==='all' || x.status===st; return inQ && inS; });
+
+    $('#tAll').innerHTML = filtered.map((x,idx)=>{
+      const i = it.indexOf(x);
+      return `<tr>
+        <td>${x.title}</td>
+        <td><small>${toCSV(x.categories)}</small><br><small style="color:#93c5fd">${toCSV(x.tags)}</small></td>
+        <td>${x.featured? '⭐️' : '—'}</td>
+        <td>${x.status}</td>
+        <td>
+          <button class="btn" data-edit="${i}">Edit</button>
+          <button class="btn" data-togglef="${i}">${x.featured?'Unfeature':'Feature'}</button>
+          <button class="btn" data-toggleh="${i}">${x.status==='hidden'?'Unhide':'Hide'}</button>
+          <a class="btn brand" href="${x.url}" target="_blank">Open</a>
+          <button class="btn" data-del="${i}" style="border-color:#2b2b2b">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    // wire actions
+    $$('#tPending [data-approve]').forEach(b=> b.addEventListener('click', ()=>{
+      const ps = pendings(); const x = ps.splice(+b.dataset.approve,1)[0];
+      const itms = items(); itms.push({...x,status:'live'}); setPendings(ps); setItems(itms);
+    }));
+    $$('#tPending [data-reject]').forEach(b=> b.addEventListener('click', ()=>{ const ps = pendings(); ps.splice(+b.dataset.reject,1); setPendings(ps); }));
+
+    $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
+    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
+    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
+    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);}));
+  }
+
+  // Filters
+  $('#aQ').addEventListener('input', renderAdmin);
+  $('#aStatus').addEventListener('change', renderAdmin);
+  $('#aReset').addEventListener('click', ()=>{ $('#aQ').value=''; $('#aStatus').value='all'; renderAdmin(); });
+
+  // Export / Import
+  $('#exportBtn').addEventListener('click', ()=>{
+    const data = { items: items(), pending: pendings(), settings: settings() };
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gptmart-export.json'; a.click();
+  });
+  $('#importFile').addEventListener('change', (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader(); reader.onload = ()=>{
+      try{ const data = JSON.parse(reader.result);
+        if(Array.isArray(data.items)) write(LS_ITEMS, data.items);
+        if(Array.isArray(data.pending)) write(LS_PENDING, data.pending);
+        if(data.settings) write(LS_SETTINGS, data.settings);
+        renderAll(); alert('Imported!');
+      }catch(err){ alert('Invalid file'); }
+    }; reader.readAsText(file);
+  });
+
+  // Settings
+  $('#saveSettings').addEventListener('click', ()=>{
+    const s = settings();
+    s.title = $('#siteTitle').value.trim() || s.title;
+    s.ga = $('#gaId').value.trim() || s.ga;
+    s.pin = $('#pinSet').value.trim() || s.pin;
+    setSettings(s);
+    alert('Settings saved');
+  });
+
+  // Manual add
+  $('#addManual').addEventListener('click', ()=> openModal());
+
+  // Modal helpers
+  function openModal(editIndex){
+    const itms = items();
+    const editing = typeof editIndex==='number'? itms[editIndex] : null;
+    $('#mTitle').textContent = editing? 'Edit GPT' : 'Add GPT';
+    $('#mTitleIn').value = editing?.title || '';
+    $('#mUrlIn').value = editing?.url || '';
+    $('#mIconIn').value = editing?.icon || '';
+    $('#mDescIn').value = editing?.desc || '';
+    $('#mCatsIn').value = toCSV(editing?.categories);
+    $('#mTagsIn').value = toCSV(editing?.tags);
+    $('#mFeatIn').checked = !!editing?.featured;
+    $('#mStatusIn').value = editing?.status || 'live';
+    $('#modal').showModal();
+    $('#mSave').onclick = ()=>{
+      const item = {
+        title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(),
+        desc: $('#mDescIn').value.trim(), categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value),
+        featured: $('#mFeatIn').checked, status: $('#mStatusIn').value
+      };
+      if(!item.title || !item.url){ alert('Title and URL required.'); return; }
+      if(editing){ itms[editIndex] = item; setItems(itms); }
+      else { itms.push(item); setItems(itms); }
+      $('#modal').close();
+    };
+  }
+
+  /*************** ROUTING + STATE ***************/
+  const state = { q:'', cat:'All' };
+  function syncPublic(){ renderCategories(); renderFeatured(); renderGrid(); }
+  function renderAll(){ syncPublic(); if(isAdmin()) renderAdmin(); }
+
+  // search wiring
+  qInput.addEventListener('input', e=>{ state.q = e.target.value; renderGrid(); });
+  qInput.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); qInput.focus(); }});
+  $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; renderGrid();});
+  catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
+
+  // tabs + admin routing
+  function showTab(which){
+    document.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
+    if(which==='admin'){ $('#tabAdmin').classList.add('active'); $('#public').classList.add('hide'); $('#admin').classList.remove('hide'); requireAdmin(); }
+    else { $('#tabPublic').classList.add('active'); $('#admin').classList.add('hide'); $('#public').classList.remove('hide'); }
+  }
+  window.addEventListener('hashchange', ()=>{ const h = location.hash.replace('#','')||'public'; showTab(h); });
+
+  // init
+  initData();
+  setSettings(settings());
   renderLanguages();
-  renderCategories();
-  renderGrid();
+  renderAll();
+  showTab((location.hash||'#public').replace('#',''));
+
+  // quick open submit panel
+  $('#btnSubmitOpen').addEventListener('click', ()=>{ location.hash = '#public'; window.scrollTo({top:0,behavior:'smooth'}); });
   </script>
 </body>
 </html>
