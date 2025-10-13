@@ -4,144 +4,92 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GPTMart</title>
-      <script>
-    // Set your GA Measurement ID once here:
-    window.GA_MEASUREMENT_ID = 'G-ZNB7MWLE99'; /* ← change here if needed */
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    // Use the centralized ID (avoids mismatches)
-    gtag('config', window.GA_MEASUREMENT_ID);
-  </script>
+
+    <!-- Google Analytics -->
+    <script>
+      window.GA_MEASUREMENT_ID = "G-ZNB7MWLE99";
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", window.GA_MEASUREMENT_ID);
+    </script>
+
+    <!-- Fonts & Styles -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./style.css" />
-    <section id="hero" class="hero-section">
-  <div class="hero-content">
-    <h1>Discover, Build & Launch <span>Powerful Custom GPTs</span></h1>
-    <p>Curated AI mentors, tools, and assistants — built for coders, creators, and innovators.</p>
-    <div class="hero-buttons">
-      <a href="#gpts" class="btn primary">Explore GPTs</a>
-      <a href="#upload" class="btn secondary">Create Your GPT</a>
-    </div>
-  </div>
-  <div class="hero-bg"></div>
-</section>
-
-<style>
-.hero-section {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: radial-gradient(circle at top, #0b0f19, #000);
-  overflow: hidden;
-}
-
-.hero-content {
-  z-index: 2;
-  color: white;
-  max-width: 800px;
-  padding: 0 20px;
-}
-
-.hero-content h1 {
-  font-size: 3rem;
-  line-height: 1.2;
-  font-weight: 800;
-  color: #fff;
-}
-
-.hero-content h1 span {
-  background: linear-gradient(90deg, #00b4d8, #90e0ef, #caf0f8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-content p {
-  margin-top: 1rem;
-  font-size: 1.2rem;
-  color: #ccc;
-}
-
-.hero-buttons {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.btn {
-  text-decoration: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn.primary {
-  background: #00b4d8;
-  color: white;
-}
-
-.btn.primary:hover {
-  background: #0077b6;
-}
-
-.btn.secondary {
-  border: 2px solid #00b4d8;
-  color: #00b4d8;
-}
-
-.btn.secondary:hover {
-  background: #00b4d8;
-  color: white;
-}
-
-/* Animated background */
-.hero-bg::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 90deg at 50% 50%, #00b4d8, transparent, #0077b6, transparent);
-  animation: rotate 10s linear infinite;
-  opacity: 0.05;
-}
-
-@keyframes rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
-
   </head>
+
   <body>
-    <div class="container">
-      <header class="header">
+    <!-- ===== HEADER (Navigation) ===== -->
+    <header class="main-header">
+      <div class="header-container">
         <h1 class="logo">GPTMart<span>.</span></h1>
-        <div class="search-bar">
+
+        <nav class="nav-menu">
+          <a href="#hero">Home</a>
+          <a href="#categories">Categories</a>
+          <a href="#grid">Explore</a>
+          <a href="#upload">Create GPT</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="header-actions">
           <input
             id="searchInput"
             type="text"
-            placeholder="Search high-quality GPTs..."
+            class="search-input"
+            placeholder="Search GPTs..."
           />
+          <a href="#login" class="login-btn">Login</a>
+          <a href="#signup" class="signup-btn">Sign Up</a>
         </div>
-      </header>
+      </div>
+    </header>
+
+    <!-- ===== HERO SECTION (Above the Fold) ===== -->
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <h1>
+          Discover, Build & Launch <span>Powerful Custom GPTs</span>
+        </h1>
+        <p>Where AI Creators Meet Opportunity</p>
+        <div class="hero-buttons">
+          <a href="#grid" class="btn primary">Explore GPTs</a>
+          <a href="#upload" class="btn secondary">Create Your GPT</a>
+        </div>
+      </div>
+      <div class="hero-bg"></div>
+    </section>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
       <section id="categories" class="categories"></section>
       <section id="languageIcons" class="language-icons"></section>
       <section id="grid" class="gpts-grid"></section>
     </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <p>© 2025 GPTMart — All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
     <script src="./data/gpts.js"></script>
     <script src="./app.js"></script>
   </body>
