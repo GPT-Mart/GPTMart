@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GPTMart Pro — Catalog & Admin</title>
-  <meta name="description" content="Public catalog for many users + a sleek admin dashboard. Single‑file, copy‑paste deploy." />
+  <meta name="description" content="Public catalog for many users + a sleek admin dashboard. Single-file, copy-paste deploy." />
   <meta name="theme-color" content="#0f172a" />
 
   <!-- Analytics (single source of truth) -->
@@ -116,7 +116,7 @@
     <div class="two hero">
       <div>
         <h1>Find, filter, and launch the best <span style="color:var(--brand)">Custom GPTs</span></h1>
-        <p>Built for many users. Lightning‑fast filters, featured picks, and a clean submission flow.</p>
+        <p>Built for many users. Lightning-fast filters, featured picks, and a clean submission flow.</p>
         <div class="searchbar">
           <input id="q" class="input" type="search" placeholder="Search GPTs, tags, categories… (⌘/Ctrl + K)"/>
           <select id="cat" class="input" style="max-width:220px">
@@ -133,8 +133,8 @@
         <div class="row"><input id="sTitle" placeholder="Title"/></div>
         <div class="row"><input id="sUrl" placeholder="ChatGPT link (https://chatgpt.com/g/...)"/></div>
         <div class="row"><input id="sIcon" placeholder="Icon URL (PNG/JPG/SVG)"/></div>
-        <div class="row"><input id="sCats" placeholder="Categories (comma‑separated)"/></div>
-        <div class="row"><input id="sTags" placeholder="Tags (comma‑separated)"/></div>
+        <div class="row"><input id="sCats" placeholder="Categories (comma-separated)"/></div>
+        <div class="row"><input id="sTags" placeholder="Tags (comma-separated)"/></div>
         <div class="row"><textarea id="sDesc" placeholder="Short description"></textarea></div>
         <div class="row" style="justify-content:flex-end"><button class="btn brand" id="sSend">Submit</button></div>
         <small style="color:#93c5fd">We store submissions locally for this demo. Wire your backend later.</small>
@@ -147,7 +147,7 @@
   <!-- ADMIN SECTION -->
   <section id="admin" class="section container hide">
     <div id="adminGate" class="panel">
-      <h3>Admin sign‑in</h3>
+      <h3>Admin sign-in</h3>
       <div class="row"><input id="pin" type="password" placeholder="Enter admin PIN"/></div>
       <div class="row" style="justify-content:flex-end"><button class="btn brand" id="pinGo">Enter</button></div>
       <small style="color:#93c5fd">Default PIN: <code>0000</code> (change in Settings)</small>
@@ -213,7 +213,7 @@
     </div>
   </section>
 
-  <footer>© <span id="ftTitle">GPTMart Pro</span>. Single‑file. Copy‑paste. Build your backend later.
+  <footer>© <span id="ftTitle">GPTMart Pro</span>. Single-file. Copy-paste. Build your backend later.
   </footer>
 
   <!-- Modal (reused) -->
@@ -225,8 +225,8 @@
         <div class="row"><input id="mUrlIn" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
         <div class="row"><input id="mIconIn" placeholder="Icon URL"></div>
         <div class="row"><textarea id="mDescIn" placeholder="Short description"></textarea></div>
-        <div class="row"><input id="mCatsIn" placeholder="Categories (comma‑separated)"></div>
-        <div class="row"><input id="mTagsIn" placeholder="Tags (comma‑separated)"></div>
+        <div class="row"><input id="mCatsIn" placeholder="Categories (comma-separated)"></div>
+        <div class="row"><input id="mTagsIn" placeholder="Tags (comma-separated)"></div>
         <div class="row">
           <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
           <select id="mStatusIn" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
@@ -245,6 +245,9 @@
   const LS_PENDING = 'gptmart.v3.pending';
   const LS_SETTINGS = 'gptmart.v3.settings';
   const SESSION_ADMIN = 'gptmart.v3.isAdmin';
+
+  /* ✅ STATE MUST BE DECLARED EARLY */
+  const state = { q:'', cat:'All' };
 
   // Your provided lists (LANGUAGES + GPTS). You can extend these.
   const LANGUAGES = [
@@ -373,8 +376,8 @@
 
   function renderGrid(){
     const list = items().filter(x=> x.status==='live');
+    const q = (state.q||'').trim();
     const filtered = list.filter(x=>{
-      const q = state.q.trim();
       const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
       const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
       return inQ && inCat;
@@ -396,7 +399,6 @@
   });
 
   /*************** ADMIN ***************/
-  const adminSec = $('#admin');
   const adminGate = $('#adminGate');
   const adminDesk = $('#adminDesk');
 
@@ -434,7 +436,7 @@
       const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
       const inS = st==='all' || x.status===st; return inQ && inS; });
 
-    $('#tAll').innerHTML = filtered.map((x,idx)=>{
+    $('#tAll').innerHTML = filtered.map((x)=>{
       const i = it.indexOf(x);
       return `<tr>
         <td>${x.title}</td>
@@ -527,8 +529,7 @@
     };
   }
 
-  /*************** ROUTING + STATE ***************/
-  const state = { q:'', cat:'All' };
+  /*************** ROUTING + RENDER ***************/
   function syncPublic(){ renderCategories(); renderFeatured(); renderGrid(); }
   function renderAll(){ syncPublic(); if(isAdmin()) renderAdmin(); }
 
