@@ -1,145 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GPTMart Pro — Explore My Custom GPTs</title>
-<meta name="description" content="Explore and launch my curated Custom GPTs. Premium app-store feel with fast search and filters." />
-<meta name="theme-color" content="#0a0f1f" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GPTMart Pro — Your Custom GPTs</title>
+  <meta name="description" content="Explore and launch my curated Custom GPTs. Fast search, filters, and featured picks." />
+  <meta name="theme-color" content="#0f172a" />
 
-<!-- Analytics (single source of truth, optional) -->
-<script>
-  window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-<script> gtag('js', new Date()); gtag('config', window.GA_MEASUREMENT_ID); </script>
+  <script>
+    window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
+  <script> gtag('js', new Date()); gtag('config', window.GA_MEASUREMENT_ID); </script>
 
-<style>
-  :root{
-    --bg-top:#070b16; --bg-bot:#0b1224;
-    --glass:#0d1427cc; --glass-2:#0f1a34cc;
-    --stroke:#16223a; --muted:#9aa3b2; --text:#e7ecf4;
-    --brand:#60a5fa; --brand-600:#3b82f6;
-    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
-    --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  body{
-    color:var(--text);
-    background:
-      radial-gradient(1200px 600px at 20% -20%, #1c2144 0%, transparent 60%),
-      radial-gradient(1000px 600px at 110% 10%, #112b4d 0%, transparent 60%),
-      linear-gradient(180deg,var(--bg-top),var(--bg-bot));
-  }
-  a{color:inherit;text-decoration:none}
+  <style>
+    :root{ --bg:#0b0f19; --panel:#0e1628; --muted:#9aa3b2; --text:#e6eaf0; --brand:#3b82f6; --brand-600:#2563eb; --stroke:#1c2435; --card:#0f172a; --radius:14px }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    body{background:linear-gradient(180deg,#090d16 0%,#0c1222 100%);color:var(--text)}
+    a{color:inherit}
+    .container{width:95%;max-width:1200px;margin:0 auto}
 
-  .container{width:94%;max-width:1240px;margin:0 auto}
+    /* Topbar */
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(9,13,22,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--stroke)}
+    .topbar .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .logo svg{filter:drop-shadow(0 4px 20px rgba(59,130,246,.35))}
+    .tabs{display:flex;gap:6px}
+    .tab{padding:8px 12px;border:1px solid var(--stroke);border-radius:999px;background:#0b1426;color:#cbd5e1;text-decoration:none}
+    .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn{background:#0b1426;border:1px solid var(--stroke);padding:10px 14px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+    .btn:hover{border-color:#2b3446}
+    .btn.brand{background:var(--brand);border-color:var(--brand);color:white}
+    .btn.brand:hover{background:var(--brand-600)}
 
-  /* Topbar */
-  .topbar{
-    position:sticky;top:0;z-index:50;
-    backdrop-filter: blur(10px);
-    background:linear-gradient(180deg, #0b122480 0%, #0b122400 100%);
-    border-bottom:1px solid var(--stroke);
-  }
-  .topbar .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
-  .logo{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.2px}
-  .logo svg{filter:drop-shadow(0 6px 26px rgba(96,165,250,.45))}
-  .tabs{display:flex;gap:8px}
-  .tab{
-    padding:8px 14px;border:1px solid var(--stroke);border-radius:999px;
-    background:#0c1428;color:#cbd5e1
-  }
-  .tab.active{background:var(--brand);border-color:var(--brand);color:#001023}
-  .btn{
-    background:#0c1428;border:1px solid var(--stroke);
-    padding:10px 14px;border-radius:12px;color:var(--text);
-    font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:transform .15s
-  }
-  .btn:hover{transform:translateY(-1px)}
-  .btn.brand{background:var(--brand);border-color:var(--brand);color:#04101f}
-  .btn.brand:hover{background:var(--brand-600);color:#fff}
+    /* Layout */
+    .section{padding:26px 0}
 
-  /* Hero */
-  .section{padding:28px 0}
-  .two{display:grid;grid-template-columns:1.15fr .85fr;gap:24px}
-  @media (max-width:980px){.two{grid-template-columns:1fr}}
-  .hero h1{font-size:clamp(30px,4.4vw,46px);margin:0 0 12px}
-  .hero p{color:var(--muted);margin:0 0 10px}
+    /* Hero */
+    .hero h1{font-size:clamp(28px,4vw,40px);margin:0 0 10px}
+    .hero p{color:var(--muted)}
 
-  /* Search & filters */
-  .searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  .input{
-    flex:1;min-width:240px;border:1px solid var(--stroke);
-    background:linear-gradient(180deg,#0b1426,#0a1324);
-    border-radius:14px;padding:12px 14px;color:var(--text)
-  }
+    /* Search + grid */
+    .searchbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .input{flex:1;min-width:240px;border:1px solid var(--stroke);background:#0a1222;border-radius:12px;padding:12px 14px;color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px}
+    .card{background:var(--card);border:1px solid var(--stroke);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324}
+    .icon img{width:100%;height:100%;object-fit:cover}
+    .title{font-weight:800;margin:0}
+    .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
+    .tags{display:flex;gap:6px;flex-wrap:wrap}
+    .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe}
+    .actions{margin-top:auto;display:flex;gap:8px}
 
-  /* Language shortcuts */
-  .langs{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:18px 0}
-  .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
-  .lang img{
-    width:48px;height:48px;border-radius:12px;background:#0a1324;border:1px solid var(--stroke);padding:8px;
-    transition:transform .12s, filter .12s
-  }
-  .lang:hover img{transform:translateY(-2px) scale(1.04); filter:drop-shadow(0 6px 16px rgba(96,165,250,.25))}
-  .lang span{font-size:12px;color:#cbd5e1}
+    /* Language strip */
+    .langs{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:18px 0}
+    .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
+    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;transition:transform .15s}
+    .lang:hover img{transform:scale(1.06)}
+    .lang span{font-size:12px;color:#cbd5e1}
 
-  /* Featured row */
-  .feature{display:flex;gap:14px;overflow:auto;padding-bottom:6px}
-  .feature .chip{
-    min-width:260px;background:linear-gradient(180deg,var(--glass),var(--glass-2));
-    border:1px solid var(--stroke);border-radius:16px;padding:14px;box-shadow:var(--shadow)
-  }
+    /* Panels */
+    .panel{background:linear-gradient(180deg,#0f172a,#0b1224);border:1px solid var(--stroke);border-radius:14px;padding:16px}
+    .panel h3{margin:0 0 8px}
+    .row{display:flex;gap:10px;align-items:center}
+    .row input,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:10px;padding:10px;color:var(--text)}
 
-  /* Cards grid */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px}
-  .card{
-    background:linear-gradient(180deg,#0c1428dd,#0a1324dd);border:1px solid var(--stroke);border-radius:18px;padding:16px;
-    display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
-    transform:perspective(800px) translateZ(0); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    will-change:transform
-  }
-  .card:hover{ transform:perspective(800px) translateY(-6px) rotateX(2deg); border-color:#274163; box-shadow:0 16px 36px rgba(0,0,0,.45)}
-  .icon{width:56px;height:56px;border-radius:14px;overflow:hidden;border:1px solid #1f2937;background:#0a1324}
-  .icon img{width:100%;height:100%;object-fit:cover}
-  .title{font-weight:900;margin:0}
-  .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
-  .tags{display:flex;gap:6px;flex-wrap:wrap}
-  .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe}
-  .actions{margin-top:auto;display:flex;gap:8px}
+    /* Admin dashboard */
+    .dash{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:900px){.dash{grid-template-columns:repeat(2,1fr)}}
+    .kpi{background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
+    .kpi h4{margin:0 0 6px}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{text-align:left;font-size:14px}
+    tbody tr{background:#0b1426}
+    tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
+    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
+    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px}
 
-  /* Panels */
-  .panel{background:linear-gradient(180deg,#0f172add,#0b1224dd);border:1px solid var(--stroke);border-radius:16px;padding:16px}
-  .panel h3{margin:0 0 8px}
-  .row{display:flex;gap:10px;align-items:center}
-  .row input,.row select{flex:1;border:1px solid var(--stroke);background:#0a1222;border-radius:12px;padding:10px;color:var(--text)}
-
-  /* Admin dashboard */
-  .dash{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  @media (max-width:900px){.dash{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:linear-gradient(180deg,#0f1a34,#0a1222);border:1px solid var(--stroke);border-radius:14px;padding:14px}
-  .kpi h4{margin:0 0 6px}
-  table{width:100%;border-collapse:separate;border-spacing:0 8px}
-  th,td{text-align:left;font-size:14px}
-  tbody tr{background:#0b1426}
-  tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
-  tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
-  tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px}
-
-  footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
-  .hide{display:none!important}
-</style>
+    footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
+    .hide{display:none!important}
+  </style>
 </head>
-
 <body>
   <div class="topbar">
     <div class="container row">
       <div class="logo">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#60a5fa"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="#3b82f6"/></svg>
         <span id="siteLogo">GPTMart Pro</span>
       </div>
       <div class="tabs">
@@ -152,16 +102,17 @@
     </div>
   </div>
 
-  <!-- PUBLIC -->
   <section id="public" class="section container">
-    <div class="two hero">
+    <div class="hero">
       <div>
         <h1>Explore my curated <span style="color:var(--brand)">Custom GPTs</span></h1>
-        <p>Premium app-store feel. Fast search, filters, and hand-picked highlights. No submissions — just the good stuff.</p>
+        <p>Fast search, neat filters, and hand-picked highlights. No submissions — just the good stuff.</p>
 
         <div class="searchbar">
           <input id="q" class="input" type="search" placeholder="Search by title, tag, or category… (⌘/Ctrl + K)"/>
-          <select id="cat" class="input" style="max-width:220px"><option value="All">All categories</option></select>
+          <select id="cat" class="input" style="max-width:220px">
+            <option value="All">All categories</option>
+          </select>
           <select id="sort" class="input" style="max-width:220px">
             <option value="featured">Featured first</option>
             <option value="title">Title A→Z</option>
@@ -171,24 +122,12 @@
         </div>
 
         <div class="langs" id="langs"></div>
-        <div class="feature" id="featured"></div>
-      </div>
-
-      <div class="panel">
-        <h3>How to use</h3>
-        <p class="desc">Click any card to open the GPT in ChatGPT. Use search, category, and sort to quickly find what you need.</p>
-        <ul style="margin:10px 0 0; padding-left:18px; color:#a7b0c0; line-height:1.55">
-          <li>⌘/Ctrl + K focuses search</li>
-          <li>“Featured first” shows top picks</li>
-          <li>Use the language icons for quick access</li>
-        </ul>
       </div>
     </div>
 
     <div class="grid" id="grid" role="list" aria-label="Results"></div>
   </section>
 
-  <!-- ADMIN (owner-only) -->
   <section id="admin" class="section container hide">
     <div id="adminGate" class="panel">
       <h3>Owner sign-in</h3>
@@ -242,7 +181,6 @@
 
   <footer>© <span id="ftTitle">GPTMart Pro</span> — curated Custom GPTs. No submissions.</footer>
 
-  <!-- Modal (Add/Edit) -->
   <dialog id="modal">
     <form method="dialog">
       <div class="panel" style="margin:0">
@@ -266,11 +204,11 @@
   </dialog>
 
   <script>
-  /*************** STORAGE KEYS & STATE ***************/
-  const LS_ITEMS    = 'gptmart.v6.items';
-  const LS_SETTINGS = 'gptmart.v6.settings';
-  const SESSION_ADMIN = 'gptmart.v6.isAdmin';
-  const ADMIN_PIN = '4545'; // owner-only
+  /*************** KEYS & STATE ***************/
+  const LS_ITEMS    = 'gptmart.v5.items';
+  const LS_SETTINGS = 'gptmart.v5.settings';
+  const SESSION_ADMIN = 'gptmart.v5.isAdmin';
+  const ADMIN_PIN = '4545'; // owner-only access
 
   const state = { q:'', cat:'All', sort:'featured' };
 
@@ -281,23 +219,26 @@
   const uniq = arr => Array.from(new Set(arr));
   const toCSV = a => (a||[]).join(', ');
   const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
+
   function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
   function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-  /*************** DATA: LANGUAGES + ALL YOUR GPTs ***************/
+  /*************** DATA (your full lists) ***************/
+  // Language shortcuts
   const LANGUAGES = [
-    { name:"Python",      icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
-    { name:"PHP",         icon:"https://www.php.net/images/logos/new-php-logo.svg",                               url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
-    { name:"Java",        icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg",                    url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
-    { name:"Swift",       icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg",                              url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
-    { name:"JavaScript",  icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
-    { name:"TypeScript",  icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg",    url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
-    { name:"C++",         icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg",        url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
-    { name:"C#",          icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg",            url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
-    { name:"Go",          icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg",            url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
-    { name:"R",           icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg",                  url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"}
+    { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
+    { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
+    { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
+    { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
+    { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
+    { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
+    { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
+    { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
+    { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
+    { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
   ];
 
+  // Built-in GPTs (ALL you provided)
   const STARTER_GPTS = [
     { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
     { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
@@ -342,7 +283,7 @@
     { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
     { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
     { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
-    { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
+    { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
     { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
     { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
     { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
@@ -355,21 +296,27 @@
     { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
   ];
 
-  /*************** INIT + SETTINGS ***************/
+  /*************** INIT + STORAGE ***************/
   function initData(){
     let have = read(LS_ITEMS, []);
     if(!have || !have.length){
+      // seed from the provided list
       have = STARTER_GPTS.map((x,idx)=>({
-        ...x, status:'live', createdAt: Date.now() - (STARTER_GPTS.length-idx)*3600_000
+        ...x,
+        status: 'live',
+        createdAt: Date.now() - (STARTER_GPTS.length-idx)*3600_000 // stagger by hours
       }));
-      if(!have.some(x=>x.featured)) have.slice(0,10).forEach(x=> x.featured = true);
+      // if none are marked featured, auto-feature first 8 for a nice homepage
+      if(!have.some(x=>x.featured)) have.slice(0,8).forEach(x=> x.featured = true);
       write(LS_ITEMS, have);
-    }else{
+    } else {
+      // backfill createdAt
       have = have.map((x,i)=> x.createdAt ? x : ({...x, createdAt: Date.now()-i*3600_000}));
       write(LS_ITEMS, have);
     }
     if(!read(LS_SETTINGS, null)) write(LS_SETTINGS, { title:'GPTMart Pro', ga: window.GA_MEASUREMENT_ID });
   }
+
   function items(){ return read(LS_ITEMS, []); }
   function setItems(v){ write(LS_ITEMS, v); renderAll(); }
   function settings(){ return read(LS_SETTINGS, {title:'GPTMart Pro', ga:window.GA_MEASUREMENT_ID}); }
@@ -377,30 +324,25 @@
     write(LS_SETTINGS, v);
     $('#ftTitle').textContent = v.title || 'GPTMart Pro';
     $('#siteLogo').textContent = v.title || 'GPTMart Pro';
-    document.title = (v.title||'GPTMart Pro') + ' — Explore My Custom GPTs';
+    document.title = (v.title||'GPTMart Pro') + ' — Your Custom GPTs';
     window.GA_MEASUREMENT_ID = v.ga || window.GA_MEASUREMENT_ID;
   }
 
   /*************** PUBLIC UI ***************/
-  const grid = $('#grid'), qInput = $('#q'), catSelect = $('#cat'), sortSelect = $('#sort');
+  const grid = $('#grid');
+  const qInput = $('#q');
+  const catSelect = $('#cat');
+  const sortSelect = $('#sort');
 
   function renderLanguages(){
-    $('#langs').innerHTML = LANGUAGES
-      .map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener">
-        <img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join('');
+    $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join('');
   }
-  function renderFeatured(){
-    const f = items().filter(x=>x.featured && x.status==='live').slice(0,12);
-    $('#featured').innerHTML = f.map(x=>`<div class="chip">
-      <div style="display:flex;gap:10px;align-items:center">
-        <div class="icon"><img src="${x.icon||''}" alt="${x.title}"></div>
-        <div><strong>${x.title}</strong><div style="color:#a7b0c0;font-size:12px">${x.desc||''}</div></div>
-      </div></div>`).join('');
-  }
+
   function renderCategories(){
     const cats = uniq(items().flatMap(x=>x.categories||[])).sort();
     catSelect.innerHTML = '<option value="All">All categories</option>' + cats.map(c=>`<option ${state.cat===c?'selected':''}>${c}</option>`).join('');
   }
+
   function cardTemplate(x){
     const tags = (x.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
     return `<article class="card" role="listitem">
@@ -411,15 +353,18 @@
       <div class="actions"><a class="btn brand" href="${x.url}" target="_blank" rel="noopener">Open</a></div>
     </article>`;
   }
+
   function sortList(list){
     if(state.sort==='title') return list.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||''));
     if(state.sort==='recent') return list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+    // featured first (default)
     return list.slice().sort((a,b)=>{
       const af = a.featured?1:0, bf = b.featured?1:0;
       if(bf!==af) return bf-af;
       return (a.title||'').localeCompare(b.title||'');
     });
   }
+
   function renderGrid(){
     const list = items().filter(x=> x.status==='live');
     const q = (state.q||'').trim();
@@ -433,16 +378,25 @@
   }
 
   /*************** ADMIN (owner) ***************/
-  const adminGate = $('#adminGate'), adminDesk = $('#adminDesk');
+  const adminGate = $('#adminGate');
+  const adminDesk = $('#adminDesk');
 
   function isAdmin(){ return sessionStorage.getItem(SESSION_ADMIN)==='1'; }
   function requireAdmin(){
-    if(isAdmin()){ adminGate.classList.add('hide'); adminDesk.classList.remove('hide'); renderAdmin(); }
-    else{ adminGate.classList.remove('hide'); adminDesk.classList.add('hide'); }
+    if(isAdmin()){
+      adminGate.classList.add('hide');
+      adminDesk.classList.remove('hide');
+      renderAdmin();
+    } else {
+      adminGate.classList.remove('hide');
+      adminDesk.classList.add('hide');
+    }
   }
+
   $('#pinGo').addEventListener('click', ()=>{
     const entered = ($('#pin').value||'').trim();
-    if(entered === ADMIN_PIN){ sessionStorage.setItem(SESSION_ADMIN,'1'); requireAdmin(); }
+    const ok = entered === ADMIN_PIN;
+    if(ok){ sessionStorage.setItem(SESSION_ADMIN,'1'); requireAdmin(); }
     else alert('Access denied');
   });
 
@@ -476,6 +430,7 @@
       </tr>`;
     }).join('');
 
+    // actions
     $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
     $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
     $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
@@ -508,7 +463,7 @@
     }; reader.readAsText(file);
   });
 
-  // Settings
+  // Settings (no PIN exposed)
   $('#saveSettings').addEventListener('click', ()=>{
     const s = settings();
     s.title = $('#siteTitle').value.trim() || s.title;
@@ -524,11 +479,11 @@
     const editing = typeof editIndex==='number'? itms[editIndex] : null;
     $('#mTitle').textContent = editing? 'Edit GPT' : 'Add GPT';
     $('#mTitleIn').value = editing?.title || '';
-    $('#mUrlIn').value   = editing?.url   || '';
-    $('#mIconIn').value  = editing?.icon  || '';
-    $('#mDescIn').value  = editing?.desc  || '';
-    $('#mCatsIn').value  = toCSV(editing?.categories);
-    $('#mTagsIn').value  = toCSV(editing?.tags);
+    $('#mUrlIn').value = editing?.url || '';
+    $('#mIconIn').value = editing?.icon || '';
+    $('#mDescIn').value = editing?.desc || '';
+    $('#mCatsIn').value = toCSV(editing?.categories);
+    $('#mTagsIn').value = toCSV(editing?.tags);
     $('#mFeatIn').checked = !!editing?.featured;
     $('#mStatusIn').value = editing?.status || 'live';
     $('#modal').showModal();
@@ -552,13 +507,15 @@
   }
 
   /*************** ROUTING + RENDER ***************/
-  function syncPublic(){ renderCategories(); renderFeatured(); renderGrid(); }
+  function syncPublic(){ renderCategories(); renderGrid(); }
   function renderAll(){ syncPublic(); if(isAdmin()) renderAdmin(); }
+
+  // search wiring
   qInput.addEventListener('input', e=>{ state.q = e.target.value; renderGrid(); });
   qInput.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); qInput.focus(); }});
   $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; sortSelect.value='featured'; state.sort='featured'; renderGrid();});
-  $('#cat').addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
-  $('#sort').addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
+  catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
+  sortSelect.addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
 
   function showTab(which){
     document.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
@@ -575,7 +532,6 @@
   showTab((location.hash||'#public').replace('#',''));
   </script>
 
-  <!-- Gentle deterrents (not security) -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
@@ -584,7 +540,7 @@
       if (
         (ctrl && k === 'u') || // view source
         (ctrl && k === 's') || // save
-        (k === 'f12')      ||  // devtools
+        (k === 'f12')     ||  // devtools
         (ctrl && e.shiftKey && (k === 'i' || k === 'c' || k === 'j')) ||
         (ctrl && k === 'p')    // print
       ) { e.preventDefault(); e.stopPropagation(); }
