@@ -84,7 +84,7 @@
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .tags{display:flex;gap:6px;flex-wrap:wrap}
     .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe; cursor: pointer; background: transparent;}
-    .tag.active{background:#1b2a55; border-color:#21408b; border-style:solid; color:#e7efff;} /* ADDED */
+    .tag.active{background:#1b2a55; border-color:#21408b; border-style:solid; color:#e7efff;}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     .actions{margin-top:auto;display:flex;gap:8px}
 
@@ -267,7 +267,7 @@
           <label for="mIconFile" class="btn" style="flex-shrink:0; cursor: pointer;">Upload</label>
           <input id="mIconFile" type="file" accept="image/*" style="display:none;">
         </div>
-        <div class="row"><input id="mCatsIn" class="input" placeholder="Categories (comma-separated)"></div>
+        <div class="row"><input id="mCatsIn" class="input" placeholder="Select one or more categories below"></div>
         <div id="mCatsSuggestions" class="tags" style="margin-bottom: 8px;"></div>
         <div class="row"><input id="mTagsIn" class="input" placeholder="Tags (comma-separated)"></div>
         <div class="row"><input id="mDescIn" class="input" placeholder="Short description"></div>
@@ -543,7 +543,7 @@
     $('#mFeatIn').checked = !!editing?.featured;
     $('#mStatusIn').value = editing?.status || 'live';
     
-    // --- NEW: Interactive Category Selection ---
+    // --- Interactive Category Selection ---
     const suggestionsContainer = $('#mCatsSuggestions');
     const allCats = uniq(items().flatMap(x => x.categories || [])).sort();
     suggestionsContainer.innerHTML = allCats.map(cat => `<button type="button" class="tag" data-cat="${cat}">${cat}</button>`).join('');
@@ -572,7 +572,7 @@
     
     $('#mCatsIn').addEventListener('input', syncCatButtons);
     syncCatButtons();
-    // --- END NEW ---
+    // --- END ---
 
     $('#modal').showModal();
     $('#mSave').onclick = ()=>{
