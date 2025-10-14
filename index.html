@@ -55,7 +55,6 @@
 
     /* Hero */
     .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end}
-    @media (max-width:900px){.hero{grid-template-columns:1fr}}
     .hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.05}
     .hero p{color:var(--muted);margin:.4rem 0 0}
     .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
@@ -64,7 +63,7 @@
 
     /* Search ribbon */
     .ribbon{margin-top:10px;display:grid;grid-template-columns:1fr 200px 200px auto;gap:8px}
-    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text)}
+    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
     .input::placeholder{color:#8aa0c2}
 
     /* Languages strip */
@@ -90,7 +89,7 @@
 
     /* Panels & table */
     .panel{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:14px;padding:16px}
-    .row{display:flex;gap:10px;align-items:center}
+    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px;}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{text-align:left;font-size:14px}
     tbody tr{background:#0b1426}
@@ -100,7 +99,6 @@
         border-right:1px solid var(--stroke);
         border-top-right-radius:10px;
         border-bottom-right-radius:10px;
-        /* ADDED: Allow action buttons to wrap on mobile */
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
@@ -124,14 +122,15 @@
     /***** RESPONSIVE STYLES *****/
     @media (max-width:1100px){.col{grid-column:span 4}}
     @media (max-width:900px){
+        .hero{grid-template-columns:1fr}
         .ribbon{grid-template-columns:1fr 1fr}
-        .top-row { /* ADDED: Allow top nav to wrap */
+        .top-row {
             flex-wrap: wrap;
             justify-content: center;
         }
     }
     @media (max-width:800px){.col{grid-column:span 6}}
-    @media (max-width: 600px) { /* ADDED: Stack ribbon items on small screens */
+    @media (max-width: 600px) {
         .ribbon {
             grid-template-columns: 1fr;
         }
@@ -262,7 +261,11 @@
         <h3 id="mTitle">Add / Edit GPT</h3>
         <div class="row"><input id="mTitleIn" class="input" placeholder="Title" required></div>
         <div class="row"><input id="mUrlIn" class="input" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
-        <div class="row"><input id="mIconIn" class="input" placeholder="Icon URL"></div>
+        <div class="row">
+          <input id="mIconIn" class="input" placeholder="Paste Icon URL or Upload" style="flex-grow:1;">
+          <label for="mIconFile" class="btn" style="flex-shrink:0; cursor: pointer;">Upload</label>
+          <input id="mIconFile" type="file" accept="image/*" style="display:none;">
+        </div>
         <div class="row"><input id="mCatsIn" class="input" placeholder="Categories (comma-separated)"></div>
         <div class="row"><input id="mTagsIn" class="input" placeholder="Tags (comma-separated)"></div>
         <div class="row"><input id="mDescIn" class="input" placeholder="Short description"></div>
@@ -270,7 +273,7 @@
           <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
           <select id="mStatusIn" class="input" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
         </div>
-        <div class="row" style="justify-content:flex-end;gap:8px">
+        <div class="row" style="justify-content:flex-end;gap:8px; margin-top: 16px;">
           <button class="btn" value="cancel">Cancel</button>
           <button class="btn accent" id="mSave" value="default">Save</button>
         </div>
@@ -623,6 +626,17 @@
   $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; sortSelect.value='featured'; state.sort='featured'; renderGrid();});
   catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
   sortSelect.addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
+
+  // ADDED: Event listener for the icon file upload
+  $('#mIconFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      $('#mIconIn').value = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 
   function syncPublic(){ renderCategories(); renderGrid(); renderHighlights(); $('#kpiCounts').textContent = `${items().filter(x=>x.status==='live').length} live • ${items().filter(x=>x.featured).length} featured`; }
   function renderAll(){ syncPublic(); if(isAdmin()) renderAdmin(); }
