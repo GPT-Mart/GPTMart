@@ -276,7 +276,7 @@
           <select id="mStatusIn" class="input" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
         </div>
         <div class="row" style="justify-content:flex-end;gap:8px; margin-top: 16px;">
-          <button class="btn" value="cancel">Cancel</button>
+          <button id="mCancel" class="btn" value="cancel">Cancel</button>
           <button class="btn accent" id="mSave" value="default">Save</button>
         </div>
       </div>
@@ -287,6 +287,7 @@
   /*************** CONSTANTS & STATE ***************/
   const LS_ITEMS    = 'gptmart.v7.items';
   const LS_SETTINGS = 'gptmart.v7.settings';
+  const LS_DRAFT    = 'gptmart.v7.draft'; // ADDED
   const SESSION_ADMIN = 'gptmart.v7.isAdmin';
   const ADMIN_PIN = '4545'; // change this
 
@@ -532,18 +533,28 @@
   $('#addManual').addEventListener('click', ()=> openModal());
   function openModal(editIndex){
     const itms = items();
-    const editing = typeof editIndex==='number'? itms[editIndex] : null;
-    $('#mTitle').textContent = editing? 'Edit GPT' : 'Add GPT';
-    $('#mTitleIn').value = editing?.title || '';
-    $('#mUrlIn').value = editing?.url || '';
-    $('#mIconIn').value = editing?.icon || '';
-    $('#mDescIn').value = editing?.desc || '';
-    $('#mCatsIn').value = toCSV(editing?.categories);
-    $('#mTagsIn').value = toCSV(editing?.tags);
-    $('#mFeatIn').checked = !!editing?.featured;
-    $('#mStatusIn').value = editing?.status || 'live';
+    const editing = typeof editIndex === 'number' ? itms[editIndex] : null;
+    const draft = read(LS_DRAFT, null);
     
-    // --- Interactive Category Selection ---
+    let dataToLoad = editing;
+    if (!editing && draft) {
+      if (confirm("You have a saved draft. Would you like to restore it?")) {
+        dataToLoad = draft;
+      }
+      write(LS_DRAFT, null); // Clear draft after asking
+    }
+    
+    $('#mTitle').textContent = editing ? 'Edit GPT' : 'Add GPT';
+    $('#mTitleIn').value = dataToLoad?.title || '';
+    $('#mUrlIn').value = dataToLoad?.url || '';
+    $('#mIconIn').value = dataToLoad?.icon || '';
+    $('#mDescIn').value = dataToLoad?.desc || '';
+    $('#mCatsIn').value = toCSV(dataToLoad?.categories);
+    $('#mTagsIn').value = toCSV(dataToLoad?.tags);
+    $('#mFeatIn').checked = !!dataToLoad?.featured;
+    $('#mStatusIn').value = dataToLoad?.status || 'live';
+    
+    // Interactive Category Selection
     const suggestionsContainer = $('#mCatsSuggestions');
     const allCats = uniq(items().flatMap(x => x.categories || [])).sort();
     suggestionsContainer.innerHTML = allCats.map(cat => `<button type="button" class="tag" data-cat="${cat}">${cat}</button>`).join('');
@@ -572,7 +583,6 @@
     
     $('#mCatsIn').addEventListener('input', syncCatButtons);
     syncCatButtons();
-    // --- END ---
 
     $('#modal').showModal();
     $('#mSave').onclick = ()=>{
@@ -590,6 +600,8 @@
       if(!item.title || !item.url){ alert('Title and URL required.'); return; }
       if(editing){ itms[editIndex] = item; setItems(itms); }
       else { itms.push(item); setItems(itms); }
+      
+      write(LS_DRAFT, null); // Clear draft on successful save
       $('#modal').close();
     };
   }
@@ -669,6 +681,26 @@
       $('#mIconIn').value = reader.result;
     };
     reader.readAsDataURL(file);
+  });
+
+  // ADDED: Save draft on cancel
+  $('#mCancel').addEventListener('click', () => {
+    const draft = {
+      title: $('#mTitleIn').value.trim(),
+      url: $('#mUrlIn').value.trim(),
+      icon: $('#mIconIn').value.trim(),
+      desc: $('#mDescIn').value.trim(),
+      categories: fromCSV($('#mCatsIn').value),
+      tags: fromCSV($('#mTagsIn').value),
+      featured: $('#mFeatIn').checked,
+      status: $('#mStatusIn').value
+    };
+    // Only save if there's meaningful content
+    if (draft.title || draft.url || draft.desc) {
+      write(LS_DRAFT, draft);
+    } else {
+      write(LS_DRAFT, null); // Clear old drafts if form is empty
+    }
   });
 
   function syncPublic(){ renderCategories(); renderGrid(); renderHighlights(); $('#kpiCounts').textContent = `${items().filter(x=>x.status==='live').length} live • ${items().filter(x=>x.featured).length} featured`; }
