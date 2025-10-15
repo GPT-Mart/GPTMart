@@ -3,49 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GPTMart — Curated Custom GPTs</title>
-  <meta name="description" content="A lightning‑fast, keyboard‑driven directory of my best Custom GPTs. Search, filter, feature, and manage — all in one file." />
+  <title id="pageTitle">GPTMart — Curated Custom GPTs</title>
+  <meta name="description" content="A lightning‑fast, keyboard‑driven directory of my best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta property="og:title" content="GPTMart — Curated Custom GPTs" />
-  <meta property="og:description" content="A lightning‑fast, keyboard‑driven directory of my best Custom GPTs." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/9919?s=200&v=4" />
-
   <style>
     :root{
       --bg:#050815; --bg-2:#080e1f; --bg-3:#0b142a;
       --card:#0c1327; --card-2:#0e162f; --panel:#0b1a36;
       --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --accent-2:#3b82f6;
-      --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
       --stroke:#16213a; --glow:0 0 0 2px rgba(110,168,255,.15), 0 30px 120px -40px rgba(60,120,255,.35);
       --radius:14px; --radius-lg:18px; --shadow:0 10px 40px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0; overflow-x:hidden;}
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:radial-gradient(1200px 600px at 80% -10%,#12244c22 0,#0000 70%), linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%); color:var(--text);}
-    a{color:inherit}
+    body{font-family:Inter,ui-sans-serif,system-ui; background:radial-gradient(1200px 600px at 80% -10%,#12244c22 0,#0000 70%), linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%); color:var(--text);}
     .container{width:94%;max-width:1200px;margin:0 auto}
-    .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden;}
-
-    /* Topbar */
     .topbar{position:sticky;top:0;z-index:50;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
     .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .brand svg{filter:drop-shadow(0 4px 18px rgba(110,168,255,.45))}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px; text-decoration: none; color: inherit;}
     .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
     .chip{border:1px solid var(--stroke);background:linear-gradient(180deg,#0b1327,#091226);padding:8px 12px;border-radius:999px;color:#cbd5e1;text-decoration:none}
-    .chip.active{background:linear-gradient(180deg,#1b2a55,#13224b);border-color:#21408b;box-shadow:var(--glow)}
     .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-    .btn:hover{border-color:#264890}
     .btn.accent{background:linear-gradient(180deg,#2c57c7,#2549a8);border-color:#2e53b7;box-shadow:0 6px 28px rgba(59,130,246,.35)}
-
-    /* Sections */
     .section{padding:30px 0}
-
-    /* Hero */
     .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:end}
     @media (min-width: 900px) { .hero{grid-template-columns:1.2fr .8fr;} }
     .hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.05}
@@ -53,269 +34,176 @@
     .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
     .quick{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
     .quick .k{border:1px dashed #27407a;color:#bcd2ff;padding:6px 10px;border-radius:999px;font-size:12px}
-
-    /* Search ribbon */
     .ribbon{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
     .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
     .ribbon > * { flex: 1 1 180px; }
     .ribbon > #q { flex: 2 1 250px; }
     .ribbon > .btn { flex-grow: 0; }
-    .input::placeholder{color:#8aa0c2}
-
-    /* Languages strip */
     .langs{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0}
     .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
-    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;transition:transform .15s}
-    .lang:hover img{transform:translateY(-2px) scale(1.05)}
+    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;}
     .lang span{font-size:12px;color:#cbd5e1}
-
-    /* Grid */
     .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
-    .card{background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
-    .card:hover{box-shadow:0 20px 80px rgba(60,120,255,.15)}
+    .card{background:linear-gradient(180deg,#0c1327,#0e162f);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
     .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink: 0;}
     .icon img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:800;margin:0}
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
-    .tags{display:flex;gap:6px;flex-wrap:wrap}
-    .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe; cursor: pointer; background: transparent;}
-    .tag.active{background:#1b2a55; border-color:#21408b; border-style:solid; color:#e7efff;}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     .actions{margin-top:auto;display:flex;gap:8px}
-
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
-
-    .hide{display:none!important}
-
-    /* MOBILE RESPONSIVENESS */
-    @media (max-width: 768px) {
-      .top-row {
-        justify-content: center;
-        gap: 12px;
-      }
-      .top-row > .brand {
-        flex-basis: 100%;
-        justify-content: center;
-      }
-      .nav {
-        justify-content: center;
-      }
-      .quick { display: none; }
-    }
   </style>
 </head>
 <body>
-  <a class="visually-hidden" href="#content">Skip to content</a>
-
-  <header class="topbar" role="navigation" aria-label="Top">
+  <header class="topbar">
     <div class="container top-row">
-      <div class="brand">
+      <a class="brand" href="/">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6ea8ff"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs></svg>
         <span id="siteLogo">GPTMart</span>
-      </div>
-      <nav class="nav" aria-label="Views">
-        <a class="chip active" href="/">Explore</a>
-      </nav>
-      <div class="nav">
-        <a class="btn accent" href="#content">Browse</a>
-      </div>
+      </a>
+      <div class="nav"><a class="btn accent" href="#content">Browse</a></div>
     </div>
   </header>
 
   <main id="content" class="container section">
-    <section id="viewExplore" class="section">
-      <div class="hero">
-        <div>
-          <h1>Discover my <span style="color:var(--accent)">best Custom GPTs</span></h1>
-          <p>Keyboard‑driven. Beautifully organized. Only the good stuff — no random submissions.</p>
-
-          <div class="quick" aria-hidden="true">
-            <span class="k">/ : Focus search</span>
-            <span class="k">Esc : Clear</span>
-          </div>
-
-          <div class="ribbon">
-            <input id="q" class="input" type="search" placeholder="Search title, tags, categories…" aria-label="Search" />
-            <select id="cat" class="input" aria-label="Category"></select>
-            <select id="sort" class="input" aria-label="Sort">
-              <option value="featured">Featured first</option>
-              <option value="title">Title A→Z</option>
-              <option value="recent">Recently added</option>
-            </select>
-            <button class="btn" id="reset">Reset</button>
-          </div>
-
-          <div class="langs" id="langs" aria-label="Language quick links"></div>
+    <div class="hero">
+      <div>
+        <h1>Discover my <span style="color:var(--accent)">best Custom GPTs</span></h1>
+        <p>Keyboard‑driven. Beautifully organized. Only the good stuff.</p>
+        <div class="ribbon">
+          <input id="q" class="input" type="search" placeholder="Search title, tags, categories…"/>
+          <select id="cat" class="input"></select>
+          <select id="sort" class="input">
+            <option value="featured">Featured first</option>
+            <option value="title">Title A→Z</option>
+            <option value="recent">Recently added</option>
+          </select>
+          <button class="btn" id="reset">Reset</button>
         </div>
-        <div class="hero-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-            <strong>Highlights</strong>
-            <span id="kpiCounts" style="color:var(--muted);font-size:12px"></span>
-          </div>
-          <div id="highlights" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px"></div>
-        </div>
+        <div class="langs" id="langs"></div>
       </div>
-
-      <div id="grid" class="grid" role="list" aria-label="Results"></div>
-    </section>
+      <div class="hero-card">
+        <strong>Highlights</strong>
+        <span id="kpiCounts" style="color:var(--muted);font-size:12px"></span>
+        <div id="highlights" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px"></div>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
   </main>
 
-  <footer>© <span id="ftTitle">GPTMart</span> — curated Custom GPTs. No submissions.</footer>
+  <footer id="footer">© <span id="ftTitle">GPTMart</span> — curated Custom GPTs.</footer>
 
   <script>
-  /*************** STATE & UTILS ***************/
-  let ALL_ITEMS = [];
-  const state = { q:'', cat:'All', sort:'featured' };
+    const $ = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+    let ALL_ITEMS = [];
+    const state = { q: '', cat: 'All', sort: 'featured' };
 
-  const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
-  const $  = (s,el=document)=> el.querySelector(s);
-  const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
-  const uniq = arr => Array.from(new Set(arr));
-  const toCSV = a => (a||[]).join(', ');
+    const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
+    const toCSV = a => (a || []).join(', ');
 
-  /*************** DATA ***************/
-  const STARTER_GPTS = [
-    { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", status: 'live', featured: true, createdAt: 1729000000000 },
-    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728900000000 },
-    { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor", status: 'live', featured: true, createdAt: 1728800000000 },
-    { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728700000000 },
-    { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor", status: 'live', featured: false, createdAt: 1728600000000 },
-  ];
-
-  const LANGUAGES = [
-    { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
-    { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
-    { name: "Java", icon: "https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", url: "https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o" },
-    { name: "Swift", icon: "https://cdn.worldvectorlogo.com/logos/swift-15.svg", url: "https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o" },
-    { name: "JavaScript", icon: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", url: "https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript" },
-    { name: "TypeScript", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", url: "https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript" },
-    { name: "C++", icon: "https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", url: "https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp" },
-    { name: "C#", icon: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", url: "https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c" },
-    { name: "Go", icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", url: "https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang" },
-    { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
-  ];
-
-  /*************** RENDER (EXPLORE) ***************/
-  const grid = $('#grid');
-  const qInput = $('#q');
-  const catSelect = $('#cat');
-  const sortSelect = $('#sort');
-
-  function renderLanguages(){ $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join(''); }
-
-  function renderCategories(){
-    const cats = uniq(ALL_ITEMS.flatMap(x=>x.categories||[])).sort();
-    catSelect.innerHTML = '<option value="All">All categories</option>' + cats.map(c=>`<option ${state.cat===c?'selected':''}>${c}</option>`).join('');
-  }
-
-  function cardTemplate(x){
-    const tags = (x.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
-    return `<article class="card" role="listitem" aria-label="${x.title}">
-      ${x.featured ? '<div class="badge">Featured</div>' : ''}
-      <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
-      <h3 class="title">${x.title||'Untitled GPT'}</h3>
-      <p class="desc">${x.desc||''}</p>
-      <div class="tags">${tags}</div>
-      <div class="actions">
-        <a class="btn accent" href="${x.url}" target="_blank" rel="noopener" aria-label="Open ${x.title}">Open</a>
-        <button class="btn" data-share='${encodeURIComponent(JSON.stringify({title:x.title,url:x.url}))}'>Share</button>
-      </div>
-    </article>`;
-  }
-
-  function sortList(list){
-    if(state.sort==='title') return list.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||''));
-    if(state.sort==='recent') return list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    // Default to 'featured'
-    return list.slice().sort((a,b)=>{
-      const af=a.featured?1:0, bf=b.featured?1:0;
-      if(bf!==af) return bf-af;
-      return (b.createdAt||0)-(a.createdAt||0);
-    });
-  }
-
-  function renderGrid(){
-    const list = ALL_ITEMS;
-    const q = (state.q||'').trim();
-    const filtered = list.filter(x=>{
-      const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
-      const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
-      return inQ && inCat;
-    });
-    const ordered = sortList(filtered);
-    grid.innerHTML = ordered.map(cardTemplate).join('');
-    wireShare();
-  }
-
-  function renderHighlights(){
-    const feats = ALL_ITEMS.filter(x=>x.featured).slice(0,8);
-    const wrap = $('#highlights');
-    wrap.innerHTML = feats.map(x=>`<a class="chip" href="${x.url}" target="_blank" rel="noopener" title="${x.title}">${x.title}</a>`).join('');
-  }
-
-  function wireShare(){
-    $$('#grid [data-share]').forEach(btn=> btn.onclick = async ()=>{
-      const payload = JSON.parse(decodeURIComponent(btn.dataset.share));
-      const text = `${payload.title} — ${payload.url}`;
-      if(navigator.share){ try{ await navigator.share({ title: payload.title, url: payload.url, text }); }catch(e){} }
-      else {
+    async function init() {
         try {
-          await navigator.clipboard.writeText(text);
-          alert('Link copied!');
-        } catch (err) {
-          console.error('Failed to copy: ', err);
-          // Fallback for older browsers
-          const textArea = document.createElement("textarea");
-          textArea.value = text;
-          document.body.appendChild(textArea);
-          textArea.focus();
-          textArea.select();
-          try {
-            document.execCommand('copy');
-            alert('Link copied!');
-          } catch (err) {
-            alert('Could not copy link.');
-          }
-          document.body.removeChild(textArea);
+            const response = await fetch('/api/gpts');
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            ALL_ITEMS = data.items;
+            applySettings(data.settings);
+            renderAll();
+        } catch (error) {
+            console.error('Failed to fetch initial data:', error);
+            $('#grid').innerHTML = '<p>Error loading content. Please try again later.</p>';
         }
-      }
-    });
-  }
 
-  function syncPublic(){
-    renderCategories();
-    renderGrid();
-    renderHighlights();
-    $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x=>x.featured).length} featured`;
-  }
+        $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); });
+        $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); });
+        $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
+        $('#reset').addEventListener('click', () => {
+            state.q = ''; $('#q').value = '';
+            state.cat = 'All'; $('#cat').value = 'All';
+            state.sort = 'featured'; $('#sort').value = 'featured';
+            renderGrid();
+        });
+    }
 
-  /*************** WIRING ***************/
-  qInput.addEventListener('input', e=>{ state.q = e.target.value; renderGrid(); });
-  $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; sortSelect.value='featured'; state.sort='featured'; renderGrid();});
-  catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
-  sortSelect.addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
-  document.addEventListener('keydown', (e)=>{
-    const k = e.key.toLowerCase();
-    if(k==='/' && !['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
-  }, true);
+    function applySettings(settings) {
+        const title = settings.title || 'GPTMart';
+        $('#pageTitle').textContent = `${title} — Curated Custom GPTs`;
+        $('#siteLogo').textContent = title;
+        $('#ftTitle').textContent = title;
+    }
 
-  /*************** INITIALIZATION ***************/
-  function init() {
-    // Data is now local for this static version, so no fetch is needed.
-    ALL_ITEMS = STARTER_GPTS.filter(item => item.status === 'live');
+    function renderAll() {
+        renderCategories();
+        renderHighlights();
+        renderGrid();
+        $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x => x.featured).length} featured`;
+    }
+
+    function renderGrid() {
+        const filtered = ALL_ITEMS.filter(x => {
+            const inQ = !state.q || [x.title, x.desc, toCSV(x.categories), toCSV(x.tags)].some(v => contains(v, state.q));
+            const inCat = state.cat === 'All' || (x.categories || []).includes(state.cat);
+            return inQ && inCat;
+        });
+
+        const sorted = sortList(filtered);
+        $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
+        wireShareButtons();
+    }
     
-    // Settings are also local for this static version.
-    const settings = { title: 'GPTMart' };
-    $('#ftTitle').textContent = settings.title;
-    $('#siteLogo').textContent = settings.title;
-    document.title = settings.title + ' — Curated Custom GPTs';
+    function sortList(list) {
+        return list.slice().sort((a, b) => {
+            if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
+            if (state.sort === 'recent') return (b.createdAt || 0) - (a.createdAt || 0);
+            // Default: featured
+            const featDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+            if (featDiff !== 0) return featDiff;
+            return (b.createdAt || 0) - (a.createdAt || 0);
+        });
+    }
 
-    renderLanguages();
-    syncPublic();
-  }
+    function renderCategories() {
+        const cats = [...new Set(ALL_ITEMS.flatMap(x => x.categories || []))].sort();
+        $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
 
-  // Run on page load
-  init();
+    function renderHighlights() {
+        const feats = ALL_ITEMS.filter(x => x.featured).slice(0, 8);
+        $('#highlights').innerHTML = feats.map(x => `<a class="chip" href="${x.url}" target="_blank" rel="noopener">${x.title}</a>`).join('');
+    }
+
+    function cardTemplate(x) {
+        return `
+            <article class="card">
+                ${x.featured ? '<div class="badge">Featured</div>' : ''}
+                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
+                    <div class="icon"><img loading="lazy" src="${x.icon || ''}" alt="${x.title} icon" onerror="this.src='https://placehold.co/48x48/0a1324/e6ecff?text=GPT'"/></div>
+                    <h3 class="title">${x.title}</h3>
+                </div>
+                <p class="desc">${x.desc}</p>
+                <div class="actions">
+                    <a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a>
+                    <button class="btn" data-share='${encodeURIComponent(JSON.stringify({ title: x.title, url: x.url }))}'>Share</button>
+                </div>
+            </article>`;
+    }
+
+    function wireShareButtons() {
+        $$('[data-share]').forEach(btn => {
+            btn.onclick = async () => {
+                const data = JSON.parse(decodeURIComponent(btn.dataset.share));
+                try {
+                    await navigator.share({ title: data.title, url: data.url });
+                } catch (err) {
+                    await navigator.clipboard.writeText(data.url);
+                    alert('Link copied to clipboard!');
+                }
+            };
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
