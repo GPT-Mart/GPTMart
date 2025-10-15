@@ -159,6 +159,108 @@
         justify-content: center;
       }
     }
+    /* =========================
+   Responsive upgrades (drop-in)
+   Paste below your existing CSS
+   ========================= */
+
+/* 1) Topbar: 3-column on wide, wraps to stacked on small */
+.top-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:12px;
+}
+.top-row .nav{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.top-row .brand{ min-width:0; }
+.top-row .brand span{ white-space:nowrap; }
+
+/* When space is tight, stack neatly */
+@media (max-width: 900px){
+  .top-row{
+    grid-template-columns:1fr;
+    justify-items:center;
+    gap:10px;
+  }
+  .top-row .nav{
+    justify-content:center;
+    width:100%;
+  }
+}
+
+/* Prevent button squish/overflow and allow wrapping */
+.nav .chip, .nav .btn{
+  flex:0 0 auto;
+  max-width:100%;
+}
+
+/* 2) Ribbon: fully fluid, wraps without horizontal scroll */
+.ribbon{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.ribbon > *{
+  min-width:0;    /* allow shrinking without overflow */
+}
+.ribbon > #q{        flex:2 1 320px; }
+.ribbon > #cat,
+.ribbon > #sort{     flex:1 1 180px; }
+.ribbon > .btn{      flex:0 0 auto; }
+
+/* Tight screens: controls stack to full width */
+@media (max-width: 700px){
+  .ribbon > #q,
+  .ribbon > #cat,
+  .ribbon > #sort,
+  .ribbon > .btn{
+    flex:1 1 100%;
+  }
+}
+
+/* 3) Languages strip: let items breathe on narrow screens */
+.langs{ gap:10px; }
+.lang img{ width:40px; height:40px; }
+
+/* 4) Card grid: auto-fit columns to avoid overflow on any width */
+.grid{
+  /* Replace fixed 12-col behavior with fluid cards. */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap:16px;
+}
+.col{ grid-column:auto; } /* ignore the old span rules for cards */
+
+/* Optionally tighten minimum on very small phones */
+@media (max-width: 380px){
+  .grid{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
+
+/* 5) Highlights grid: keep chips wrapping instead of overflowing */
+#highlights{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+/* 6) Admin filters: wrap nicely and avoid long-row overflow */
+#adminDesk .row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#adminDesk .row > .input{
+  flex:1 1 220px;
+  min-width:0;
+}
+#adminDesk .row .btn{
+  flex:0 0 auto;
+}
+#adminDesk .panel table{ width:100%; }
+
+/* 7) Misc: ensure no accidental horizontal scroll on body/container */
+html, body{ overflow-x:hidden; }
+.container{ max-width:1200px; width:92%; }
+
   </style>
 </head>
 <body>
