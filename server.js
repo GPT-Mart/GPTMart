@@ -62,28 +62,34 @@ async function startServer() {
         if (url.pathname.startsWith('/api/')) {
             res.setHeader('Content-Type', 'application/json');
             
+            // --- PUBLIC ROUTES ---
             if (url.pathname === '/api/login' && method === 'POST') {
                 let body = '';
                 req.on('data', chunk => { body += chunk.toString(); });
                 req.on('end', () => {
-                    const { pin } = JSON.parse(body);
-                    if (pin === ADMIN_PIN) {
-                        const token = createToken({ user: 'admin' });
-                        res.writeHead(200).end(JSON.stringify({ success: true, token }));
-                    } else {
-                        res.writeHead(401).end(JSON.stringify({ error: 'Invalid PIN' }));
+                    try {
+                        const { pin } = JSON.parse(body);
+                        if (pin === ADMIN_PIN) {
+                            const token = createToken({ user: 'admin' });
+                            res.writeHead(200).end(JSON.stringify({ success: true, token }));
+                        } else {
+                            res.writeHead(401).end(JSON.stringify({ error: 'Invalid PIN' }));
+                        }
+                    } catch (e) {
+                        res.writeHead(400).end(JSON.stringify({ error: 'Invalid request body' }));
                     }
                 });
                 return;
             }
             
-            if (url.pathname === '/api/gpts' && method === 'GET') {
+            if (url.pathname === '/api/gpts/public' && method === 'GET') {
                 const db = await readDB();
                 const publicItems = db.items.filter(item => item.status === 'live');
                 res.writeHead(200).end(JSON.stringify({ settings: db.settings, items: publicItems }));
                 return;
             }
 
+            // --- ADMIN-ONLY ROUTES (Authorization Required) ---
             const authHeader = req.headers['authorization'];
             const token = authHeader && authHeader.split(' ')[1];
             if (!verifyToken(token)) {
@@ -94,39 +100,44 @@ async function startServer() {
             const db = await readDB();
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
+
             req.on('end', async () => {
-                if (url.pathname === '/api/gpts/all' && method === 'GET') {
-                    res.writeHead(200).end(JSON.stringify(db));
-                } else if (url.pathname === '/api/gpts' && method === 'POST') {
-                    const newItem = JSON.parse(body);
-                    newItem.id = uuidv4();
-                    newItem.createdAt = Date.now();
-                    db.items.unshift(newItem);
-                    await writeDB(db);
-                    res.writeHead(201).end(JSON.stringify(newItem));
-                } else if (url.pathname.startsWith('/api/gpts/') && method === 'PUT') {
-                    const id = url.pathname.split('/')[3];
-                    const updatedItemData = JSON.parse(body);
-                    const itemIndex = db.items.findIndex(i => i.id === id);
-                    if (itemIndex > -1) {
-                        db.items[itemIndex] = { ...db.items[itemIndex], ...updatedItemData };
+                try {
+                    if (url.pathname === '/api/gpts/all' && method === 'GET') {
+                        res.writeHead(200).end(JSON.stringify(db));
+                    } else if (url.pathname === '/api/gpts/create' && method === 'POST') {
+                        const newItem = JSON.parse(body);
+                        newItem.id = uuidv4();
+                        newItem.createdAt = Date.now();
+                        db.items.unshift(newItem);
                         await writeDB(db);
-                        res.writeHead(200).end(JSON.stringify(db.items[itemIndex]));
+                        res.writeHead(201).end(JSON.stringify(newItem));
+                    } else if (url.pathname.startsWith('/api/gpts/update/') && method === 'PUT') {
+                        const id = path.basename(url.pathname);
+                        const updatedData = JSON.parse(body);
+                        const itemIndex = db.items.findIndex(i => i.id === id);
+                        if (itemIndex > -1) {
+                            db.items[itemIndex] = { ...db.items[itemIndex], ...updatedData };
+                            await writeDB(db);
+                            res.writeHead(200).end(JSON.stringify(db.items[itemIndex]));
+                        } else {
+                            res.writeHead(404).end(JSON.stringify({ error: 'Item not found' }));
+                        }
+                    } else if (url.pathname.startsWith('/api/gpts/delete/') && method === 'DELETE') {
+                        const id = path.basename(url.pathname);
+                        const initialLength = db.items.length;
+                        db.items = db.items.filter(i => i.id !== id);
+                        if (db.items.length < initialLength) {
+                            await writeDB(db);
+                            res.writeHead(204).end(); // Success with no content
+                        } else {
+                            res.writeHead(404).end(JSON.stringify({ error: 'Item not found' }));
+                        }
                     } else {
-                        res.writeHead(404).end(JSON.stringify({ error: 'Item not found' }));
+                        res.writeHead(404).end(JSON.stringify({ error: 'API route not found' }));
                     }
-                } else if (url.pathname.startsWith('/api/gpts/') && method === 'DELETE') {
-                    const id = url.pathname.split('/')[3];
-                    const itemIndex = db.items.findIndex(i => i.id === id);
-                    if (itemIndex > -1) {
-                        db.items.splice(itemIndex, 1);
-                        await writeDB(db);
-                        res.writeHead(204).end();
-                    } else {
-                        res.writeHead(404).end(JSON.stringify({ error: 'Item not found' }));
-                    }
-                } else {
-                    res.writeHead(404).end(JSON.stringify({ error: 'API route not found' }));
+                } catch (e) {
+                    res.writeHead(500).end(JSON.stringify({ error: 'Server error processing request' }));
                 }
             });
             return;
@@ -140,7 +151,12 @@ async function startServer() {
             if (filePath.endsWith('.js')) contentType = 'application/javascript';
             res.setHeader('Content-Type', contentType).writeHead(200).end(data);
         } catch (error) {
-            res.writeHead(404).end('<h1>404 Not Found</h1>');
+            if (error.code === 'ENOENT') {
+                console.error(`File not found: ${filePath}. Make sure index.html and admin.html are in the same directory as server.js.`);
+                res.writeHead(404).end('<h1>404 Not Found</h1>');
+            } else {
+                res.writeHead(500).end(`<h1>Server Error: ${error.code}</h1>`);
+            }
         }
     });
 
