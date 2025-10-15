@@ -14,14 +14,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://avatars.githubusercontent.com/u/9919?s=200&v=4" />
 
-  <script>
-    window.GA_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || 'G-ZNB7MWLE99';
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-  </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB7MWLE99"></script>
-  <script> gtag('js', new Date()); gtag('config', window.GA_MEASUREMENT_ID); </script>
-
   <style>
     :root{
       --bg:#050815; --bg-2:#080e1f; --bg-3:#0b142a;
@@ -91,28 +83,7 @@
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     .actions{margin-top:auto;display:flex;gap:8px}
 
-    /* Panels & table */
-    .panel{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:14px;padding:16px}
-    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px; flex-wrap:wrap;}
-    .row > .input {width: auto; flex-grow: 1;}
-    table{width:100%;border-collapse:separate;border-spacing:0 8px}
-    th,td{text-align:left;font-size:14px}
-    tbody tr{background:#0b1426}
-    tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
-    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
-    tbody tr td:last-child{ border-right:1px solid var(--stroke); border-top-right-radius:10px; border-bottom-right-radius:10px; display: flex; flex-wrap: wrap; gap: 6px; }
-
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
-
-    /* Command palette */
-    .palette{position:fixed;inset:0;display:none;place-items:center;background:rgba(5,8,21,.6);backdrop-filter:blur(6px);z-index:80}
-    .palette.open{display:grid}
-    .pal-card{width:min(840px,92vw);background:linear-gradient(180deg,#0d1634,#0b1228);border:1px solid #20305a;border-radius:16px;box-shadow:var(--shadow)}
-    .pal-head{padding:10px;border-bottom:1px solid #1b2a52}
-    .pal-head input{width:100%;background:#0b1228;border:1px solid #1a2b56;color:#e7efff;border-radius:10px;padding:12px}
-    .pal-list{max-height:60vh;overflow:auto}
-    .pal-item{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid #11204a;cursor:pointer}
-    .pal-item:hover{background:#0f1a3a}
 
     .hide{display:none!important}
 
@@ -143,12 +114,11 @@
         <span id="siteLogo">GPTMart</span>
       </div>
       <nav class="nav" aria-label="Views">
-        <a class="chip" id="navExplore" href="#/explore">Explore</a>
-        <a class="chip" id="navAdmin" href="#/admin">Admin</a>
+        <a class="chip active" href="/">Explore</a>
+        <a class="chip" href="/admin.html">Admin</a>
       </nav>
       <div class="nav">
-        <button class="chip" id="openPalette" title="Command palette (⌘/Ctrl K)">⌘K</button>
-        <a class="btn accent" href="#/explore">Browse</a>
+        <a class="btn accent" href="#content">Browse</a>
       </div>
     </div>
   </header>
@@ -161,7 +131,6 @@
           <p>Keyboard‑driven. Beautifully organized. Only the good stuff — no random submissions.</p>
 
           <div class="quick" aria-hidden="true">
-            <span class="k">⌘/Ctrl K: Command palette</span>
             <span class="k">/ : Focus search</span>
             <span class="k">Esc : Clear</span>
           </div>
@@ -190,101 +159,13 @@
 
       <div id="grid" class="grid" role="list" aria-label="Results"></div>
     </section>
-
-    <section id="viewAdmin" class="section hide">
-      <div id="adminGate" class="panel">
-        <h3 style="margin:0 0 8px">Owner sign‑in</h3>
-        <div class="row">
-          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" />
-          <button class="btn accent" id="pinGo">Enter</button>
-        </div>
-      </div>
-
-      <div id="adminDesk" class="hide">
-        <div class="grid">
-          <div class="panel"><h4 style="margin:.2rem 0">Live</h4><div id="kLive" style="font-weight:800;font-size:22px">0</div></div>
-          <div class="panel"><h4 style="margin:.2rem 0">Featured</h4><div id="kFeat" style="font-weight:800;font-size:22px">0</div></div>
-          <div class="panel"><h4 style="margin:.2rem 0">Hidden</h4><div id="kHidden" style="font-weight:800;font-size:22px">0</div></div>
-        </div>
-
-        <div class="section">
-          <h3 style="margin:0 0 10px">All Items</h3>
-          <div class="panel">
-            <div class="row" style="margin-bottom:10px;">
-              <input id="aQ" class="input" placeholder="Filter items…" />
-              <select id="aStatus" class="input" style="max-width:200px"><option value="all">All</option><option value="live">Live</option><option value="hidden">Hidden</option></select>
-              <button class="btn" id="aReset">Reset</button>
-              <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn" id="exportBtn">Export JSON</button>
-                <label class="btn" title="Import JSON"><input id="importFile" type="file" accept="application/json" style="display:none">Import</label>
-                <button class="btn accent" id="addManual">＋ New</button>
-              </div>
-            </div>
-            <div style="overflow-x:auto">
-              <table>
-                <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="tAll"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="section">
-          <h3 style="margin:0 0 10px">Settings</h3>
-          <div class="panel">
-            <div class="row"><input id="siteTitle" class="input" placeholder="Site Title (public)"/></div>
-            <div class="row"><input id="gaId" class="input" placeholder="Google Analytics ID (e.g., G-XXXX)"/></div>
-            <div class="row" style="justify-content:flex-end"><button class="btn accent" id="saveSettings">Save Settings</button></div>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer>© <span id="ftTitle">GPTMart</span> — curated Custom GPTs. No submissions.</footer>
 
-  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-labelledby="palLabel">
-    <div class="pal-card">
-      <div class="pal-head"><input id="palQ" placeholder="Type a command or search… (e.g., \"add\", \"export\", \"python\")" aria-label="Command"/></div>
-      <div class="pal-list" id="palList" role="listbox" aria-labelledby="palLabel"></div>
-    </div>
-  </div>
-
-  <dialog id="modal">
-    <form>
-      <div class="panel" style="margin:0">
-        <h3 id="mTitle">Add / Edit GPT</h3>
-        <div class="row"><input id="mTitleIn" class="input" placeholder="Title" required></div>
-        <div class="row"><input id="mUrlIn" class="input" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
-        <div class="row">
-          <input id="mIconIn" class="input" placeholder="Paste Icon URL or Upload" style="flex-grow:1;">
-          <label for="mIconFile" class="btn" style="flex-shrink:0; cursor: pointer;">Upload</label>
-          <input id="mIconFile" type="file" accept="image/*" style="display:none;">
-        </div>
-        <div class="row"><input id="mCatsIn" class="input" placeholder="Select one or more categories below"></div>
-        <div id="mCatsSuggestions" class="tags" style="margin-bottom: 8px;"></div>
-        <div class="row"><input id="mTagsIn" class="input" placeholder="Tags (e.g., api, web, data analysis)"></div>
-        <div class="row"><input id="mDescIn" class="input" placeholder="Short description"></div>
-        <div class="row">
-          <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
-          <select id="mStatusIn" class="input" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
-        </div>
-        <div class="row" style="justify-content:flex-end;gap:8px; margin-top: 16px;">
-          <button id="mCancel" class="btn" type="button">Cancel</button>
-          <button class="btn accent" id="mSave" type="button">Save</button>
-        </div>
-      </div>
-    </form>
-  </dialog>
-
   <script>
-  /*************** CONSTANTS & STATE ***************/
-  const LS_ITEMS    = 'gptmart.v7.items';
-  const LS_SETTINGS = 'gptmart.v7.settings';
-  const LS_DRAFT    = 'gptmart.v7.draft';
-  const SESSION_ADMIN = 'gptmart.v7.isAdmin';
-  const ADMIN_PIN = '4545'; // change this
-
+  /*************** STATE & UTILS ***************/
+  let ALL_ITEMS = [];
   const state = { q:'', cat:'All', sort:'featured' };
 
   const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
@@ -292,10 +173,6 @@
   const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
   const uniq = arr => Array.from(new Set(arr));
   const toCSV = a => (a||[]).join(', ');
-  const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
-
-  function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
-  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
   /*************** DATA ***************/
   const LANGUAGES = [
@@ -311,81 +188,6 @@
     { name: "R", icon: "https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", url: "https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r" }
   ];
 
-  const STARTER_GPTS = [
-    { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
-    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5"},
-    { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor"},
-    { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5"},
-    { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor"},
-    { title:"Gen AI Mentor", desc:"LLMs, diffusion/GANs, audio/video models. Code, projects, and ethics — beginner to advanced.", icon:"https://miro.medium.com/v2/resize:fit:720/format:webp/1*vYurT8Cw7upWSOLJvUo0Mg.png", categories:["AI & Automation"], url:"https://chatgpt.com/g/g-68b6e5d5c7e08191ab8f644e7c87501f-gen-ai-mentor?model=gpt-5"},
-    { title:"SciPy Tutor", desc:"Optimization, linear algebra, signal processing, integration, interpolation, statistics — with examples.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b2/SCIPY_2.svg", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6e4f4f8d081918945af5baad8eb97-scipy-tutor"},
-    { title:"Cybersecurity Mentor", desc:"Network security, encryption, ethical hacking basics, malware, risk, and best practices. Lessons + simulations.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor"},
-    { title:"Data Science Mentor", desc:"NumPy, Pandas, Matplotlib, scikit-learn. Tutorials, datasets, projects — beginner to advanced.", icon:"https://cdn-icons-png.flaticon.com/512/2967/2967262.png", categories:["Data","AI & Automation"], url:"https://chatgpt.com/g/g-68b6a06e44e881919c09ff648d64b0f3-data-science-mentor"},
-    { title:"Introduction to Programming", desc:"Start coding from zero. Variables, loops, functions. Python by default, C++/Java/JS optional.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Learning","Languages"], url:"https://chatgpt.com/g/g-68b69ed77aec81919d3393e367baf046-introduction-to-programming"},
-    { title:"DSA Coach", desc:"Concepts, patterns, checklists, complexities, tests, multiple approaches. Python/C++/Java/JS.", icon:"https://cdn-icons-png.flaticon.com/512/5903/5903823.png", categories:["Learning","Interviews"], url:"https://chatgpt.com/g/g-68b69c9ea8d081918fb91d37f78ec3c3-dsa-coach"},
-    { title:"Responsive UI Coach (Bootstrap-ready)", desc:"Accessible components & pages. v3/v4→v5, utilities, fixes, CDN or npm/Sass.", icon:"https://cdn.iconscout.com/icon/free/png-256/bootstrap-226077.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b697b5913c81918e64a23a52138255-responsive-ui-coach-bootstrap-ready"},
-    { title:"Sedative", desc:"Talk to me to sleep. no cap.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Lifestyle"], url:"https://chatgpt.com/g/g-688363b4125c8191bb950c37778ab4d0-sedative?model=gpt-4o"},
-    { title:"Global Football Hub", desc:"ESPN FC, UEFA, Transfermarkt, FIFA, FBref. News, tables, verified info.", icon:"https://cdn-icons-png.flaticon.com/512/280/280766.png", categories:["Sports"], url:"https://chatgpt.com/g/g-6878f74104908191b0ae0f9a513c392b-global-football-hub?model=gpt-4o"},
-    { title:"Freeware finder", desc:"Find quality free software/services fast.", icon:"https://cdn-icons-png.flaticon.com/512/3223/3223652.png", categories:["Search","Tools"], url:"https://chatgpt.com/g/g-6873b6d56ae0819192702a6ab83a9006-freeware-finder?model=gpt-4o"},
-    { title:"Blasphemy -- Holy Heresy,Divine Rebellion", desc:"Explore controversial, sacred, and forbidden ideas — religion, philosophy, truth beyond tradition.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/41/Blasphemous_logo.png", categories:["Philosophy"], url:"https://chatgpt.com/g/g-68652a058b348191ba363415dda6bf23-blasphemy-holy-heresy-divine-rebellion?model=gpt-4o"},
-    { title:"Spam & Scam Detector – Protect Your Inbox", desc:"Detect scams, spam, phishing in email/SMS/DMs. AI-powered protection.", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926715.png", categories:["Security","Tools"], url:"https://chatgpt.com/g/g-686522599f78819196f796d8f20dc5a7-spam-scam-detector-protect-your-inbox?model=gpt-4o"},
-    { title:"Error Detector – Spot, Explain, Fix", desc:"Bugs in code, grammar flaws, logic errors, factual inaccuracies. Detect, explain, fix.", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055673.png", categories:["Tools"], url:"https://chatgpt.com/g/g-68651a7bd7a081919b9e95ed139b1d4c-error-detector-spot-explain-fix?model=gpt-4o"},
-    { title:"Lisp/Scheme", desc:"Harness Lisp’s legendary power for AI and elegant computation.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/48/Lisp_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc6a389cc8191a9a54ed9633c8d9c-lisp-scheme"},
-    { title:"PowerShell", desc:"Scripting, Windows automation, admin tasks, WMI, AD — pro-grade helper.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a1/Powershell_128.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efc250595c81918bf818005ac8dded-powershell?model=gpt-5"},
-    { title:"Perl", desc:"Regex, parsing, automation, modules — for devs, analysts, and sysadmins.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/34/Perl-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67efc0f669848191bb17090ea0ac5aab-perl?model=gpt-4o"},
-    { title:"Bash", desc:"Automate tasks, scripts, terminal mastery — loops, cron, file ops.", icon:"https://upload.wikimedia.org/wikipedia/commons/5/52/Bash-tip.svg", categories:["Languages","Automation"], url:"https://chatgpt.com/g/g-67efbf3da2048191b28d875c2c041130-bash?model=gpt-4o"},
-    { title:"MATLAB", desc:"Matrix math, simulations, analysis, toolboxes, debugging — for students and pros.", icon:"https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbdf8604c8191b48f2596faa7c13a-matlab"},
-    { title:"Julia", desc:"High-performance Julia for scientific computing and data science.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/ae/Julia_logo_circles.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67efbca1eb9481919f6d08d23dcdd14e-julia"},
-    { title:"TypeScript", desc:"Types, interfaces, generics, debugging. Ideal for React/Node/full-stack.", icon:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67efb97be07c8191b266b92f5e095c99-typescript"},
-    { title:"Rust", desc:"Ownership, lifetimes, crates, zero-cost abstractions — fearless systems dev.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6d3bd4d081919fb3b0cec36e487a-rust"},
-    { title:"Kotlin", desc:"Android, backend, multiplatform. Coroutines, Jetpack, OOP, clean architecture.", icon:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Kotlin_icon_%282016-2021%29.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef6bda03888191a399bb2ec8dddb80-kotlin"},
-    { title:"Ruby", desc:"Scripts, automation, web (Rails), debugging. For beginners to ninjas.", icon:"https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef69f3d4488191b55dd9d6fa0b5b4a-ruby"},
-    { title:"C#", desc:".NET, Unity, OOP, LINQ, async. Build games, apps, enterprise systems.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/bd/Logo_C_sharp.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef690a075c8191a17713ad997799ff-c"},
-    { title:"C", desc:"Syntax, pointers, memory, performance — efficient low-level code.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/C_Programming_Language.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef67c3b83481918336d1c4ddfd5600-c"},
-    { title:"SQL", desc:"Queries, joins, indexing, optimization, schema design — beginner to pro.", icon:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Sql_data_base_with_logo.svg", categories:["Data"], url:"https://chatgpt.com/g/g-67ef62fdcdd081918ce75b1c878f43f4-sql"},
-    { title:"GO (Golang)", desc:"APIs, microservices, CLIs — fast, concurrent, idiomatic Go.", icon:"https://upload.wikimedia.org/wikipedia/commons/0/05/Go_Logo_Blue.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef61ba9f588191bf95969b202cbb40-go-golang"},
-    { title:"R", desc:"Tidyverse, ggplot2, ML, research workflows — for analysts and researchers.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/1b/R_logo.svg", categories:["Languages","Data"], url:"https://chatgpt.com/g/g-67ef6038ca98819185f6220127732863-r"},
-    { title:"Swift", desc:"Swift & SwiftUI for Apple platforms. Animations, APIs, UI design.", icon:"https://cdn.worldvectorlogo.com/logos/swift-15.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5efbde6c8191b42c15244c8a1a78-swift?model=gpt-4o"},
-    { title:"Java", desc:"Clean OOP, Android/back-end systems, DSA, debugging.", icon:"https://upload.wikimedia.org/wikipedia/it/2/2e/Java_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67ef5e1c6e9c8191b70a38f779ffa6e6-java?model=gpt-4o"},
-    { title:"React", desc:"Build fast component-based UIs with hooks & state.", icon:"https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-67ef5d4d75a48191aa49f525af48e4d9-react"},
-    { title:"HTML&CSS", desc:"Responsive layouts, flexbox, grid, forms, animations — clean design help.", icon:"https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-67ef5b2d70bc81918d9a5c2877de14d7-html-css?model=gpt-4o"},
-    { title:"Python", desc:"Scripting, automation, data science, AI — clean code and real-world use cases.", icon:"https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", categories:["Languages","AI & Automation"], url:"https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5"},
-    { title:"JavaScript", desc:"Modern JS — ES6+, DOM, async, Node.js. Debugging & best practices.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg", categories:["Languages","Frontend"], url:"https://chatgpt.com/g/g-67ef55adf8bc8191b0ed342c54a7ffed-javascript"},
-    { title:"c++ cpp", desc:"Write, debug, and learn modern C++ with STL. Basics to advanced & competitive programming.", icon:"https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-67e5dd64ae48819198a2a7ec557a70ce-c-cpp"},
-    { title:"Part-Time Canada 🇨🇦💼", desc:"Find part-time jobs in Canada. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e0199bba8c8191b4b18babb5e4371b-part-time-canada?model=gpt-4o"},
-    { title:"Part-Time USA 🇺🇸💼", desc:"Find part-time jobs in the USA. Resume help, interview prep, and job search guidance.", icon:"https://cdn-icons-png.flaticon.com/512/1041/1041926.png", categories:["Careers"], url:"https://chatgpt.com/g/g-67e013d13f94819184fcb52c29055801-part-time-usa?model=gpt-4o"},
-    { title:"Task Master", desc:"Master your time, crush your goals. Zero overwhelm.", icon:"https://cdn-icons-png.flaticon.com/512/1005/1005141.png", categories:["Productivity"], url:"https://chatgpt.com/g/g-67dea8dbd7308191ad830a0bf253cad3-task-master-mind?model=gpt-4o"},
-    { title:"PHP", desc:"A sharp PHP helper for modern backend work: PHP 8.3 syntax, Composer, Laravel/Symfony, WordPress hooks, secure PDO, DX tips, benchmarks, and bug-fixing.", icon:"https://www.php.net/images/logos/new-php-logo.svg", categories:["Languages"], url:"https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5"},
-    { title:"CS Roast Battle GPT", desc:"Roasts entire programming languages.", icon:"https://cdn-icons-png.flaticon.com/512/3069/3069151.png", categories:["Humor","Languages"], url:"https://chatgpt.com/g/g-68dac3d327d88191a9eaa7acf549e9f3-cs-roast-battle-gpt?model=gpt-5"},
-    { title:"Startup Pitch GPT", desc:"Turns random code into billion-dollar startup pitches.", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135728.png", categories:["Humor","Careers"], url:"https://chatgpt.com/g/g-68dac274b17c819184887dd80271c125-startup-pitch-gpt?model=gpt-5"},
-    { title:"Haunted Compiler GPT", desc:"Acts like your compiler is possessed.", icon:"https://cdn-icons-png.flaticon.com/512/2873/2873646.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac0df1cf88191aaff7952ea764a39-haunted-compiler-gpt?model=gpt-5"},
-    { title:"Code Horror Stories GPT", desc:"Tells creepy campfire stories about bugs.", icon:"https://cdn-icons-png.flaticon.com/512/1792/1792942.png", categories:["Humor"], url:"https://chatgpt.com/g/g-68dac00c2b3481918393a8d577d44408-code-horror-stories-gpt"},
-    { title:"StackOverflow Parrot GPT", desc:"The sassiest dev bot alive. Ask it anything and get roasted like you're on StackOverflow...", icon:"https://cdn-icons-png.flaticon.com/512/2926/2926725.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabe58efc88191b7b5340395c98de7-stackoverflow-parrot-gpt?model=gpt-5"},
-    { title:"Meme Compiler GPT", desc:"Compiles errors into memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221596.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabd397b3c8191a464c3e7e6aa6cab-meme-compiler-gpt?model=gpt-5"},
-    { title:"Code Reviewer From Hell GPT", desc:"Roasts your code brutally but hilariously.", icon:"https://cdn-icons-png.flaticon.com/512/2613/2613106.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dabbb898a8819182b05c6c3bb15150-code-reviewer-from-hell-gpt?model=gpt-5"},
-    { title:"Debug Dungeon GPT", desc:"Debugging turned into a text-based RPG.", icon:"https://cdn-icons-png.flaticon.com/512/2953/2953531.png", categories:["Tools","Learning"], url:"https://chatgpt.com/g/g-68daba494c44819190c3757fc4236360-debug-dungeon-gpt?model=gpt-5"},
-    { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
-    { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
-  ];
-
-  function initData(){
-    let have = read(LS_ITEMS, []);
-    if(!have || !have.length){
-      have = STARTER_GPTS.map((x,idx)=>({ ...x, status:'live', createdAt: Date.now() - (STARTER_GPTS.length-idx)*3600_000 }));
-      if(!have.some(x=>x.featured)) have.slice(0,8).forEach(x=> x.featured = true);
-      write(LS_ITEMS, have);
-    }else{
-      have = have.map((x,i)=> x.createdAt ? x : ({...x, createdAt: Date.now()-i*3600_000}));
-      write(LS_ITEMS, have);
-    }
-    if(!read(LS_SETTINGS, null)) write(LS_SETTINGS, { title:'GPTMart', ga: window.GA_MEASUREMENT_ID });
-  }
-
-  function items(){ return read(LS_ITEMS, []); }
-  function setItems(v){ write(LS_ITEMS, v); renderAll(); }
-  function settings(){ return read(LS_SETTINGS, {title:'GPTMart', ga:window.GA_MEASUREMENT_ID}); }
-  function setSettings(v){ write(LS_SETTINGS, v); applySettings(); }
-
   /*************** RENDER (EXPLORE) ***************/
   const grid = $('#grid');
   const qInput = $('#q');
@@ -395,14 +197,14 @@
   function renderLanguages(){ $('#langs').innerHTML = LANGUAGES.map(l=>`<a class="lang" href="${l.url}" target="_blank" rel="noopener"><img loading="lazy" src="${l.icon}" alt="${l.name}"><span>${l.name}</span></a>`).join(''); }
 
   function renderCategories(){
-    const cats = uniq(items().flatMap(x=>x.categories||[])).sort();
+    const cats = uniq(ALL_ITEMS.flatMap(x=>x.categories||[])).sort();
     catSelect.innerHTML = '<option value="All">All categories</option>' + cats.map(c=>`<option ${state.cat===c?'selected':''}>${c}</option>`).join('');
   }
 
   function cardTemplate(x){
     const tags = (x.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
     return `<article class="card" role="listitem" aria-label="${x.title}">
-      <div class="badge">${x.featured ? 'Featured' : x.status==='hidden' ? 'Hidden':'Live'}</div>
+      ${x.featured ? '<div class="badge">Featured</div>' : ''}
       <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
       <h3 class="title">${x.title||'Untitled GPT'}</h3>
       <p class="desc">${x.desc||''}</p>
@@ -417,11 +219,16 @@
   function sortList(list){
     if(state.sort==='title') return list.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||''));
     if(state.sort==='recent') return list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    return list.slice().sort((a,b)=>{ const af=a.featured?1:0, bf=b.featured?1:0; if(bf!==af) return bf-af; return (b.createdAt||0)-(a.createdAt||0); });
+    // Default to 'featured'
+    return list.slice().sort((a,b)=>{
+      const af=a.featured?1:0, bf=b.featured?1:0;
+      if(bf!==af) return bf-af;
+      return (b.createdAt||0)-(a.createdAt||0);
+    });
   }
 
   function renderGrid(){
-    const list = items().filter(x=> x.status==='live');
+    const list = ALL_ITEMS;
     const q = (state.q||'').trim();
     const filtered = list.filter(x=>{
       const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q));
@@ -434,7 +241,7 @@
   }
 
   function renderHighlights(){
-    const feats = items().filter(x=>x.status==='live' && x.featured).slice(0,8);
+    const feats = ALL_ITEMS.filter(x=>x.featured).slice(0,8);
     const wrap = $('#highlights');
     wrap.innerHTML = feats.map(x=>`<a class="chip" href="${x.url}" target="_blank" rel="noopener" title="${x.title}">${x.title}</a>`).join('');
   }
@@ -444,226 +251,35 @@
       const payload = JSON.parse(decodeURIComponent(btn.dataset.share));
       const text = `${payload.title} — ${payload.url}`;
       if(navigator.share){ try{ await navigator.share({ title: payload.title, url: payload.url, text }); }catch(e){} }
-      else { await navigator.clipboard.writeText(text); alert('Link copied!'); }
-    });
-  }
-
-  /*************** ADMIN ***************/
-  const adminGate = $('#adminGate');
-  const adminDesk = $('#adminDesk');
-
-  function isAdmin(){ return sessionStorage.getItem(SESSION_ADMIN)==='1'; }
-  function requireAdmin(){ if(isAdmin()){ adminGate.classList.add('hide'); adminDesk.classList.remove('hide'); renderAdmin(); } else { adminGate.classList.remove('hide'); adminDesk.classList.add('hide'); } }
-
-  $('#pinGo').addEventListener('click', ()=>{ const entered = ($('#pin').value||'').trim(); if(entered===ADMIN_PIN){ sessionStorage.setItem(SESSION_ADMIN,'1'); requireAdmin(); } else alert('Access denied'); });
-
-  function renderAdmin(){
-    const it = items();
-    $('#kLive').textContent   = it.filter(x=>x.status==='live').length;
-    $('#kHidden').textContent = it.filter(x=>x.status==='hidden').length;
-    $('#kFeat').textContent   = it.filter(x=>x.featured && x.status==='live').length;
-    const q = ($('#aQ').value||'').trim();
-    const st = $('#aStatus').value||'all';
-    const filtered = it.filter(x=>{ const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q)); const inS = st==='all' || x.status===st; return inQ && inS; });
-    
-    $('#tAll').innerHTML = filtered.map((x) => {
-      const originalIndex = items().findIndex(originalItem => originalItem.createdAt === x.createdAt);
-      return `<tr>
-        <td>${x.title}</td>
-        <td><small>${toCSV(x.categories)}</small><br><small style="color:#93c5fd">${toCSV(x.tags)}</small></td>
-        <td>${x.featured ? '⭐️' : '—'}</td>
-        <td>${x.status}</td>
-        <td>
-          <button class="btn" data-edit="${originalIndex}">Edit</button>
-          <button class="btn" data-togglef="${originalIndex}">${x.featured?'Unfeature':'Feature'}</button>
-          <button class="btn" data-toggleh="${originalIndex}">${x.status==='hidden'?'Unhide':'Hide'}</button>
-          <a class="btn accent" href="${x.url}" target="_blank">Open</a>
-          <button class="btn" data-del="${originalIndex}" style="border-color:#b91c1c; color:#fca5a5">Delete</button>
-        </td>
-      </tr>`;
-    }).join('');
-
-    $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
-    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
-    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
-    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ if(confirm('Are you sure you want to delete this item?')){ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);}}));
-  }
-
-  $('#aQ').addEventListener('input', renderAdmin);
-  $('#aStatus').addEventListener('change', renderAdmin);
-  $('#aReset').addEventListener('click', ()=>{ $('#aQ').value=''; $('#aStatus').value='all'; renderAdmin(); });
-
-  $('#exportBtn').addEventListener('click', ()=>{
-    const data = { items: items(), settings: settings() };
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gptmart-export.json'; a.click();
-  });
-  $('#importFile').addEventListener('change', (e)=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader(); reader.onload = ()=>{
-      try{
-        const data = JSON.parse(reader.result);
-        if(Array.isArray(data.items)) write(LS_ITEMS, data.items);
-        if(data.settings){ const curr = settings(); write(LS_SETTINGS, { title: data.settings.title || curr.title, ga: data.settings.ga || curr.ga }); }
-        renderAll(); alert('Imported!');
-      }catch(err){ alert('Invalid file'); }
-    };
-    reader.readAsText(file);
-  });
-
-  $('#saveSettings').addEventListener('click', ()=>{
-    const s = settings();
-    s.title = $('#siteTitle').value.trim() || s.title;
-    s.ga = $('#gaId').value.trim() || s.ga;
-    setSettings(s);
-    alert('Settings saved');
-  });
-
-  $('#addManual').addEventListener('click', ()=> openModal());
-  let currentEditIndex = null;
-  function openModal(editIndex){
-    currentEditIndex = (typeof editIndex === 'number') ? editIndex : null;
-    const itms = items();
-    const editing = currentEditIndex !== null ? itms[currentEditIndex] : null;
-    const draft = read(LS_DRAFT, null);
-    
-    let dataToLoad = editing;
-    if (!editing && draft && (draft.title || draft.url)) {
-      if (confirm("You have a saved draft. Would you like to restore it?")) {
-        dataToLoad = draft;
-      }
-      write(LS_DRAFT, null);
-    }
-    
-    $('#mTitle').textContent = editing ? 'Edit GPT' : 'Add GPT';
-    $('#mTitleIn').value = dataToLoad?.title || '';
-    $('#mUrlIn').value = dataToLoad?.url || '';
-    $('#mIconIn').value = dataToLoad?.icon || '';
-    $('#mDescIn').value = dataToLoad?.desc || '';
-    $('#mCatsIn').value = toCSV(dataToLoad?.categories);
-    $('#mTagsIn').value = toCSV(dataToLoad?.tags);
-    $('#mFeatIn').checked = !!dataToLoad?.featured;
-    $('#mStatusIn').value = dataToLoad?.status || 'live';
-    
-    const suggestionsContainer = $('#mCatsSuggestions');
-    const allCats = uniq(items().flatMap(x => x.categories || [])).sort();
-    suggestionsContainer.innerHTML = allCats.map(cat => `<button type="button" class="tag" data-cat="${cat}">${cat}</button>`).join('');
-    const syncCatButtons = () => {
-      const selectedCats = fromCSV($('#mCatsIn').value);
-      $$('#mCatsSuggestions .tag').forEach(btn => {
-        btn.classList.toggle('active', selectedCats.includes(btn.dataset.cat));
-      });
-    };
-    $$('#mCatsSuggestions .tag').forEach(btn => {
-      btn.onclick = () => {
-        const catToAdd = btn.dataset.cat;
-        const input = $('#mCatsIn');
-        let currentCats = fromCSV(input.value);
-        if (currentCats.includes(catToAdd)) {
-          currentCats = currentCats.filter(c => c !== catToAdd);
-        } else {
-          currentCats.push(catToAdd);
+      else {
+        try {
+          await navigator.clipboard.writeText(text);
+          alert('Link copied!');
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+          // Fallback for older browsers
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          try {
+            document.execCommand('copy');
+            alert('Link copied!');
+          } catch (err) {
+            alert('Could not copy link.');
+          }
+          document.body.removeChild(textArea);
         }
-        input.value = toCSV(currentCats);
-        syncCatButtons();
-      };
+      }
     });
-    
-    $('#mCatsIn').addEventListener('input', syncCatButtons);
-    syncCatButtons();
-    $('#modal').showModal();
-  }
-  
-  $('#mSave').addEventListener('click', ()=>{
-    if (!$('#modal form').checkValidity()) {
-      $('#modal form').reportValidity();
-      return;
-    }
-    const item = {
-      title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(), desc: $('#mDescIn').value.trim(),
-      categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value), featured: $('#mFeatIn').checked, status: $('#mStatusIn').value,
-    };
-    let itms = items();
-    if (currentEditIndex !== null) {
-      item.createdAt = itms[currentEditIndex].createdAt || Date.now();
-      itms[currentEditIndex] = item;
-    } else {
-      item.createdAt = Date.now();
-      itms.unshift(item);
-    }
-    setItems(itms);
-    write(LS_DRAFT, null);
-    $('#modal').close();
-    currentEditIndex = null;
-  });
-
-  $('#mCancel').addEventListener('click', () => {
-    const draft = {
-      title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(), desc: $('#mDescIn').value.trim(),
-      categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value), featured: $('#mFeatIn').checked, status: $('#mStatusIn').value
-    };
-    if (draft.title || draft.url || draft.desc) {
-      if(confirm("Do you want to save this as a draft?")){ write(LS_DRAFT, draft); } else { write(LS_DRAFT, null); }
-    }
-    $('#modal').close();
-    currentEditIndex = null;
-  });
-
-  /*************** COMMAND PALETTE ***************/
-  const palette = $('#palette');
-  const palQ = $('#palQ');
-  const palList = $('#palList');
-  $('#openPalette').addEventListener('click', openPalette);
-  document.addEventListener('keydown', (e)=>{
-    const k = e.key.toLowerCase();
-    const ctrl = e.ctrlKey || e.metaKey;
-    if((ctrl && k==='k')){ e.preventDefault(); openPalette(); }
-    if(k==='/' && !['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
-    if(k==='escape' && palette.classList.contains('open')) closePalette();
-  }, true);
-
-  function openPalette(){ palette.classList.add('open'); palQ.value=''; renderPalette(''); palQ.focus(); }
-  function closePalette(){ palette.classList.remove('open'); }
-
-  function paletteActions(){
-    return [
-      { label:'Add new GPT', fn: ()=>openModal(), hint:'Create an entry' },
-      { label:'Export JSON', fn: ()=>$('#exportBtn').click(), hint:'Backup data' },
-      { label:'Import JSON', fn: ()=>$('#importFile').click(), hint:'Restore data' },
-      { label:'Go to Explore', fn: ()=>navigate('#/explore'), hint:'View mode' },
-      { label:'Go to Admin', fn: ()=>navigate('#/admin'), hint:'Owner dashboard' },
-    ].concat(items().slice(0,20).map(x=>({ label:`Open: ${x.title}`, fn: ()=>window.open(x.url,'_blank'), hint:x.categories?.join(', ')||'' })));
   }
 
-  function renderPalette(q){
-    const acts = paletteActions().filter(a=> contains(a.label,q) || contains(a.hint,q));
-    palList.innerHTML = acts.map((a,i)=>`<div class="pal-item" role="option" data-i="${i}"><div>${a.label}</div><small style="color:var(--muted)">${a.hint||''}</small></div>`).join('');
-    $$('#palList .pal-item').forEach(el=> el.onclick = ()=>{ const i=+el.dataset.i; acts[i].fn?.(); closePalette(); });
-  }
-  palQ.addEventListener('input', e=> renderPalette(e.target.value));
-  palette.addEventListener('click', (e)=>{ if(e.target===palette) closePalette(); });
-
-  /*************** ROUTING & SETTINGS ***************/
-  function applySettings(){
-    const s = settings();
-    $('#ftTitle').textContent = s.title || 'GPTMart';
-    $('#siteLogo').textContent = s.title || 'GPTMart';
-    document.title = (s.title||'GPTMart') + ' — Curated Custom GPTs';
-    window.GA_MEASUREMENT_ID = s.ga || window.GA_MEASUREMENT_ID;
-    $('#siteTitle').value = s.title||'';
-    $('#gaId').value = s.ga||'';
-  }
-
-  function navigate(hash){ location.hash = hash; onRoute(); }
-  function onRoute(){ const h=(location.hash||'#/explore');
-    $$('.topbar .chip').forEach(c=>c.classList.remove('active'));
-    if(h.startsWith('#/admin')){ showTab('admin'); } else { showTab('explore'); }
-  }
-
-  function showTab(which){
-    $$('#navExplore, #navAdmin').forEach(x=>x.classList.remove('active'));
-    if(which==='admin'){ $('#navAdmin').classList.add('active'); $('#viewAdmin').classList.remove('hide'); $('#viewExplore').classList.add('hide'); requireAdmin(); }
-    else { $('#navExplore').classList.add('active'); $('#viewAdmin').classList.add('hide'); $('#viewExplore').classList.remove('hide'); }
+  function syncPublic(){
+    renderCategories();
+    renderGrid();
+    renderHighlights();
+    $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x=>x.featured).length} featured`;
   }
 
   /*************** WIRING ***************/
@@ -671,25 +287,36 @@
   $('#reset').addEventListener('click', ()=>{ state.q=''; qInput.value=''; state.cat='All'; catSelect.value='All'; sortSelect.value='featured'; state.sort='featured'; renderGrid();});
   catSelect.addEventListener('change', e=>{ state.cat = e.target.value; renderGrid(); });
   sortSelect.addEventListener('change', e=>{ state.sort = e.target.value; renderGrid(); });
+  document.addEventListener('keydown', (e)=>{
+    const k = e.key.toLowerCase();
+    if(k==='/' && !['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
+  }, true);
 
-  $('#mIconFile').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { $('#mIconIn').value = reader.result; };
-    reader.readAsDataURL(file);
-  });
+  /*************** INITIALIZATION ***************/
+  async function init() {
+    try {
+      const response = await fetch('/api/gpts');
+      if (!response.ok) throw new Error('Network response was not ok');
+      ALL_ITEMS = await response.json();
+      
+      const settingsRes = await fetch('/api/settings');
+      const settings = await settingsRes.json();
+      $('#ftTitle').textContent = settings.title || 'GPTMart';
+      $('#siteLogo').textContent = settings.title || 'GPTMart';
+      document.title = (settings.title || 'GPTMart') + ' — Curated Custom GPTs';
 
-  function syncPublic(){ renderCategories(); renderGrid(); renderHighlights(); $('#kpiCounts').textContent = `${items().filter(x=>x.status==='live').length} live • ${items().filter(x=>x.featured).length} featured`; }
-  function renderAll(){ syncPublic(); if(isAdmin()) renderAdmin(); }
+    } catch (error) {
+      console.error("Failed to fetch initial data:", error);
+      grid.innerHTML = "<p style='color:var(--danger)'>Could not load GPTs. Please try again later.</p>";
+      return;
+    }
 
-  // Init
-  initData();
-  renderLanguages();
-  applySettings();
-  renderAll();
-  onRoute();
-  window.addEventListener('hashchange', onRoute);
+    renderLanguages();
+    syncPublic();
+  }
+
+  // Run on page load
+  init();
   </script>
 </body>
 </html>
