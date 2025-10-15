@@ -32,17 +32,11 @@
     .hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.05}
     .hero p{color:var(--muted);margin:.4rem 0 0}
     .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
-    .quick{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .quick .k{border:1px dashed #27407a;color:#bcd2ff;padding:6px 10px;border-radius:999px;font-size:12px}
     .ribbon{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
     .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
     .ribbon > * { flex: 1 1 180px; }
     .ribbon > #q { flex: 2 1 250px; }
     .ribbon > .btn { flex-grow: 0; }
-    .langs{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0}
-    .lang{display:grid;justify-items:center;gap:6px;text-decoration:none}
-    .lang img{width:44px;height:44px;border-radius:10px;background:#0a1324;border:1px solid var(--stroke);padding:8px;}
-    .lang span{font-size:12px;color:#cbd5e1}
     .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
     .card{background:linear-gradient(180deg,#0c1327,#0e162f);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
     .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink: 0;}
@@ -80,7 +74,6 @@
           </select>
           <button class="btn" id="reset">Reset</button>
         </div>
-        <div class="langs" id="langs"></div>
       </div>
       <div class="hero-card">
         <strong>Highlights</strong>
@@ -104,7 +97,8 @@
 
     async function init() {
         try {
-            const response = await fetch('/api/gpts');
+            // Securely fetch ONLY public data from the server
+            const response = await fetch('/api/gpts/public');
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
             ALL_ITEMS = data.items;
@@ -149,14 +143,12 @@
 
         const sorted = sortList(filtered);
         $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
-        wireShareButtons();
     }
     
     function sortList(list) {
         return list.slice().sort((a, b) => {
             if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
             if (state.sort === 'recent') return (b.createdAt || 0) - (a.createdAt || 0);
-            // Default: featured
             const featDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
             if (featDiff !== 0) return featDiff;
             return (b.createdAt || 0) - (a.createdAt || 0);
@@ -184,27 +176,11 @@
                 <p class="desc">${x.desc}</p>
                 <div class="actions">
                     <a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a>
-                    <button class="btn" data-share='${encodeURIComponent(JSON.stringify({ title: x.title, url: x.url }))}'>Share</button>
                 </div>
             </article>`;
-    }
-
-    function wireShareButtons() {
-        $$('[data-share]').forEach(btn => {
-            btn.onclick = async () => {
-                const data = JSON.parse(decodeURIComponent(btn.dataset.share));
-                try {
-                    await navigator.share({ title: data.title, url: data.url });
-                } catch (err) {
-                    await navigator.clipboard.writeText(data.url);
-                    alert('Link copied to clipboard!');
-                }
-            };
-        });
     }
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
-
