@@ -32,18 +32,18 @@
       --radius:14px; --radius-lg:18px; --shadow:0 10px 40px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
+    html,body{height:100%;margin:0; overflow-x:hidden;}
     body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:radial-gradient(1200px 600px at 80% -10%,#12244c22 0,#0000 70%), linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%); color:var(--text);}
     a{color:inherit}
-    .container{width:95%;max-width:1200px;margin:0 auto}
+    .container{width:94%;max-width:1200px;margin:0 auto}
     .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden;}
 
     /* Topbar */
     .topbar{position:sticky;top:0;z-index:50;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
-    .top-row{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 0}
+    .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
     .brand svg{filter:drop-shadow(0 4px 18px rgba(110,168,255,.45))}
-    .nav{display:flex;gap:8px; flex-wrap: wrap; /* NEW: Allow nav items to wrap */}
+    .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
     .chip{border:1px solid var(--stroke);background:linear-gradient(180deg,#0b1327,#091226);padding:8px 12px;border-radius:999px;color:#cbd5e1;text-decoration:none}
     .chip.active{background:linear-gradient(180deg,#1b2a55,#13224b);border-color:#21408b;box-shadow:var(--glow)}
     .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
@@ -54,7 +54,8 @@
     .section{padding:30px 0}
 
     /* Hero */
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end}
+    .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:end}
+    @media (min-width: 900px) { .hero{grid-template-columns:1.2fr .8fr;} }
     .hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.05}
     .hero p{color:var(--muted);margin:.4rem 0 0}
     .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
@@ -62,11 +63,12 @@
     .quick .k{border:1px dashed #27407a;color:#bcd2ff;padding:6px 10px;border-radius:999px;font-size:12px}
 
     /* Search ribbon */
-    .ribbon{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;}
-    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
-    .input::placeholder{color:#8aa0c2}
-    .ribbon > .input { flex: 1 1 180px; }
+    .ribbon{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
+    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
+    .ribbon > * { flex: 1 1 180px; }
     .ribbon > #q { flex: 2 1 250px; }
+    .ribbon > .btn { flex-grow: 0; }
+    .input::placeholder{color:#8aa0c2}
 
     /* Languages strip */
     .langs{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0}
@@ -76,11 +78,10 @@
     .lang span{font-size:12px;color:#cbd5e1}
 
     /* Grid */
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:16px}
-    .col{grid-column:span 3}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
     .card{background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
     .card:hover{box-shadow:0 20px 80px rgba(60,120,255,.15)}
-    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324}
+    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink: 0;}
     .icon img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:800;margin:0}
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
@@ -93,21 +94,13 @@
     /* Panels & table */
     .panel{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:14px;padding:16px}
     .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px; flex-wrap:wrap;}
-    /* NEW: Makes inputs in flex rows behave correctly */
     .row > .input {width: auto; flex-grow: 1;}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{text-align:left;font-size:14px}
     tbody tr{background:#0b1426}
     tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
     tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
-    tbody tr td:last-child{
-      border-right:1px solid var(--stroke);
-      border-top-right-radius:10px;
-      border-bottom-right-radius:10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    tbody tr td:last-child{ border-right:1px solid var(--stroke); border-top-right-radius:10px; border-bottom-right-radius:10px; display: flex; flex-wrap: wrap; gap: 6px; }
 
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
 
@@ -121,146 +114,23 @@
     .pal-item{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid #11204a;cursor:pointer}
     .pal-item:hover{background:#0f1a3a}
 
-    /* Hide helpers */
     .hide{display:none!important}
 
-    /***** RESPONSIVE STYLES *****/
-    @media (max-width:1100px){.col{grid-column:span 4}}
-    @media (max-width:900px){
-      .hero{grid-template-columns:1fr}
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 768px) {
       .top-row {
-        flex-wrap: wrap;
-        justify-content: center; /* Center items when they wrap */
-      }
-      .top-row .brand, .top-row .nav {
-        flex: 1 1 auto; /* Allow items in the top-row to take available space */
-        justify-content: center; /* Center nav items if they wrap */
-      }
-      .ribbon {
-        flex-direction: column; /* Stack search and filter inputs on small screens */
-      }
-      .ribbon > .input {
-        flex: 1 1 auto; /* Allow inputs to take full width */
-      }
-    }
-    @media (max-width:800px){.col{grid-column:span 6}}
-    @media (max-width:560px){
-      .col{grid-column:span 12} /* NEW: GPT cards stack on extra small screens */
-      .nav {
-        gap: 6px; /* Reduce gap between nav items */
-      }
-      .btn.accent {
-        width: 100%; /* Make "Browse" button full width on small screens */
         justify-content: center;
+        gap: 12px;
       }
-      .top-row .nav:last-child {
-        margin-left: 0; /* Remove auto margin that might push buttons to one side */
+      .top-row > .brand {
         width: 100%;
         justify-content: center;
       }
+      .top-row > .nav {
+        justify-content: center;
+      }
+      .quick { display: none; }
     }
-    /* =========================
-   Responsive upgrades (drop-in)
-   Paste below your existing CSS
-   ========================= */
-
-/* 1) Topbar: 3-column on wide, wraps to stacked on small */
-.top-row{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  gap:12px;
-}
-.top-row .nav{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
-.top-row .brand{ min-width:0; }
-.top-row .brand span{ white-space:nowrap; }
-
-/* When space is tight, stack neatly */
-@media (max-width: 900px){
-  .top-row{
-    grid-template-columns:1fr;
-    justify-items:center;
-    gap:10px;
-  }
-  .top-row .nav{
-    justify-content:center;
-    width:100%;
-  }
-}
-
-/* Prevent button squish/overflow and allow wrapping */
-.nav .chip, .nav .btn{
-  flex:0 0 auto;
-  max-width:100%;
-}
-
-/* 2) Ribbon: fully fluid, wraps without horizontal scroll */
-.ribbon{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.ribbon > *{
-  min-width:0;    /* allow shrinking without overflow */
-}
-.ribbon > #q{        flex:2 1 320px; }
-.ribbon > #cat,
-.ribbon > #sort{     flex:1 1 180px; }
-.ribbon > .btn{      flex:0 0 auto; }
-
-/* Tight screens: controls stack to full width */
-@media (max-width: 700px){
-  .ribbon > #q,
-  .ribbon > #cat,
-  .ribbon > #sort,
-  .ribbon > .btn{
-    flex:1 1 100%;
-  }
-}
-
-/* 3) Languages strip: let items breathe on narrow screens */
-.langs{ gap:10px; }
-.lang img{ width:40px; height:40px; }
-
-/* 4) Card grid: auto-fit columns to avoid overflow on any width */
-.grid{
-  /* Replace fixed 12-col behavior with fluid cards. */
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap:16px;
-}
-.col{ grid-column:auto; } /* ignore the old span rules for cards */
-
-/* Optionally tighten minimum on very small phones */
-@media (max-width: 380px){
-  .grid{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-}
-
-/* 5) Highlights grid: keep chips wrapping instead of overflowing */
-#highlights{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-
-/* 6) Admin filters: wrap nicely and avoid long-row overflow */
-#adminDesk .row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-#adminDesk .row > .input{
-  flex:1 1 220px;
-  min-width:0;
-}
-#adminDesk .row .btn{
-  flex:0 0 auto;
-}
-#adminDesk .panel table{ width:100%; }
-
-/* 7) Misc: ensure no accidental horizontal scroll on body/container */
-html, body{ overflow-x:hidden; }
-.container{ max-width:1200px; width:92%; }
-
   </style>
 </head>
 <body>
@@ -296,7 +166,7 @@ html, body{ overflow-x:hidden; }
             <span class="k">Esc : Clear</span>
           </div>
 
-          <div class="ribbon" style="margin-top:14px">
+          <div class="ribbon">
             <input id="q" class="input" type="search" placeholder="Search title, tags, categories…" aria-label="Search" />
             <select id="cat" class="input" aria-label="Category"></select>
             <select id="sort" class="input" aria-label="Sort">
@@ -314,7 +184,7 @@ html, body{ overflow-x:hidden; }
             <strong>Highlights</strong>
             <span id="kpiCounts" style="color:var(--muted);font-size:12px"></span>
           </div>
-          <div id="highlights" class="grid" style="grid-template-columns:repeat(12,1fr);gap:10px;margin-top:10px"></div>
+          <div id="highlights" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px"></div>
         </div>
       </div>
 
@@ -331,10 +201,10 @@ html, body{ overflow-x:hidden; }
       </div>
 
       <div id="adminDesk" class="hide">
-        <div class="grid" style="grid-template-columns:repeat(12,1fr);gap:12px">
-          <div class="col panel" style="grid-column:span 4"><h4 style="margin:.2rem 0">Live</h4><div id="kLive" style="font-weight:800;font-size:22px">0</div></div>
-          <div class="col panel" style="grid-column:span 4"><h4 style="margin:.2rem 0">Featured</h4><div id="kFeat" style="font-weight:800;font-size:22px">0</div></div>
-          <div class="col panel" style="grid-column:span 4"><h4 style="margin:.2rem 0">Hidden</h4><div id="kHidden" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="grid">
+          <div class="panel"><h4 style="margin:.2rem 0">Live</h4><div id="kLive" style="font-weight:800;font-size:22px">0</div></div>
+          <div class="panel"><h4 style="margin:.2rem 0">Featured</h4><div id="kFeat" style="font-weight:800;font-size:22px">0</div></div>
+          <div class="panel"><h4 style="margin:.2rem 0">Hidden</h4><div id="kHidden" style="font-weight:800;font-size:22px">0</div></div>
         </div>
 
         <div class="section">
@@ -350,7 +220,7 @@ html, body{ overflow-x:hidden; }
                 <button class="btn accent" id="addManual">＋ New</button>
               </div>
             </div>
-            <div style="overflow:auto">
+            <div style="overflow-x:auto">
               <table>
                 <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody id="tAll"></tbody>
@@ -530,12 +400,17 @@ html, body{ overflow-x:hidden; }
   }
 
   function cardTemplate(x){
-    const tags = (x.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
-    return `<article class="card col" role="listitem" aria-label="${x.title}">
-      <div class="badge">${x.featured? 'Featured' : x.status==='hidden'?'Hidden':'Live'}</div>
-      <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
-      <h3 class="title">${x.title||'Untitled GPT'}</h3>
-      <p class="desc">${x.desc||''}</p>
+    const tags = (x.tags||[]).map(t=>`<button class="tag">#${t}</button>`).join('');
+    // **NOTE**: Removed the "col" class from the article tag for the new grid system to work correctly.
+    return `<article class="card" role="listitem" aria-label="${x.title}">
+      ${x.featured ? `<div class="badge">Featured</div>` : ''}
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div class="icon"><img loading="lazy" src="${x.icon||'https://cdn-icons-png.flaticon.com/512/4712/4712151.png'}" alt="${x.title} icon"/></div>
+        <div style="flex: 1;">
+          <h3 class="title">${x.title||'Untitled GPT'}</h3>
+          <p class="desc">${x.desc||''}</p>
+        </div>
+      </div>
       <div class="tags">${tags}</div>
       <div class="actions">
         <a class="btn accent" href="${x.url}" target="_blank" rel="noopener" aria-label="Open ${x.title}">Open</a>
@@ -547,7 +422,7 @@ html, body{ overflow-x:hidden; }
   function sortList(list){
     if(state.sort==='title') return list.slice().sort((a,b)=> (a.title||'').localeCompare(b.title||''));
     if(state.sort==='recent') return list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    return list.slice().sort((a,b)=>{ const af=a.featured?1:0, bf=b.featured?1:0; if(bf!==af) return bf-af; return (a.title||'').localeCompare(b.title||''); });
+    return list.slice().sort((a,b)=>{ const af=a.featured?1:0, bf=b.featured?1:0; if(bf!==af) return bf-af; return (b.createdAt||0)-(a.createdAt||0); });
   }
 
   function renderGrid(){
@@ -564,7 +439,7 @@ html, body{ overflow-x:hidden; }
   }
 
   function renderHighlights(){
-    const feats = items().filter(x=>x.status==='live' && x.featured).slice(0,6);
+    const feats = items().filter(x=>x.status==='live' && x.featured).slice(0,8);
     const wrap = $('#highlights');
     wrap.innerHTML = feats.map(x=>`<a class="chip" href="${x.url}" target="_blank" rel="noopener" title="${x.title}">${x.title}</a>`).join('');
   }
@@ -597,35 +472,28 @@ html, body{ overflow-x:hidden; }
     const st = $('#aStatus').value||'all';
     const filtered = it.filter(x=>{ const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q)); const inS = st==='all' || x.status===st; return inQ && inS; });
 
-    $('#tAll').innerHTML = filtered.map((x)=>{
-      const i = it.indexOf(x);
+    $('#tAll').innerHTML = filtered.map((x, idx)=>{
+      const originalIndex = items().findIndex(originalItem => originalItem.createdAt === x.createdAt);
       return `<tr>
         <td>${x.title}</td>
         <td><small>${toCSV(x.categories)}</small><br><small style="color:#93c5fd">${toCSV(x.tags)}</small></td>
         <td>${x.featured? '⭐️' : '—'}</td>
         <td>${x.status}</td>
         <td>
-          <button class="btn" data-edit="${i}">Edit</button>
-          <button class="btn" data-togglef="${i}">${x.featured?'Unfeature':'Feature'}</button>
-          <button class="btn" data-toggleh="${i}">${x.status==='hidden'?'Unhide':'Hide'}</button>
-          <a class="btn accent" href="${x.url}" target="_blank">Open</a>
-          <button class="btn" data-del="${i}" style="border-color:#2b2b2b">Delete</button>
+          <button class="btn" data-edit="${originalIndex}">Edit</button>
+          <button class="btn" data-del="${originalIndex}" style="border-color:#2b2b2b">Delete</button>
         </td>
       </tr>`;
     }).join('');
 
     $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
-    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
-    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
-    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);}));
+    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ if(confirm('Are you sure?')){ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);} }));
   }
 
-  // Filters (admin)
   $('#aQ').addEventListener('input', renderAdmin);
   $('#aStatus').addEventListener('change', renderAdmin);
   $('#aReset').addEventListener('click', ()=>{ $('#aQ').value=''; $('#aStatus').value='all'; renderAdmin(); });
 
-  // Export / Import
   $('#exportBtn').addEventListener('click', ()=>{
     const data = { items: items(), settings: settings() };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -644,7 +512,6 @@ html, body{ overflow-x:hidden; }
     reader.readAsText(file);
   });
 
-  // Settings
   $('#saveSettings').addEventListener('click', ()=>{
     const s = settings();
     s.title = $('#siteTitle').value.trim() || s.title;
@@ -653,7 +520,6 @@ html, body{ overflow-x:hidden; }
     alert('Settings saved');
   });
 
-  // Modal
   $('#addManual').addEventListener('click', ()=> openModal());
   let currentEditIndex = null;
   function openModal(editIndex){
@@ -667,7 +533,7 @@ html, body{ overflow-x:hidden; }
       if (confirm("You have a saved draft. Would you like to restore it?")) {
         dataToLoad = draft;
       }
-      write(LS_DRAFT, null); // Clear draft after asking
+      write(LS_DRAFT, null);
     }
     
     $('#mTitle').textContent = editing ? 'Edit GPT' : 'Add GPT';
@@ -680,7 +546,6 @@ html, body{ overflow-x:hidden; }
     $('#mFeatIn').checked = !!dataToLoad?.featured;
     $('#mStatusIn').value = dataToLoad?.status || 'live';
     
-    // Interactive Category Selection
     const suggestionsContainer = $('#mCatsSuggestions');
     const allCats = uniq(items().flatMap(x => x.categories || [])).sort();
     suggestionsContainer.innerHTML = allCats.map(cat => `<button type="button" class="tag" data-cat="${cat}">${cat}</button>`).join('');
@@ -709,7 +574,6 @@ html, body{ overflow-x:hidden; }
     
     $('#mCatsIn').addEventListener('input', syncCatButtons);
     syncCatButtons();
-
     $('#modal').showModal();
   }
   
@@ -718,52 +582,31 @@ html, body{ overflow-x:hidden; }
       $('#modal form').reportValidity();
       return;
     }
-
     const item = {
-      title: $('#mTitleIn').value.trim(),
-      url: $('#mUrlIn').value.trim(),
-      icon: $('#mIconIn').value.trim(),
-      desc: $('#mDescIn').value.trim(),
-      categories: fromCSV($('#mCatsIn').value),
-      tags: fromCSV($('#mTagsIn').value),
-      featured: $('#mFeatIn').checked,
-      status: $('#mStatusIn').value,
+      title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(), desc: $('#mDescIn').value.trim(),
+      categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value), featured: $('#mFeatIn').checked, status: $('#mStatusIn').value,
     };
-    
     let itms = items();
-    
     if (currentEditIndex !== null) {
-        item.createdAt = itms[currentEditIndex].createdAt || Date.now(); // Preserve original creation date
-        itms[currentEditIndex] = item;
+      item.createdAt = itms[currentEditIndex].createdAt || Date.now();
+      itms[currentEditIndex] = item;
     } else {
-        item.createdAt = Date.now();
-        itms.push(item);
+      item.createdAt = Date.now();
+      itms.unshift(item);
     }
-
     setItems(itms);
-    
-    write(LS_DRAFT, null); // Clear draft on successful save
+    write(LS_DRAFT, null);
     $('#modal').close();
     currentEditIndex = null;
   });
 
   $('#mCancel').addEventListener('click', () => {
     const draft = {
-      title: $('#mTitleIn').value.trim(),
-      url: $('#mUrlIn').value.trim(),
-      icon: $('#mIconIn').value.trim(),
-      desc: $('#mDescIn').value.trim(),
-      categories: fromCSV($('#mCatsIn').value),
-      tags: fromCSV($('#mTagsIn').value),
-      featured: $('#mFeatIn').checked,
-      status: $('#mStatusIn').value
+      title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(), desc: $('#mDescIn').value.trim(),
+      categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value), featured: $('#mFeatIn').checked, status: $('#mStatusIn').value
     };
     if (draft.title || draft.url || draft.desc) {
-      if(confirm("Do you want to save this as a draft?")){
-        write(LS_DRAFT, draft);
-      } else {
-        write(LS_DRAFT, null);
-      }
+      if(confirm("Do you want to save this as a draft?")){ write(LS_DRAFT, draft); } else { write(LS_DRAFT, null); }
     }
     $('#modal').close();
     currentEditIndex = null;
@@ -792,10 +635,6 @@ html, body{ overflow-x:hidden; }
       { label:'Import JSON', fn: ()=>$('#importFile').click(), hint:'Restore data' },
       { label:'Go to Explore', fn: ()=>navigate('#/explore'), hint:'View mode' },
       { label:'Go to Admin', fn: ()=>navigate('#/admin'), hint:'Owner dashboard' },
-      { label:'Toggle Featured on first item', fn: ()=>{ const itms=items(); if(itms[0]){ itms[0].featured=!itms[0].featured; setItems(itms);} }, hint:'Demo' },
-      { label:'Clear search', fn: ()=>{ state.q=''; qInput.value=''; renderGrid(); }, hint:'Reset query' },
-      { label:'Focus search', fn: ()=>{ qInput.focus(); }, hint:'Shortcut: /' },
-      { label:'About', fn: ()=> alert('GPTMart — keyboard‑first directory. Built as a single HTML file.'), hint:'Info' },
     ].concat(items().slice(0,20).map(x=>({ label:`Open: ${x.title}`, fn: ()=>window.open(x.url,'_blank'), hint:x.categories?.join(', ')||'' })));
   }
 
@@ -840,9 +679,7 @@ html, body{ overflow-x:hidden; }
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      $('#mIconIn').value = reader.result;
-    };
+    reader.onload = () => { $('#mIconIn').value = reader.result; };
     reader.readAsDataURL(file);
   });
 
@@ -855,17 +692,7 @@ html, body{ overflow-x:hidden; }
   applySettings();
   renderAll();
   onRoute();
-
   window.addEventListener('hashchange', onRoute);
-
-  // Light anti‑inspect (optional — keeps UX smooth)
-  // document.addEventListener('contextmenu', e => e.preventDefault());
-  // document.addEventListener('keydown', e => {
-  //   const k = e.key.toLowerCase(); const ctrl = e.ctrlKey || e.metaKey;
-  //   if ((ctrl && ['u','s','p'].includes(k)) || k==='f12' || (ctrl && e.shiftKey && ['i','c','j'].includes(k))) {
-  //     e.preventDefault(); e.stopPropagation();
-  //   }
-  // }, true);
   </script>
 </body>
 </html>
