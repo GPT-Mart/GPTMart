@@ -23,7 +23,6 @@
     .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px; text-decoration: none; color: inherit;}
     .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
-    .chip{border:1px solid var(--stroke);background:linear-gradient(180deg,#0b1327,#091226);padding:8px 12px;border-radius:999px;color:#cbd5e1;text-decoration:none}
     .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
     .btn.accent{background:linear-gradient(180deg,#2c57c7,#2549a8);border-color:#2e53b7;box-shadow:0 6px 28px rgba(59,130,246,.35)}
     .section{padding:30px 0}
@@ -34,9 +33,6 @@
     .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
     .ribbon{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
     .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
-    .ribbon > * { flex: 1 1 180px; }
-    .ribbon > #q { flex: 2 1 250px; }
-    .ribbon > .btn { flex-grow: 0; }
     .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
     .card{background:linear-gradient(180deg,#0c1327,#0e162f);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
     .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink: 0;}
@@ -58,7 +54,6 @@
       <div class="nav"><a class="btn accent" href="#content">Browse</a></div>
     </div>
   </header>
-
   <main id="content" class="container section">
     <div class="hero">
       <div>
@@ -83,23 +78,17 @@
     </div>
     <div id="grid" class="grid"></div>
   </main>
-
   <footer id="footer">© <span id="ftTitle">GPTMart</span> — curated Custom GPTs.</footer>
-
   <script>
     const $ = (s, el = document) => el.querySelector(s);
-    const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
     let ALL_ITEMS = [];
     const state = { q: '', cat: 'All', sort: 'featured' };
-
     const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
-    const toCSV = a => (a || []).join(', ');
-
     async function init() {
         try {
-            // Securely fetch ONLY public data from the server
+            // This now points to the correct public API endpoint
             const response = await fetch('/api/gpts/public');
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Network response failed');
             const data = await response.json();
             ALL_ITEMS = data.items;
             applySettings(data.settings);
@@ -108,7 +97,6 @@
             console.error('Failed to fetch initial data:', error);
             $('#grid').innerHTML = '<p>Error loading content. Please try again later.</p>';
         }
-
         $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); });
         $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); });
         $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
@@ -119,32 +107,27 @@
             renderGrid();
         });
     }
-
     function applySettings(settings) {
         const title = settings.title || 'GPTMart';
-        $('#pageTitle').textContent = `${title} — Curated Custom GPTs`;
+        document.title = `${title} — Curated Custom GPTs`;
         $('#siteLogo').textContent = title;
         $('#ftTitle').textContent = title;
     }
-
     function renderAll() {
         renderCategories();
         renderHighlights();
         renderGrid();
         $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x => x.featured).length} featured`;
     }
-
     function renderGrid() {
         const filtered = ALL_ITEMS.filter(x => {
-            const inQ = !state.q || [x.title, x.desc, toCSV(x.categories), toCSV(x.tags)].some(v => contains(v, state.q));
+            const inQ = !state.q || [x.title, x.desc, (x.categories||[]).join(','), (x.tags||[]).join(',')].some(v => contains(v, state.q));
             const inCat = state.cat === 'All' || (x.categories || []).includes(state.cat);
             return inQ && inCat;
         });
-
         const sorted = sortList(filtered);
         $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
     }
-    
     function sortList(list) {
         return list.slice().sort((a, b) => {
             if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
@@ -154,17 +137,14 @@
             return (b.createdAt || 0) - (a.createdAt || 0);
         });
     }
-
     function renderCategories() {
         const cats = [...new Set(ALL_ITEMS.flatMap(x => x.categories || []))].sort();
         $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
     }
-
     function renderHighlights() {
         const feats = ALL_ITEMS.filter(x => x.featured).slice(0, 8);
         $('#highlights').innerHTML = feats.map(x => `<a class="chip" href="${x.url}" target="_blank" rel="noopener">${x.title}</a>`).join('');
     }
-
     function cardTemplate(x) {
         return `
             <article class="card">
@@ -179,7 +159,6 @@
                 </div>
             </article>`;
     }
-
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
