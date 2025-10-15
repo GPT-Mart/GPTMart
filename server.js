@@ -98,8 +98,26 @@ async function startServer() {
         }
     }
 
+    // --- FIX: ADDED A WRITE QUEUE TO PREVENT RACE CONDITIONS ---
+    let isWriting = false;
+    const writeQueue = [];
+
     async function writeDB(data) {
-        await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
+        if (isWriting) {
+            writeQueue.push(data);
+            return;
+        }
+
+        isWriting = true;
+        try {
+            await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
+        } finally {
+            isWriting = false;
+            if (writeQueue.length > 0) {
+                const nextData = writeQueue.shift();
+                writeDB(nextData);
+            }
+        }
     }
 
     // --- AUTH MOCK ---
