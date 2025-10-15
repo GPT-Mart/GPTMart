@@ -5,379 +5,232 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0b0f19" />
-  <meta name="color-scheme" content="dark" />
   <style>
-    :root{
-      --bg:#050815; --bg-2:#080e1f; --bg-3:#0b142a;
-      --card:#0c1327; --card-2:#0e162f; --panel:#0b1a36;
-      --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --accent-2:#3b82f6;
-      --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
-      --stroke:#16213a; --glow:0 0 0 2px rgba(110,168,255,.15), 0 30px 120px -40px rgba(60,120,255,.35);
-      --radius:14px; --radius-lg:18px; --shadow:0 10px 40px rgba(0,0,0,.35);
-    }
+    :root{--bg:#050815; --panel:#0b1a36; --text:#e6ecff; --accent:#6ea8ff; --accent-2:#3b82f6; --stroke:#16213a; --radius:14px;}
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0; overflow-x:hidden;}
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:radial-gradient(1200px 600px at 80% -10%,#12244c22 0,#0000 70%), linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%); color:var(--text);}
-    a{color:inherit}
+    body{font-family:Inter,ui-sans-serif,system-ui; background:var(--bg); color:var(--text); margin:0;}
     .container{width:94%;max-width:1200px;margin:0 auto}
-    
-    .topbar{position:sticky;top:0;z-index:50;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
-    .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .brand svg{filter:drop-shadow(0 4px 18px rgba(110,168,255,.45))}
-    .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
-    .chip{border:1px solid var(--stroke);background:linear-gradient(180deg,#0b1327,#091226);padding:8px 12px;border-radius:999px;color:#cbd5e1;text-decoration:none}
-    .chip.active{background:linear-gradient(180deg,#1b2a55,#13224b);border-color:#21408b;box-shadow:var(--glow)}
-    .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-    .btn:hover{border-color:#264890}
-    .btn.accent{background:linear-gradient(180deg,#2c57c7,#2549a8);border-color:#2e53b7;box-shadow:0 6px 28px rgba(59,130,246,.35)}
+    .topbar{background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke); padding: 12px 0;}
+    .top-row{display:flex;align-items:center;justify-content:space-between;}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;}
+    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;font-weight:700;cursor:pointer;}
+    .btn.accent{background:#2c57c7;border-color:#2e53b7;}
     .section{padding:30px 0}
-    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
-    .input::placeholder{color:#8aa0c2}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
-    .panel{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:14px;padding:16px}
-    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px; flex-wrap:wrap;}
-    .row > .input {width: auto; flex-grow: 1;}
+    .input{border:1px solid var(--stroke);background:#091327;border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
+    .panel{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px}
+    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px;}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
-    th,td{text-align:left;font-size:14px}
+    th,td{text-align:left;font-size:14px; padding:10px; border-bottom:1px solid var(--stroke);}
     tbody tr{background:#0b1426}
-    tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
-    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
-    tbody tr td:last-child{ border-right:1px solid var(--stroke); border-top-right-radius:10px; border-bottom-right-radius:10px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .tags{display:flex;gap:6px;flex-wrap:wrap}
-    .tag{font-size:11px;border:1px dashed #2c3850;padding:4px 8px;border-radius:999px;color:#c7d2fe; cursor: pointer; background: transparent;}
-    .tag.active{background:#1b2a55; border-color:#21408b; border-style:solid; color:#e7efff;}
+    tbody tr:hover{background: #101c36;}
     .hide{display:none!important}
+    dialog { border: 1px solid var(--stroke); background: var(--panel); color: var(--text); border-radius: var(--radius); padding: 0; max-width: 600px; width: 90vw;}
+    dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
   </style>
 </head>
 <body>
-  <header class="topbar" role="navigation" aria-label="Top">
+  <header class="topbar">
     <div class="container top-row">
-      <div class="brand">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6ea8ff"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs></svg>
-        <span>GPTMart Admin</span>
-      </div>
-      <nav class="nav" aria-label="Views">
-        <a class="chip" href="/index.html">Explore</a>
-        <a class="chip active" href="/admin.html">Admin</a>
-      </nav>
-      <div class="nav">
-        <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
-      </div>
+      <div class="brand">Admin Panel</div>
+      <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
     </div>
   </header>
 
   <main class="container section">
-    <div id="adminGate">
+    <div id="loginView">
       <div class="panel" style="max-width: 400px; margin: 40px auto;">
-        <h3 style="margin:0 0 8px">Owner sign‑in</h3>
-        <div class="row">
-          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" />
-          <button class="btn accent" id="pinGo">Enter</button>
-        </div>
+        <h3 style="margin:0 0 8px">Owner Sign‑in</h3>
+        <form id="loginForm" class="row">
+          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" required/>
+          <button class="btn accent" type="submit">Enter</button>
+        </form>
       </div>
     </div>
 
-    <div id="adminDesk" class="hide">
-      <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
-        <div class="panel"><h4 style="margin:.2rem 0">Live</h4><div id="kLive" style="font-weight:800;font-size:22px">0</div></div>
-        <div class="panel"><h4 style="margin:.2rem 0">Featured</h4><div id="kFeat" style="font-weight:800;font-size:22px">0</div></div>
-        <div class="panel"><h4 style="margin:.2rem 0">Hidden</h4><div id="kHidden" style="font-weight:800;font-size:22px">0</div></div>
-      </div>
-
-      <div class="section">
+    <div id="adminView" class="hide">
         <h3 style="margin:0 0 10px">All Items</h3>
         <div class="panel">
-          <div class="row" style="margin-bottom:10px;">
-            <input id="aQ" class="input" placeholder="Filter items…" />
-            <select id="aStatus" class="input" style="max-width:200px"><option value="all">All</option><option value="live">Live</option><option value="hidden">Hidden</option></select>
-            <button class="btn" id="aReset">Reset</button>
+          <div class="row" style="margin-bottom:10px; flex-wrap: wrap;">
             <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn" id="exportBtn">Export JSON</button>
-              <label class="btn" title="Import JSON"><input id="importFile" type="file" accept="application/json" style="display:none">Import</label>
-              <button class="btn accent" id="addManual">＋ New</button>
+              <button class="btn accent" id="addBtn">＋ New Item</button>
             </div>
           </div>
           <div style="overflow-x:auto">
             <table>
-              <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody id="tAll"></tbody>
+              <thead><tr><th>Title</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="itemsTable"></tbody>
             </table>
           </div>
         </div>
-      </div>
-
-      <div class="section">
-        <h3 style="margin:0 0 10px">Settings</h3>
-        <div class="panel">
-          <div class="row"><input id="siteTitle" class="input" placeholder="Site Title (public)"/></div>
-          <div class="row" style="justify-content:flex-end"><button class="btn accent" id="saveSettings">Save Settings</button></div>
-        </div>
-      </div>
     </div>
   </main>
   
-  <dialog id="modal" style="background: transparent; border: 0; max-width: 600px; width: 100%;">
-    <form>
-      <div class="panel" style="margin:0">
-        <h3 id="mTitle">Add / Edit GPT</h3>
-        <div class="row"><input id="mTitleIn" class="input" placeholder="Title" required></div>
-        <div class="row"><input id="mUrlIn" class="input" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
-        <div class="row">
-          <input id="mIconIn" class="input" placeholder="Paste Icon URL or Upload" style="flex-grow:1;">
-          <label for="mIconFile" class="btn" style="flex-shrink:0; cursor: pointer;">Upload</label>
-          <input id="mIconFile" type="file" accept="image/*" style="display:none;">
-        </div>
-        <div class="row"><input id="mCatsIn" class="input" placeholder="Select one or more categories below"></div>
-        <div id="mCatsSuggestions" class="tags" style="margin-bottom: 8px;"></div>
-        <div class="row"><input id="mTagsIn" class="input" placeholder="Tags (e.g., api, web, data analysis)"></div>
-        <div class="row"><input id="mDescIn" class="input" placeholder="Short description"></div>
-        <div class="row">
-          <label style="display:flex;gap:8px;align-items:center"><input id="mFeatIn" type="checkbox">Featured</label>
-          <select id="mStatusIn" class="input" style="max-width:200px"><option value="live">Live</option><option value="hidden">Hidden</option></select>
-        </div>
-        <div class="row" style="justify-content:flex-end;gap:8px; margin-top: 16px;">
-          <button id="mCancel" class="btn" type="button">Cancel</button>
-          <button class="btn accent" id="mSave" type="submit">Save</button>
-        </div>
-      </div>
-    </form>
+  <dialog id="itemModal">
+      <form id="itemForm" style="padding: 20px;">
+          <h3 id="modalTitle">Add Item</h3>
+          <input type="hidden" id="itemId">
+          <div class="row"><input id="mTitle" class="input" placeholder="Title" required></div>
+          <div class="row"><input id="mUrl" class="input" placeholder="ChatGPT link" required></div>
+          <div class="row"><input id="mIcon" class="input" placeholder="Icon URL"></div>
+          <div class="row"><textarea id="mDesc" class="input" placeholder="Short description" style="min-height: 60px;"></textarea></div>
+          <div class="row"><input id="mCats" class="input" placeholder="Categories (comma-separated)"></div>
+          <div class="row"><input id="mTags" class="input" placeholder="Tags (comma-separated)"></div>
+          <div class="row" style="align-items: center;">
+              <label><input id="mFeat" type="checkbox" style="margin-right: 5px;">Featured</label>
+              <select id="mStatus" class="input" style="width: 150px; margin-left: auto;">
+                  <option value="live">Live</option>
+                  <option value="hidden">Hidden</option>
+              </select>
+          </div>
+          <div class="row" style="justify-content:flex-end;gap:8px; margin-top: 16px;">
+              <button id="mCancel" class="btn" type="button">Cancel</button>
+              <button class="btn accent" type="submit">Save</button>
+          </div>
+      </form>
   </dialog>
   
   <script>
-  /*************** CONSTANTS & STATE ***************/
-  const LS_ITEMS    = 'gptmart.v7.items';
-  const LS_SETTINGS = 'gptmart.v7.settings';
-  const SESSION_ADMIN = 'gptmart.v7.isAdmin';
-  const ADMIN_PIN = '4545'; // THIS IS INSECURE FOR A REAL WEBSITE
+    const $ = s => document.querySelector(s);
+    let authToken = null;
 
-  const $  = (s,el=document)=> el.querySelector(s);
-  const $$ = (s,el=document)=> Array.from(el.querySelectorAll(s));
-  const uniq = arr => Array.from(new Set(arr));
-  const toCSV = a => (a||[]).join(', ');
-  const fromCSV = s => (s||'').split(',').map(x=>x.trim()).filter(Boolean);
-  const contains = (t,q)=> (t||'').toLowerCase().includes((q||'').toLowerCase());
-
-  function read(k,def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch(e){ return def; } }
-  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-
-  /*************** DATA ***************/
-  const STARTER_GPTS_ADMIN = [
-      { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", status: 'live', featured: true, createdAt: 1729000000000 },
-      { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728900000000 },
-      { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor", status: 'live', featured: true, createdAt: 1728800000000 },
-      { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728700000000 },
-      { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor", status: 'live', featured: false, createdAt: 1728600000000 },
-      { title:"Cybersecurity Mentor", desc:"Network security, encryption, ethical hacking basics, malware, risk, and best practices. Lessons + simulations.", icon:"https://cdn-icons-png.flaticon.com/512/3063/3063468.png", categories:["Security"], url:"https://chatgpt.com/g/g-68b6e41946448191af4377ad84dafe24-cybersecurity-mentor", status: 'hidden', featured: false, createdAt: 1728500000000 }
-  ];
-
-  function initData(){
-    if(!read(LS_ITEMS, null)) write(LS_ITEMS, STARTER_GPTS_ADMIN);
-    if(!read(LS_SETTINGS, null)) write(LS_SETTINGS, { title:'GPTMart' });
-  }
-
-  function items(){ return read(LS_ITEMS, []); }
-  function setItems(v){ write(LS_ITEMS, v); renderAdmin(); }
-  function settings(){ return read(LS_SETTINGS, {title:'GPTMart'}); }
-  function setSettings(v){ write(LS_SETTINGS, v); applySettings(); }
-
-  /*************** AUTHENTICATION ***************/
-  const adminGate = $('#adminGate');
-  const adminDesk = $('#adminDesk');
-  const logoutBtn = $('#logoutBtn');
-
-  function isAdmin(){ return sessionStorage.getItem(SESSION_ADMIN)==='1'; }
-  
-  function requireAdmin(){ 
-    if(isAdmin()){ 
-      adminGate.classList.add('hide'); 
-      adminDesk.classList.remove('hide'); 
-      logoutBtn.style.display = 'inline-flex';
-      renderAdmin(); 
-      applySettings();
-    } else { 
-      adminGate.classList.remove('hide'); 
-      adminDesk.classList.add('hide'); 
-      logoutBtn.style.display = 'none';
-    } 
-  }
-
-  $('#pinGo').addEventListener('click', ()=>{ 
-    const entered = ($('#pin').value||'').trim(); 
-    if(entered===ADMIN_PIN){ 
-      sessionStorage.setItem(SESSION_ADMIN,'1'); 
-      requireAdmin(); 
-    } else {
-      alert('Access denied');
-    }
-  });
-
-  logoutBtn.addEventListener('click', () => {
-    sessionStorage.removeItem(SESSION_ADMIN);
-    requireAdmin();
-  });
-
-  /*************** ADMIN RENDER & LOGIC ***************/
-  let currentEditIndex = null;
-
-  function renderAdmin(){
-    const it = items();
-    $('#kLive').textContent   = it.filter(x=>x.status==='live').length;
-    $('#kHidden').textContent = it.filter(x=>x.status==='hidden').length;
-    $('#kFeat').textContent   = it.filter(x=>x.featured && x.status==='live').length;
-    
-    const q = ($('#aQ').value||'').trim();
-    const st = $('#aStatus').value||'all';
-    const filtered = it.filter(x=>{ 
-        const inQ = !q || [x.title,x.desc,toCSV(x.tags),toCSV(x.categories)].some(v=>contains(v,q)); 
-        const inS = st==='all' || x.status===st; 
-        return inQ && inS; 
-    });
-    
-    $('#tAll').innerHTML = filtered.map((x, originalIndex) => `
-      <tr>
-        <td>${x.title}</td>
-        <td><small>${toCSV(x.categories)}</small><br><small style="color:#93c5fd">${toCSV(x.tags)}</small></td>
-        <td>${x.featured ? '⭐️' : '—'}</td>
-        <td>${x.status}</td>
-        <td>
-          <button class="btn" data-edit="${originalIndex}">Edit</button>
-          <button class="btn" data-togglef="${originalIndex}">${x.featured?'Unfeature':'Feature'}</button>
-          <button class="btn" data-toggleh="${originalIndex}">${x.status==='hidden'?'Unhide':'Hide'}</button>
-          <a class="btn accent" href="${x.url}" target="_blank">Open</a>
-          <button class="btn" data-del="${originalIndex}" style="border-color:#b91c1c; color:#fca5a5">Delete</button>
-        </td>
-      </tr>`).join('');
-
-    $$('#tAll [data-edit]').forEach(b=> b.addEventListener('click', ()=> openModal(+b.dataset.edit)));
-    $$('#tAll [data-togglef]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.togglef; itms[i].featured=!itms[i].featured; setItems(itms);}));
-    $$('#tAll [data-toggleh]').forEach(b=> b.addEventListener('click', ()=>{ const itms = items(); const i=+b.dataset.toggleh; itms[i].status = itms[i].status==='hidden'?'live':'hidden'; setItems(itms);}));
-    $$('#tAll [data-del]').forEach(b=> b.addEventListener('click', ()=>{ if(confirm('Are you sure you want to delete this item?')){ const itms=items(); itms.splice(+b.dataset.del,1); setItems(itms);}}));
-  }
-
-  $('#aQ').addEventListener('input', renderAdmin);
-  $('#aStatus').addEventListener('change', renderAdmin);
-  $('#aReset').addEventListener('click', ()=>{ $('#aQ').value=''; $('#aStatus').value='all'; renderAdmin(); });
-
-  $('#exportBtn').addEventListener('click', ()=>{
-    const data = { items: items(), settings: settings() };
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gptmart-export.json'; a.click();
-  });
-  
-  $('#importFile').addEventListener('change', (e)=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader(); 
-    reader.onload = ()=>{
-      try {
-        const data = JSON.parse(reader.result);
-        if(confirm('This will overwrite all existing data. Are you sure?')) {
-            if(Array.isArray(data.items)) write(LS_ITEMS, data.items);
-            if(data.settings) write(LS_SETTINGS, data.settings);
-            setItems(read(LS_ITEMS));
-            applySettings();
-            alert('Imported!');
+    // A single helper function for all authenticated API calls
+    async function api(endpoint, method = 'GET', body = null) {
+        const headers = { 'Authorization': `Bearer ${authToken}` };
+        const options = { method, headers };
+        if (body) {
+            headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
         }
-      } catch(err){ alert('Invalid file'); }
-    };
-    reader.readAsText(file);
-  });
+        const response = await fetch(endpoint, options);
+        if (response.status === 401) { // Token expired or invalid
+            sessionStorage.removeItem('gptmart_token');
+            checkAuth();
+            throw new Error('Unauthorized');
+        }
+        if (!response.ok) throw new Error('API request failed');
+        return response.status === 204 ? null : response.json(); // Handle no content for DELETE
+    }
 
-  $('#saveSettings').addEventListener('click', ()=>{
-    const s = settings();
-    s.title = $('#siteTitle').value.trim() || s.title;
-    setSettings(s);
-    alert('Settings saved');
-  });
-
-  function applySettings(){
-    const s = settings();
-    $('#siteTitle').value = s.title||'';
-  }
-
-  /*************** MODAL LOGIC ***************/
-  const modal = $('#modal');
-  $('#addManual').addEventListener('click', ()=> openModal());
-  
-  function openModal(editIndex = null){
-    currentEditIndex = editIndex;
-    const itms = items();
-    const editing = (editIndex !== null) ? itms[editIndex] : null;
-    
-    $('#mTitle').textContent = editing ? 'Edit GPT' : 'Add GPT';
-    $('#mTitleIn').value = editing?.title || '';
-    $('#mUrlIn').value = editing?.url || '';
-    $('#mIconIn').value = editing?.icon || '';
-    $('#mDescIn').value = editing?.desc || '';
-    $('#mCatsIn').value = toCSV(editing?.categories);
-    $('#mTagsIn').value = toCSV(editing?.tags);
-    $('#mFeatIn').checked = !!editing?.featured;
-    $('#mStatusIn').value = editing?.status || 'live';
-    
-    const suggestionsContainer = $('#mCatsSuggestions');
-    const allCats = uniq(items().flatMap(x => x.categories || [])).sort();
-    suggestionsContainer.innerHTML = allCats.map(cat => `<button type="button" class="tag" data-cat="${cat}">${cat}</button>`).join('');
-    
-    const syncCatButtons = () => {
-      const selectedCats = fromCSV($('#mCatsIn').value);
-      $$('#mCatsSuggestions .tag').forEach(btn => btn.classList.toggle('active', selectedCats.includes(btn.dataset.cat)));
-    };
-
-    $$('#mCatsSuggestions .tag').forEach(btn => {
-      btn.onclick = () => {
-        const catToAdd = btn.dataset.cat;
-        const input = $('#mCatsIn');
-        let currentCats = fromCSV(input.value);
-        if (currentCats.includes(catToAdd)) {
-          currentCats = currentCats.filter(c => c !== catToAdd);
+    function checkAuth() {
+        authToken = sessionStorage.getItem('gptmart_token');
+        if (authToken) {
+            $('#loginView').classList.add('hide');
+            $('#adminView').classList.remove('hide');
+            $('#logoutBtn').style.display = 'block';
+            loadAdminData();
         } else {
-          currentCats.push(catToAdd);
+            $('#loginView').classList.remove('hide');
+            $('#adminView').classList.add('hide');
+            $('#logoutBtn').style.display = 'none';
         }
-        input.value = toCSV(currentCats);
-        syncCatButtons();
-      };
-    });
-    
-    $('#mCatsIn').addEventListener('input', syncCatButtons);
-    syncCatButtons();
-    modal.showModal();
-  }
-  
-  modal.querySelector('form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const item = {
-      title: $('#mTitleIn').value.trim(), url: $('#mUrlIn').value.trim(), icon: $('#mIconIn').value.trim(), desc: $('#mDescIn').value.trim(),
-      categories: fromCSV($('#mCatsIn').value), tags: fromCSV($('#mTagsIn').value), featured: $('#mFeatIn').checked, status: $('#mStatusIn').value,
-    };
-    
-    let itms = items();
-    if (currentEditIndex !== null) {
-      item.createdAt = itms[currentEditIndex].createdAt || Date.now();
-      itms[currentEditIndex] = item;
-    } else {
-      item.createdAt = Date.now();
-      itms.unshift(item);
     }
-    setItems(itms);
-    modal.close();
-    currentEditIndex = null;
-  });
 
-  $('#mCancel').addEventListener('click', () => modal.close());
+    $('#loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pin = $('#pin').value;
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            sessionStorage.setItem('gptmart_token', data.token);
+            checkAuth();
+        } else {
+            alert('Login failed. Invalid PIN.');
+        }
+    });
 
-  $('#mIconFile').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { $('#mIconIn').value = reader.result; };
-    reader.readAsDataURL(file);
-  });
+    $('#logoutBtn').addEventListener('click', () => {
+        sessionStorage.removeItem('gptmart_token');
+        checkAuth();
+    });
 
-  /*************** INITIALIZATION ***************/
-  initData();
-  requireAdmin();
+    async function loadAdminData() {
+        try {
+            const data = await api('/api/gpts/all');
+            const tableBody = $('#itemsTable');
+            tableBody.innerHTML = data.items.map(item => `
+                <tr>
+                    <td>${item.title}</td>
+                    <td>${item.status}</td>
+                    <td style="display:flex; gap: 6px; flex-wrap: wrap;">
+                        <button class="btn" onclick="openModal('${item.id}')">Edit</button>
+                        <button class="btn" onclick="deleteItem('${item.id}')" style="background: #5a1d1d; border-color: #b91c1c;">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    const modal = $('#itemModal');
+    $('#addBtn').addEventListener('click', () => openModal());
+    $('#mCancel').addEventListener('click', () => modal.close());
+
+    async function openModal(id = null) {
+        const form = $('#itemForm');
+        form.reset();
+        $('#itemId').value = '';
+        if (id) {
+            $('#modalTitle').textContent = 'Edit Item';
+            const data = await api('/api/gpts/all');
+            const item = data.items.find(i => i.id === id);
+            if (item) {
+                $('#itemId').value = item.id;
+                $('#mTitle').value = item.title;
+                $('#mUrl').value = item.url;
+                $('#mIcon').value = item.icon;
+                $('#mDesc').value = item.desc;
+                $('#mCats').value = (item.categories || []).join(', ');
+                $('#mTags').value = (item.tags || []).join(', ');
+                $('#mFeat').checked = item.featured;
+                $('#mStatus').value = item.status;
+            }
+        } else {
+            $('#modalTitle').textContent = 'Add Item';
+        }
+        modal.showModal();
+    }
+
+    $('#itemForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = $('#itemId').value;
+        const itemData = {
+            title: $('#mTitle').value,
+            url: $('#mUrl').value,
+            icon: $('#mIcon').value,
+            desc: $('#mDesc').value,
+            categories: $('#mCats').value.split(',').map(s => s.trim()).filter(Boolean),
+            tags: $('#mTags').value.split(',').map(s => s.trim()).filter(Boolean),
+            featured: $('#mFeat').checked,
+            status: $('#mStatus').value
+        };
+
+        const url = id ? `/api/gpts/update/${id}` : '/api/gpts/create';
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            await api(url, method, itemData);
+            modal.close();
+            loadAdminData();
+        } catch (e) {
+            alert('Failed to save item.');
+        }
+    });
+
+    async function deleteItem(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            try {
+                await api(`/api/gpts/delete/${id}`, 'DELETE');
+                loadAdminData();
+            } catch (e) {
+                alert('Failed to delete item.');
+            }
+        }
+    }
+    
+    checkAuth();
   </script>
 </body>
 </html>
-
