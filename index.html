@@ -97,7 +97,7 @@
         flex-basis: 100%;
         justify-content: center;
       }
-      .top-row > .nav {
+      .nav {
         justify-content: center;
       }
       .quick { display: none; }
@@ -115,7 +115,6 @@
       </div>
       <nav class="nav" aria-label="Views">
         <a class="chip active" href="/">Explore</a>
-        <a class="chip" href="/admin.html">Admin</a>
       </nav>
       <div class="nav">
         <a class="btn accent" href="#content">Browse</a>
@@ -175,6 +174,14 @@
   const toCSV = a => (a||[]).join(', ');
 
   /*************** DATA ***************/
+  const STARTER_GPTS = [
+    { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor", status: 'live', featured: true, createdAt: 1729000000000 },
+    { title:"ASP Tutor", desc:"Classic ASP + modern ASP.NET (C#). Server-side scripting, examples, debugging, and web app best practices.", icon:"https://cdn.iconscout.com/icon/free/png-256/asp-net-3-1175185.png", categories:["Backend","Languages"], url:"https://chatgpt.com/g/g-68b6eaad79e48191b3b2c487f0e60071-asp-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728900000000 },
+    { title:"Artificial Intelligence Mentor", desc:"ML, DL, NLP, CV, RL, and Generative AI. Runnable code, projects, and ethics — beginner to advanced.", icon:"https://upload.wikimedia.org/wikipedia/commons/b/b9/AI_logo_by_United_Blasters.png", categories:["AI & Automation","Data"], url:"https://chatgpt.com/g/g-68b6e97f95ac81918b262e088c05f522-artificial-intelligence-mentor", status: 'live', featured: true, createdAt: 1728800000000 },
+    { title:"Sass Tutor", desc:"Master Sass/SCSS: variables, mixins, nesting, partials, imports, architecture. Real-world patterns and debugging.", icon:"https://cdn.iconscout.com/icon/free/png-256/sass-226059.png", categories:["Frontend","Design"], url:"https://chatgpt.com/g/g-68b6e8bf3d7881919c484523463fa967-sass-tutor?model=gpt-5", status: 'live', featured: true, createdAt: 1728700000000 },
+    { title:"Vue Tutor", desc:"Vue components, props, events, router, Pinia/Vuex, Composition API, API integration.", icon:"https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg", categories:["Frontend","Frameworks"], url:"https://chatgpt.com/g/g-68b6e70822048191a981d4994078c447-vue-tutor", status: 'live', featured: false, createdAt: 1728600000000 },
+  ];
+
   const LANGUAGES = [
     { name: "Python", icon: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg", url: "https://chatgpt.com/g/g-67ef5a74409081919143341dc018e522-python?model=gpt-5" },
     { name: "PHP", icon: "https://www.php.net/images/logos/new-php-logo.svg", url: "https://chatgpt.com/g/g-68cbbcf3baac81918fd5ec4667a31a0e-php-pro-studio?model=gpt-5" },
@@ -293,23 +300,15 @@
   }, true);
 
   /*************** INITIALIZATION ***************/
-  async function init() {
-    try {
-      const response = await fetch('/api/gpts');
-      if (!response.ok) throw new Error('Network response was not ok');
-      ALL_ITEMS = await response.json();
-      
-      const settingsRes = await fetch('/api/settings');
-      const settings = await settingsRes.json();
-      $('#ftTitle').textContent = settings.title || 'GPTMart';
-      $('#siteLogo').textContent = settings.title || 'GPTMart';
-      document.title = (settings.title || 'GPTMart') + ' — Curated Custom GPTs';
-
-    } catch (error) {
-      console.error("Failed to fetch initial data:", error);
-      grid.innerHTML = "<p style='color:var(--danger)'>Could not load GPTs. Please try again later.</p>";
-      return;
-    }
+  function init() {
+    // Data is now local for this static version, so no fetch is needed.
+    ALL_ITEMS = STARTER_GPTS.filter(item => item.status === 'live');
+    
+    // Settings are also local for this static version.
+    const settings = { title: 'GPTMart' };
+    $('#ftTitle').textContent = settings.title;
+    $('#siteLogo').textContent = settings.title;
+    document.title = settings.title + ' — Curated Custom GPTs';
 
     renderLanguages();
     syncPublic();
@@ -320,3 +319,4 @@
   </script>
 </body>
 </html>
+
