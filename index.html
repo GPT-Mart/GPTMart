@@ -62,9 +62,11 @@
     .quick .k{border:1px dashed #27407a;color:#bcd2ff;padding:6px 10px;border-radius:999px;font-size:12px}
 
     /* Search ribbon */
-    .ribbon{margin-top:10px;display:grid;grid-template-columns:1fr 200px 200px auto;gap:8px}
+    .ribbon{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;}
     .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
     .input::placeholder{color:#8aa0c2}
+    .ribbon > .input { flex: 1 1 180px; }
+    .ribbon > #q { flex: 2 1 250px; }
 
     /* Languages strip */
     .langs{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0}
@@ -90,19 +92,21 @@
 
     /* Panels & table */
     .panel{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:14px;padding:16px}
-    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px;}
+    .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px; flex-wrap:wrap;}
+    /* NEW: Makes inputs in flex rows behave correctly */
+    .row > .input {width: auto; flex-grow: 1;}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{text-align:left;font-size:14px}
     tbody tr{background:#0b1426}
     tbody td{padding:10px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke)}
     tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
     tbody tr td:last-child{
-        border-right:1px solid var(--stroke);
-        border-top-right-radius:10px;
-        border-bottom-right-radius:10px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+      border-right:1px solid var(--stroke);
+      border-top-right-radius:10px;
+      border-bottom-right-radius:10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
@@ -123,19 +127,13 @@
     /***** RESPONSIVE STYLES *****/
     @media (max-width:1100px){.col{grid-column:span 4}}
     @media (max-width:900px){
-        .hero{grid-template-columns:1fr}
-        .ribbon{grid-template-columns:1fr 1fr}
-        .top-row {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+      .hero{grid-template-columns:1fr}
+      .top-row {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
     @media (max-width:800px){.col{grid-column:span 6}}
-    @media (max-width: 600px) {
-        .ribbon {
-            grid-template-columns: 1fr;
-        }
-    }
     @media (max-width:560px){.col{grid-column:span 12}}
   </style>
 </head>
@@ -216,7 +214,7 @@
         <div class="section">
           <h3 style="margin:0 0 10px">All Items</h3>
           <div class="panel">
-            <div class="row" style="margin-bottom:10px;flex-wrap:wrap">
+            <div class="row" style="margin-bottom:10px;">
               <input id="aQ" class="input" placeholder="Filter items…" />
               <select id="aStatus" class="input" style="max-width:200px"><option value="all">All</option><option value="live">Live</option><option value="hidden">Hidden</option></select>
               <button class="btn" id="aReset">Reset</button>
@@ -531,13 +529,15 @@
 
   // Modal
   $('#addManual').addEventListener('click', ()=> openModal());
+  let currentEditIndex = null;
   function openModal(editIndex){
+    currentEditIndex = (typeof editIndex === 'number') ? editIndex : null;
     const itms = items();
-    const editing = typeof editIndex === 'number' ? itms[editIndex] : null;
+    const editing = currentEditIndex !== null ? itms[currentEditIndex] : null;
     const draft = read(LS_DRAFT, null);
     
     let dataToLoad = editing;
-    if (!editing && draft) {
+    if (!editing && draft && (draft.title || draft.url)) {
       if (confirm("You have a saved draft. Would you like to restore it?")) {
         dataToLoad = draft;
       }
@@ -587,9 +587,7 @@
     $('#modal').showModal();
   }
   
-  // MODIFIED: moved save/cancel listeners outside openModal
   $('#mSave').addEventListener('click', ()=>{
-    // Use the form's checkValidity method to trigger validation
     if (!$('#modal form').checkValidity()) {
       $('#modal form').reportValidity();
       return;
@@ -604,22 +602,23 @@
       tags: fromCSV($('#mTagsIn').value),
       featured: $('#mFeatIn').checked,
       status: $('#mStatusIn').value,
-      createdAt: Date.now() // Simplification: always update time on edit or use new time
     };
     
     let itms = items();
-    const existingIndex = itms.findIndex(i => i.url === item.url || i.title === item.title); // A simple way to check for existing
     
-    if (existingIndex > -1 && !$('#modal').dataset.editing) { // If it exists and we're not in edit mode
-        itms[existingIndex] = item;
+    if (currentEditIndex !== null) {
+        item.createdAt = itms[currentEditIndex].createdAt || Date.now(); // Preserve original creation date
+        itms[currentEditIndex] = item;
     } else {
+        item.createdAt = Date.now();
         itms.push(item);
     }
+
     setItems(itms);
     
     write(LS_DRAFT, null); // Clear draft on successful save
     $('#modal').close();
-    delete $('#modal').dataset.editing;
+    currentEditIndex = null;
   });
 
   $('#mCancel').addEventListener('click', () => {
@@ -634,11 +633,14 @@
       status: $('#mStatusIn').value
     };
     if (draft.title || draft.url || draft.desc) {
-      write(LS_DRAFT, draft);
-    } else {
-      write(LS_DRAFT, null);
+      if(confirm("Do you want to save this as a draft?")){
+        write(LS_DRAFT, draft);
+      } else {
+        write(LS_DRAFT, null);
+      }
     }
-    $('#modal').close(); // Manually close
+    $('#modal').close();
+    currentEditIndex = null;
   });
 
   /*************** COMMAND PALETTE ***************/
@@ -650,8 +652,8 @@
     const k = e.key.toLowerCase();
     const ctrl = e.ctrlKey || e.metaKey;
     if((ctrl && k==='k')){ e.preventDefault(); openPalette(); }
-    if(k==='/' && document.activeElement!==qInput){ e.preventDefault(); qInput.focus(); }
-    if(k==='escape') closePalette();
+    if(k==='/' && !['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); qInput.focus(); }
+    if(k==='escape' && palette.classList.contains('open')) closePalette();
   }, true);
 
   function openPalette(){ palette.classList.add('open'); palQ.value=''; renderPalette(''); palQ.focus(); }
@@ -692,7 +694,7 @@
 
   function navigate(hash){ location.hash = hash; onRoute(); }
   function onRoute(){ const h=(location.hash||'#/explore');
-    $$('#top .chip').forEach(c=>c.classList.remove('active'));
+    $$('.topbar .chip').forEach(c=>c.classList.remove('active'));
     if(h.startsWith('#/admin')){ showTab('admin'); } else { showTab('explore'); }
   }
 
@@ -731,13 +733,13 @@
   window.addEventListener('hashchange', onRoute);
 
   // Light anti‑inspect (optional — keeps UX smooth)
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
-    const k = e.key.toLowerCase(); const ctrl = e.ctrlKey || e.metaKey;
-    if ((ctrl && ['u','s','p'].includes(k)) || k==='f12' || (ctrl && e.shiftKey && ['i','c','j'].includes(k))) {
-      e.preventDefault(); e.stopPropagation();
-    }
-  }, true);
+  // document.addEventListener('contextmenu', e => e.preventDefault());
+  // document.addEventListener('keydown', e => {
+  //   const k = e.key.toLowerCase(); const ctrl = e.ctrlKey || e.metaKey;
+  //   if ((ctrl && ['u','s','p'].includes(k)) || k==='f12' || (ctrl && e.shiftKey && ['i','c','j'].includes(k))) {
+  //     e.preventDefault(); e.stopPropagation();
+  //   }
+  // }, true);
   </script>
 </body>
 </html>
