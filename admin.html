@@ -13,16 +13,18 @@
     .topbar{background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke); padding: 12px 0;}
     .top-row{display:flex;align-items:center;justify-content:space-between;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;}
-    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;font-weight:700;cursor:pointer;}
+    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:8px 12px;border-radius:10px;color:#e7efff;font-weight:700;cursor:pointer; font-size: 13px;}
     .btn.accent{background:#2c57c7;border-color:#2e53b7;}
+    .btn.danger{background: #450a0a; border-color: #991b1b; color: #fca5a5;}
     .section{padding:30px 0}
     .input{border:1px solid var(--stroke);background:#091327;border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
     .panel{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px}
     .row{display:flex;gap:10px;align-items:center; margin-bottom: 8px;}
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
-    th,td{text-align:left;font-size:14px; padding:10px; border-bottom:1px solid var(--stroke);}
+    th,td{text-align:left;font-size:14px; padding:12px; border-top:1px solid var(--stroke); border-bottom:1px solid var(--stroke); vertical-align: top;}
     tbody tr{background:#0b1426}
-    tbody tr:hover{background: #101c36;}
+    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
+    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px}
     .hide{display:none!important}
     dialog { border: 1px solid var(--stroke); background: var(--panel); color: var(--text); border-radius: var(--radius); padding: 0; max-width: 600px; width: 90vw;}
     dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
@@ -35,7 +37,6 @@
       <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
     </div>
   </header>
-
   <main class="container section">
     <div id="loginView">
       <div class="panel" style="max-width: 400px; margin: 40px auto;">
@@ -46,25 +47,21 @@
         </form>
       </div>
     </div>
-
     <div id="adminView" class="hide">
-        <h3 style="margin:0 0 10px">All Items</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3>All Items</h3>
+            <button class="btn accent" id="addBtn">＋ New Item</button>
+        </div>
         <div class="panel">
-          <div class="row" style="margin-bottom:10px; flex-wrap: wrap;">
-            <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn accent" id="addBtn">＋ New Item</button>
-            </div>
-          </div>
           <div style="overflow-x:auto">
             <table>
-              <thead><tr><th>Title</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="itemsTable"></tbody>
             </table>
           </div>
         </div>
     </div>
   </main>
-  
   <dialog id="itemModal">
       <form id="itemForm" style="padding: 20px;">
           <h3 id="modalTitle">Add Item</h3>
@@ -88,12 +85,11 @@
           </div>
       </form>
   </dialog>
-  
   <script>
     const $ = s => document.querySelector(s);
     let authToken = null;
+    let allItemsCache = [];
 
-    // A single helper function for all authenticated API calls
     async function api(endpoint, method = 'GET', body = null) {
         const headers = { 'Authorization': `Bearer ${authToken}` };
         const options = { method, headers };
@@ -102,13 +98,13 @@
             options.body = JSON.stringify(body);
         }
         const response = await fetch(endpoint, options);
-        if (response.status === 401) { // Token expired or invalid
+        if (response.status === 401) {
             sessionStorage.removeItem('gptmart_token');
             checkAuth();
             throw new Error('Unauthorized');
         }
-        if (!response.ok) throw new Error('API request failed');
-        return response.status === 204 ? null : response.json(); // Handle no content for DELETE
+        if (!response.ok) throw new Error(`API request failed: ${response.statusText}`);
+        return response.status === 204 ? null : response.json();
     }
 
     function checkAuth() {
@@ -128,17 +124,21 @@
     $('#loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const pin = $('#pin').value;
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pin })
-        });
-        if (response.ok) {
-            const data = await response.json();
-            sessionStorage.setItem('gptmart_token', data.token);
-            checkAuth();
-        } else {
-            alert('Login failed. Invalid PIN.');
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem('gptmart_token', data.token);
+                checkAuth();
+            } else {
+                alert('Login failed. Invalid PIN.');
+            }
+        } catch (err) {
+            alert('Error connecting to the server.');
         }
     });
 
@@ -150,32 +150,40 @@
     async function loadAdminData() {
         try {
             const data = await api('/api/gpts/all');
+            allItemsCache = data.items; // Cache the data
             const tableBody = $('#itemsTable');
-            tableBody.innerHTML = data.items.map(item => `
+            tableBody.innerHTML = allItemsCache.map(item => `
                 <tr>
                     <td>${item.title}</td>
+                    <td>
+                        <small>${(item.categories || []).join(', ')}</small><br>
+                        <small style="color:#81a3ff">${(item.tags || []).join(', ')}</small>
+                    </td>
+                    <td>${item.featured ? '⭐️' : '—'}</td>
                     <td>${item.status}</td>
                     <td style="display:flex; gap: 6px; flex-wrap: wrap;">
                         <button class="btn" onclick="openModal('${item.id}')">Edit</button>
-                        <button class="btn" onclick="deleteItem('${item.id}')" style="background: #5a1d1d; border-color: #b91c1c;">Delete</button>
+                        <button class="btn" onclick="toggleFeature('${item.id}')">${item.featured ? 'Unfeature' : 'Feature'}</button>
+                        <button class="btn" onclick="toggleStatus('${item.id}')">${item.status === 'live' ? 'Hide' : 'Unhide'}</button>
+                        <a class="btn accent" href="${item.url}" target="_blank">Open</a>
+                        <button class="btn danger" onclick="deleteItem('${item.id}')">Delete</button>
                     </td>
                 </tr>
             `).join('');
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Failed to load data:", e); }
     }
 
     const modal = $('#itemModal');
     $('#addBtn').addEventListener('click', () => openModal());
     $('#mCancel').addEventListener('click', () => modal.close());
-
-    async function openModal(id = null) {
+    
+    function openModal(id = null) {
         const form = $('#itemForm');
         form.reset();
         $('#itemId').value = '';
         if (id) {
             $('#modalTitle').textContent = 'Edit Item';
-            const data = await api('/api/gpts/all');
-            const item = data.items.find(i => i.id === id);
+            const item = allItemsCache.find(i => i.id === id);
             if (item) {
                 $('#itemId').value = item.id;
                 $('#mTitle').value = item.title;
@@ -206,10 +214,8 @@
             featured: $('#mFeat').checked,
             status: $('#mStatus').value
         };
-
         const url = id ? `/api/gpts/update/${id}` : '/api/gpts/create';
         const method = id ? 'PUT' : 'POST';
-
         try {
             await api(url, method, itemData);
             modal.close();
@@ -229,8 +235,34 @@
             }
         }
     }
+
+    async function toggleFeature(id) {
+        const item = allItemsCache.find(i => i.id === id);
+        if (!item) return;
+        const updatedData = { ...item, featured: !item.featured };
+        try {
+            await api(`/api/gpts/update/${id}`, 'PUT', updatedData);
+            loadAdminData();
+        } catch(e) {
+            alert('Failed to update feature status.');
+        }
+    }
+
+    async function toggleStatus(id) {
+        const item = allItemsCache.find(i => i.id === id);
+        if (!item) return;
+        const newStatus = item.status === 'live' ? 'hidden' : 'live';
+        const updatedData = { ...item, status: newStatus };
+        try {
+            await api(`/api/gpts/update/${id}`, 'PUT', updatedData);
+            loadAdminData();
+        } catch(e) {
+            alert('Failed to update status.');
+        }
+    }
     
     checkAuth();
   </script>
 </body>
 </html>
+
