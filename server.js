@@ -1,3 +1,4 @@
+// server.js
 const http = require('http');
 const fs = require('fs').promises;
 const path = require('path');
@@ -11,14 +12,26 @@ async function startServer() {
   // --- CONFIG ---
   const PORT = process.env.PORT || 3000;
   const ADMIN_PIN = (process.env.ADMIN_PIN || '4545').trim();
-  const DB_PATH = path.join(__dirname, 'db.json');
+
+  // Where to store db.json (Render Disk mounts at /data). Fallback to app dir if needed (local dev).
+  let DATA_DIR = process.env.DATA_DIR || '/data';
+  async function ensureDataDir() {
+    try {
+      await fs.mkdir(DATA_DIR, { recursive: true });
+    } catch {
+      DATA_DIR = __dirname; // fallback for local/dev if /data not writable
+      try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch {}
+    }
+  }
+  await ensureDataDir();
+  const DB_PATH = path.join(DATA_DIR, 'db.json');
 
   // --- DB HELPERS ---
   async function readDB() {
     try {
       const data = await fs.readFile(DB_PATH, 'utf8');
       return JSON.parse(data);
-    } catch (error) {
+    } catch {
       // Seed on first run
       const allGpts = [
         { title:"jQuery Tutor", desc:"Learn and master jQuery: selectors, events, animations, DOM, AJAX, plugins, debugging, and modern alternatives.", icon:"https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg", categories:["Frontend","Tools"], url:"https://chatgpt.com/g/g-68b859c4f6f88191b05a4effe7d2140a-jquery-tutor"},
@@ -101,10 +114,7 @@ async function startServer() {
   const writeQueue = [];
 
   async function writeDB(data) {
-    if (isWriting) {
-      writeQueue.push(data);
-      return;
-    }
+    if (isWriting) { writeQueue.push(data); return; }
     isWriting = true;
     try {
       const tmpPath = DB_PATH + '.tmp';
@@ -112,10 +122,7 @@ async function startServer() {
       await fs.rename(tmpPath, DB_PATH); // atomic replace
     } finally {
       isWriting = false;
-      if (writeQueue.length > 0) {
-        const nextData = writeQueue.shift();
-        writeDB(nextData);
-      }
+      if (writeQueue.length > 0) writeDB(writeQueue.shift());
     }
   }
 
@@ -159,31 +166,25 @@ async function startServer() {
       req.on('end', () => {
         const ct = (req.headers['content-type'] || '').toLowerCase();
         try {
-          if (ct.includes('application/json')) {
-            resolve(JSON.parse(body || '{}'));
-          } else if (ct.includes('application/x-www-form-urlencoded')) {
-            resolve(querystring.parse(body));
-          } else {
-            // Try JSON then fallback to plain
-            try {
-              resolve(JSON.parse(body || '{}'));
-            } catch {
-              resolve({ raw: body });
-            }
+          if (ct.includes('application/json')) resolve(JSON.parse(body || '{}'));
+          else if (ct.includes('application/x-www-form-urlencoded')) resolve(querystring.parse(body));
+          else {
+            try { resolve(JSON.parse(body || '{}')); }
+            catch { resolve({ raw: body }); }
           }
-        } catch (e) {
-          reject(e);
-        }
+        } catch (e) { reject(e); }
       });
       req.on('error', reject);
     });
   }
 
-  // CORS helper
+  // CORS helper (echo Origin; works with credentials)
   function setCORS(req, res) {
-    const origin = req.headers.origin || '*';
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
+    const origin = req.headers.origin || '';
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -196,16 +197,13 @@ async function startServer() {
 
     // CORS + preflight
     setCORS(req, res);
-    if (method === 'OPTIONS') {
-      res.writeHead(204).end();
-      return;
-    }
+    if (method === 'OPTIONS') { res.writeHead(204).end(); return; }
 
     // API routes
     if (url.pathname.startsWith('/api/')) {
-      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
-      // LOGIN (accept JSON or form)
+      // LOGIN
       if (url.pathname === '/api/login' && method === 'POST') {
         try {
           const body = await parseBody(req);
@@ -214,7 +212,9 @@ async function startServer() {
             const token = createToken({ user: 'admin' });
 
             // set httpOnly cookie for browsers
-            const isSecure = (req.headers['x-forwarded-proto'] || '').includes('https');
+            const isSecure =
+              (req.headers['x-forwarded-proto'] || '').includes('https') ||
+              (req.connection && req.connection.encrypted);
             const cookie = [
               `session=${encodeURIComponent(token)}`,
               'HttpOnly',
@@ -229,7 +229,7 @@ async function startServer() {
           } else {
             res.writeHead(401).end(JSON.stringify({ error: 'Invalid PIN' }));
           }
-        } catch (e) {
+        } catch {
           res.writeHead(400).end(JSON.stringify({ error: 'Invalid request body' }));
         }
         return;
@@ -248,10 +248,7 @@ async function startServer() {
       const bearer = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
       const cookieTok = getCookieToken(req);
       const user = verifyTokenValue(bearer || cookieTok);
-      if (!user) {
-        res.writeHead(401).end(JSON.stringify({ error: 'Unauthorized' }));
-        return;
-      }
+      if (!user) { res.writeHead(401).end(JSON.stringify({ error: 'Unauthorized' })); return; }
 
       // Mutating / admin routes
       const db = await readDB();
@@ -296,14 +293,14 @@ async function startServer() {
           } else {
             res.writeHead(404).end(JSON.stringify({ error: 'API route not found' }));
           }
-        } catch (e) {
+        } catch {
           res.writeHead(500).end(JSON.stringify({ error: 'Server error' }));
         }
       });
       return;
     }
 
-    // Static files
+    // Static files (optional if you also host a tiny UI from this service)
     try {
       let filePath = path.join(__dirname, url.pathname === '/' ? 'index.html' : url.pathname);
       const data = await fs.readFile(filePath);
@@ -316,13 +313,13 @@ async function startServer() {
       else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
       res.setHeader('Content-Type', contentType);
       res.writeHead(200).end(data);
-    } catch (err) {
+    } catch {
       res.writeHead(404).end('<h1>404 Not Found</h1>');
     }
   });
 
   server.listen(PORT, () => {
-    console.log(`✅ Server running at http://localhost:${PORT}/`);
+    console.log(`✅ Server running on port ${PORT} (DATA_DIR=${DATA_DIR})`);
   });
 }
 
