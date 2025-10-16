@@ -12,19 +12,7 @@ async function startServer() {
   // --- CONFIG ---
   const PORT = process.env.PORT || 3000;
   const ADMIN_PIN = (process.env.ADMIN_PIN || '4545').trim();
-
-  // Where to store db.json (Render Disk mounts at /data). Fallback to app dir if needed (local dev).
-  let DATA_DIR = process.env.DATA_DIR || '/data';
-  async function ensureDataDir() {
-    try {
-      await fs.mkdir(DATA_DIR, { recursive: true });
-    } catch {
-      DATA_DIR = __dirname; // fallback for local/dev if /data not writable
-      try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch {}
-    }
-  }
-  await ensureDataDir();
-  const DB_PATH = path.join(DATA_DIR, 'db.json');
+  const DB_PATH = path.join(__dirname, 'db.json');
 
   // --- DB HELPERS ---
   async function readDB() {
@@ -89,7 +77,6 @@ async function startServer() {
         { title:"Code-to-Rap GPT", desc:"Explains code by rapping about it.", icon:"https://cdn-icons-png.flaticon.com/512/2769/2769747.png", categories:["Humor","Learning"], url:"https://chatgpt.com/g/g-68dab7f617cc819198b1432fe32cf307-code-to-rap-gpt?model=gpt-5"},
         { title:"Bug Meme GPT", desc:"Turns bugs into instant memes.", icon:"https://cdn-icons-png.flaticon.com/512/3221/3221614.png", categories:["Humor","Tools"], url:"https://chatgpt.com/g/g-68dab3b8cebc819180d1b629ab574579-bug-meme-gpt?model=gpt-5"}
       ];
-
       const formattedGpts = allGpts.map(item => ({
         id: uuidv4(),
         createdAt: Date.now() - Math.floor(Math.random() * 1000000),
@@ -102,7 +89,6 @@ async function startServer() {
         tags: item.tags || [],
         url: item.url,
       }));
-
       const defaultData = { settings: { title: "GPTMart" }, items: formattedGpts };
       await writeDB(defaultData);
       return defaultData;
@@ -112,7 +98,6 @@ async function startServer() {
   // --- ATOMIC WRITES W/ QUEUE ---
   let isWriting = false;
   const writeQueue = [];
-
   async function writeDB(data) {
     if (isWriting) { writeQueue.push(data); return; }
     isWriting = true;
@@ -138,16 +123,6 @@ async function startServer() {
     if (s && s.expires > Date.now()) return s.user;
     if (s) delete sessions[token];
     return null;
-  }
-  function getCookieToken(req) {
-    const raw = req.headers.cookie || '';
-    const jar = Object.fromEntries(
-      raw.split(';').map(v => v.trim()).filter(Boolean).map(kv => {
-        const i = kv.indexOf('=');
-        return [kv.slice(0, i), decodeURIComponent(kv.slice(i + 1))];
-      })
-    );
-    return jar.session || null;
   }
 
   // constant-time PIN compare
@@ -178,13 +153,11 @@ async function startServer() {
     });
   }
 
-  // CORS helper (echo Origin; works with credentials)
+  // CORS helper
   function setCORS(req, res) {
-    const origin = req.headers.origin || '';
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Vary', 'Origin');
-    }
+    const origin = req.headers.origin || '*';
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -199,11 +172,25 @@ async function startServer() {
     setCORS(req, res);
     if (method === 'OPTIONS') { res.writeHead(204).end(); return; }
 
+    // Helpful root page
+    if (url.pathname === '/' && method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
+         .end('GPTMart connector is running. Try /api/gpts/public or /api/health');
+      return;
+    }
+
+    // Health check
+    if (url.pathname === '/api/health' && method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+         .end(JSON.stringify({ ok: true }));
+      return;
+    }
+
     // API routes
     if (url.pathname.startsWith('/api/')) {
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Type', 'application/json');
 
-      // LOGIN
+      // LOGIN (accept JSON or form) — cross-site cookie enabled
       if (url.pathname === '/api/login' && method === 'POST') {
         try {
           const body = await parseBody(req);
@@ -211,18 +198,15 @@ async function startServer() {
           if (checkPin(pin)) {
             const token = createToken({ user: 'admin' });
 
-            // set httpOnly cookie for browsers
-            const isSecure =
-              (req.headers['x-forwarded-proto'] || '').includes('https') ||
-              (req.connection && req.connection.encrypted);
+            // Always send cross-site capable cookie
             const cookie = [
               `session=${encodeURIComponent(token)}`,
               'HttpOnly',
               'Path=/',
-              'SameSite=Lax',
-              isSecure ? 'Secure' : null,
+              'SameSite=None',  // <-- allow cross-site
+              'Secure',         // <-- required with SameSite=None
               'Max-Age=3600'
-            ].filter(Boolean).join('; ');
+            ].join('; ');
             res.setHeader('Set-Cookie', cookie);
 
             res.writeHead(200).end(JSON.stringify({ success: true, token }));
@@ -235,7 +219,7 @@ async function startServer() {
         return;
       }
 
-      // PUBLIC LIST
+      // PUBLIC LIST (no auth)
       if (url.pathname === '/api/gpts/public' && method === 'GET') {
         const db = await readDB();
         const publicItems = db.items.filter(i => i.status === 'live');
@@ -243,10 +227,16 @@ async function startServer() {
         return;
       }
 
-      // AUTH (Bearer or Cookie)
+      // AUTH (cookie or bearer)
       const authHeader = req.headers['authorization'];
       const bearer = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-      const cookieTok = getCookieToken(req);
+
+      // parse cookie header for "session="
+      const cookieHeader = req.headers.cookie || '';
+      const cookieTok = cookieHeader.split(';').map(s => s.trim())
+        .map(kv => kv.split('='))
+        .reduce((acc,[k,v]) => (k==='session' ? decodeURIComponent(v||'') : acc), null);
+
       const user = verifyTokenValue(bearer || cookieTok);
       if (!user) { res.writeHead(401).end(JSON.stringify({ error: 'Unauthorized' })); return; }
 
@@ -300,7 +290,7 @@ async function startServer() {
       return;
     }
 
-    // Static files (optional if you also host a tiny UI from this service)
+    // Static files (optional if you add admin.html in this repo)
     try {
       let filePath = path.join(__dirname, url.pathname === '/' ? 'index.html' : url.pathname);
       const data = await fs.readFile(filePath);
@@ -319,7 +309,7 @@ async function startServer() {
   });
 
   server.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT} (DATA_DIR=${DATA_DIR})`);
+    console.log(`✅ Server running at http://localhost:${PORT}/`);
   });
 }
 
