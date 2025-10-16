@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow">
+  <!-- Set your API base here (fallbacks to connector Render URL) -->
+  <meta name="gptmart-api" content="https://connector-320f.onrender.com">
   <style>
     :root{--bg:#050815; --panel:#0b1a36; --text:#e6ecff; --accent:#6ea8ff; --accent-2:#3b82f6; --stroke:#16213a; --radius:14px;}
     *{box-sizing:border-box}
@@ -109,6 +111,11 @@
   </dialog>
 
   <script>
+    // ===== API base (from meta tag, window override, or fallback to Render URL)
+    const API_BASE =
+      window.GPTMART_API ||
+      (document.querySelector('meta[name="gptmart-api"]')?.content || 'https://connector-320f.onrender.com').replace(/\/+$/,'');
+
     // —— Utilities
     const $ = s => document.querySelector(s);
     const loginView = $('#loginView');
@@ -121,40 +128,37 @@
 
     // Generic API caller that uses cookie session (no Authorization header needed)
     async function api(endpoint, method = 'GET', body = null) {
+      const url = `${API_BASE}${endpoint}`;
       const opts = { method, credentials: 'include', headers: {} };
       if (body) {
         opts.headers['Content-Type'] = 'application/json';
         opts.body = JSON.stringify(body);
       }
-      const res = await fetch(endpoint, opts);
+      const res = await fetch(url, opts);
       if (res.status === 401) throw new Error('unauthorized');
       if (res.status === 204) return null;
       if (!res.ok) throw new Error(await safeText(res) || res.statusText);
       return res.json();
     }
 
-    async function safeText(res) {
-      try { return await res.text(); } catch { return ''; }
-    }
+    async function safeText(res) { try { return await res.text(); } catch { return ''; } }
 
     // —— Auth flow
     async function checkAuthAndLoad() {
       try {
-        // If session cookie is valid, this will succeed
-        await api('/api/gpts/all', 'GET');
+        await api('/api/gpts/all', 'GET'); // succeeds if cookie session valid
         loginView.classList.add('hide');
         adminView.classList.remove('hide');
         $('#logoutBtn').style.display = 'block';
         loadAdminData();
-      } catch (e) {
-        // Not logged in
+      } catch {
         loginView.classList.remove('hide');
         adminView.classList.add('hide');
         $('#logoutBtn').style.display = 'none';
       }
     }
 
-    // Login handler (JSON + cookie session)
+    // Login (POST to API_BASE, cookie set by server)
     $('#loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const pin = $('#pin').value.trim();
@@ -164,10 +168,10 @@
       loginMsg.textContent = 'Signing in…';
 
       try {
-        const res = await fetch('/api/login', {
+        const res = await fetch(`${API_BASE}/api/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',  // << important: store/set cookie
+          credentials: 'include',
           body: JSON.stringify({ pin })
         });
         const data = await res.json().catch(() => ({}));
@@ -184,10 +188,8 @@
       }
     });
 
-    // Fake logout (clears UI). Real session expires in 1h on server.
-    // If you add a /api/logout later, call it here and then reload.
+    // Logout (client-side only; server cookie expires in 1h)
     $('#logoutBtn').addEventListener('click', () => {
-      // Just show login view; cookie will expire server-side.
       adminView.classList.add('hide');
       loginView.classList.remove('hide');
       $('#logoutBtn').style.display = 'none';
@@ -201,7 +203,6 @@
         renderTable();
       } catch (e) {
         if (String(e.message).includes('unauthorized')) {
-          // Session expired → show login
           loginView.classList.remove('hide');
           adminView.classList.add('hide');
           $('#logoutBtn').style.display = 'none';
@@ -297,7 +298,7 @@
         await api(endpoint, method, itemData);
         modal.close();
         await loadAdminData();
-      } catch (err) {
+      } catch {
         alert('Failed to save item.');
       } finally {
         $('#saveBtn').disabled = false;
