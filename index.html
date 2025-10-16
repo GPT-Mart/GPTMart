@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title id="pageTitle">GPTMart — Curated Custom GPTs</title>
-  <meta name="description" content="A lightning‑fast, keyboard‑driven directory of my best Custom GPTs." />
+  <meta name="description" content="A lightning-fast, keyboard-driven directory of my best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
   <style>
@@ -41,6 +41,7 @@
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     .actions{margin-top:auto;display:flex;gap:8px}
+    .chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #254a9b;background:#0f1a3a;color:#d5e4ff;font-size:12px;text-decoration:none}
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
   </style>
 </head>
@@ -58,7 +59,7 @@
     <div class="hero">
       <div>
         <h1>Discover my <span style="color:var(--accent)">best Custom GPTs</span></h1>
-        <p>Keyboard‑driven. Beautifully organized. Only the good stuff.</p>
+        <p>Keyboard-driven. Beautifully organized. Only the good stuff.</p>
         <div class="ribbon">
           <input id="q" class="input" type="search" placeholder="Search title, tags, categories…"/>
           <select id="cat" class="input"></select>
@@ -79,87 +80,130 @@
     <div id="grid" class="grid"></div>
   </main>
   <footer id="footer">© <span id="ftTitle">GPTMart</span> — curated Custom GPTs.</footer>
+
   <script>
+    // === CONFIG ===
+    const API_BASE = 'https://connector-320f.onrender.com'; // <- your Render service
+
+    // === UTIL ===
     const $ = (s, el = document) => el.querySelector(s);
+    const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
+
+    // === STATE ===
     let ALL_ITEMS = [];
     const state = { q: '', cat: 'All', sort: 'featured' };
-    const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
-    async function init() {
-        try {
-            // This now points to the correct public API endpoint
-            const response = await fetch('/api/gpts/public');
-            if (!response.ok) throw new Error('Network response failed');
-            const data = await response.json();
-            ALL_ITEMS = data.items;
-            applySettings(data.settings);
-            renderAll();
-        } catch (error) {
-            console.error('Failed to fetch initial data:', error);
-            $('#grid').innerHTML = '<p>Error loading content. Please try again later.</p>';
-        }
-        $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); });
-        $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); });
-        $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
-        $('#reset').addEventListener('click', () => {
-            state.q = ''; $('#q').value = '';
-            state.cat = 'All'; $('#cat').value = 'All';
-            state.sort = 'featured'; $('#sort').value = 'featured';
-            renderGrid();
-        });
-    }
-    function applySettings(settings) {
-        const title = settings.title || 'GPTMart';
-        document.title = `${title} — Curated Custom GPTs`;
-        $('#siteLogo').textContent = title;
-        $('#ftTitle').textContent = title;
-    }
-    function renderAll() {
-        renderCategories();
-        renderHighlights();
-        renderGrid();
-        $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x => x.featured).length} featured`;
-    }
-    function renderGrid() {
-        const filtered = ALL_ITEMS.filter(x => {
-            const inQ = !state.q || [x.title, x.desc, (x.categories||[]).join(','), (x.tags||[]).join(',')].some(v => contains(v, state.q));
-            const inCat = state.cat === 'All' || (x.categories || []).includes(state.cat);
-            return inQ && inCat;
-        });
-        const sorted = sortList(filtered);
-        $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
-    }
-    function sortList(list) {
-        return list.slice().sort((a, b) => {
-            if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
-            if (state.sort === 'recent') return (b.createdAt || 0) - (a.createdAt || 0);
-            const featDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-            if (featDiff !== 0) return featDiff;
-            return (b.createdAt || 0) - (a.createdAt || 0);
-        });
-    }
-    function renderCategories() {
-        const cats = [...new Set(ALL_ITEMS.flatMap(x => x.categories || []))].sort();
-        $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
-    function renderHighlights() {
-        const feats = ALL_ITEMS.filter(x => x.featured).slice(0, 8);
-        $('#highlights').innerHTML = feats.map(x => `<a class="chip" href="${x.url}" target="_blank" rel="noopener">${x.title}</a>`).join('');
-    }
-    function cardTemplate(x) {
-        return `
-            <article class="card">
-                ${x.featured ? '<div class="badge">Featured</div>' : ''}
-                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
-                    <div class="icon"><img loading="lazy" src="${x.icon || ''}" alt="${x.title} icon" onerror="this.src='https://placehold.co/48x48/0a1324/e6ecff?text=GPT'"/></div>
-                    <h3 class="title">${x.title}</h3>
-                </div>
-                <p class="desc">${x.desc}</p>
-                <div class="actions">
-                    <a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a>
-                </div>
-            </article>`;
-    }
+
+    // === INIT ===
     document.addEventListener('DOMContentLoaded', init);
+
+    async function init() {
+      try {
+        const data = await fetchPublic();
+        ALL_ITEMS = data.items || [];
+        applySettings(data.settings || {});
+        renderAll();
+      } catch (err) {
+        console.error('Failed to fetch initial data:', err);
+        $('#grid').innerHTML = '<p>Error loading content. Please try again later.</p>';
+      }
+
+      $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); });
+      $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); });
+      $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
+      $('#reset').addEventListener('click', () => {
+        state.q = ''; $('#q').value = '';
+        state.cat = 'All'; $('#cat').value = 'All';
+        state.sort = 'featured'; $('#sort').value = 'featured';
+        renderGrid();
+      });
+    }
+
+    async function fetchPublic() {
+      const res = await fetch(`${API_BASE}/api/gpts/public`, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      // Read as text first so we can show helpful errors if it's HTML
+      const text = await res.text();
+      const ctype = res.headers.get('content-type') || '';
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+      }
+      if (!ctype.includes('application/json')) {
+        throw new Error(`Expected JSON but got "${ctype}". Body: ${text.slice(0, 200)}`);
+      }
+      return JSON.parse(text);
+    }
+
+    // === RENDER ===
+    function applySettings(settings) {
+      const title = settings.title || 'GPTMart';
+      document.title = `${title} — Curated Custom GPTs`;
+      $('#siteLogo').textContent = title;
+      $('#ftTitle').textContent = title;
+    }
+
+    function renderAll() {
+      renderCategories();
+      renderHighlights();
+      renderGrid();
+      $('#kpiCounts').textContent =
+        `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x => x.featured).length} featured`;
+    }
+
+    function renderGrid() {
+      const filtered = ALL_ITEMS.filter(x => {
+        const inQ = !state.q || [x.title, x.desc, (x.categories||[]).join(','), (x.tags||[]).join(',')]
+          .some(v => contains(v, state.q));
+        const inCat = state.cat === 'All' || (x.categories || []).includes(state.cat);
+        return inQ && inCat;
+      });
+
+      const sorted = sortList(filtered);
+      $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
+    }
+
+    function sortList(list) {
+      return list.slice().sort((a, b) => {
+        if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
+        if (state.sort === 'recent') return (b.createdAt || 0) - (a.createdAt || 0);
+        const featDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        if (featDiff !== 0) return featDiff;
+        return (b.createdAt || 0) - (a.createdAt || 0);
+      });
+    }
+
+    function renderCategories() {
+      const cats = [...new Set(ALL_ITEMS.flatMap(x => x.categories || []))].sort();
+      $('#cat').innerHTML = '<option value="All">All Categories</option>' +
+        cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderHighlights() {
+      const feats = ALL_ITEMS.filter(x => x.featured).slice(0, 8);
+      $('#highlights').innerHTML =
+        feats.map(x => `<a class="chip" href="${x.url}" target="_blank" rel="noopener">${x.title}</a>`).join('');
+    }
+
+    function cardTemplate(x) {
+      return `
+        <article class="card">
+          ${x.featured ? '<div class="badge">Featured</div>' : ''}
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+            <div class="icon"><img loading="lazy" src="${x.icon || ''}" alt="${x.title} icon"
+                 onerror="this.src='https://placehold.co/48x48/0a1324/e6ecff?text=GPT'"/></div>
+            <h3 class="title">${x.title}</h3>
+          </div>
+          <p class="desc">${x.desc}</p>
+          <div class="actions">
+            <a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a>
+          </div>
+        </article>`;
+    }
   </script>
 </body>
 </html>
