@@ -14,9 +14,7 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-6PTBJ3N2DK');   // your real Measurement ID
-
-    // helper for custom events
+    gtag('config', 'G-6PTBJ3N2DK');
     const track = (event, params = {}) => { try { gtag('event', event, params); } catch(e){} };
   </script>
 
@@ -36,26 +34,36 @@
     .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px; text-decoration: none; color: inherit;}
     .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
-    .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-    .btn.accent{background:linear-gradient(180deg,#2c57c7,#2549a8);border-color:#2e53b7;box-shadow:0 6px 28px rgba(59,130,246,.35)}
-    .section{padding:30px 0}
-    .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:end}
-    @media (min-width: 900px) { .hero{grid-template-columns:1.2fr .8fr;} }
-    .hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.05}
-    .hero p{color:var(--muted);margin:.4rem 0 0}
-    .hero-card{background:linear-gradient(180deg,#0e1733,#0b1228);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
-    .ribbon{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
-    .input{border:1px solid var(--stroke);background:linear-gradient(180deg,#091327,#071022);border-radius:12px;padding:12px 14px;color:var(--text); width: 100%; min-width: 0;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:16px;margin-top:16px}
-    .card{background:linear-gradient(180deg,#0c1327,#0e162f);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative}
-    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink: 0;}
+    .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;cursor:pointer}
+    .btn.accent{background:linear-gradient(180deg,#2c57c7,#21419b);border-color:#2e53b7;}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
+    .hero{display:flex;gap:20px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+    .ribbon{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .hero-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;min-width:260px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:18px}
+    .card{background:var(--card-2);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:14px;display:flex;gap:14px;align-items:flex-start;
+      transition:.2s transform, .2s box-shadow}
+    .card:hover{transform:translateY(-2px); box-shadow:var(--glow)}
+    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink:0;}
     .icon img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:800;margin:0}
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     .actions{margin-top:auto;display:flex;gap:8px}
     .chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #254a9b;background:#0f1a3a;color:#d5e4ff;font-size:12px;text-decoration:none}
+
     footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
+
+    /* ===== Add GPT modal (end-user) ===== */
+    dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
+    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+    .muted{color:#9eb0d6;font-size:12px}
+    .input.big{height:48px;display:flex;align-items:center;}
+    .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;}
+    .chip-btn{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px;}
+    .chip-btn.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset;}
   </style>
 </head>
 <body>
@@ -65,7 +73,11 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6ea8ff"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs></svg>
         <span id="siteLogo">GPTMart</span>
       </a>
-      <div class="nav"><a class="btn accent" href="#content">Browse</a></div>
+      <div class="nav">
+        <a class="btn accent" href="#content">Browse</a>
+        <!-- NEW: End-user Add button -->
+        <button class="btn" id="userAddBtn">Add GPT</button>
+      </div>
     </div>
   </header>
 
@@ -91,14 +103,48 @@
         <div id="highlights" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px"></div>
       </div>
     </div>
+
     <div id="grid" class="grid"></div>
   </main>
 
   <footer id="footer">© <span id="ftTitle">GPTMart</span> — curated Custom GPTs.</footer>
 
+  <!-- ===== End-user Add GPT Modal (no status/feature) ===== -->
+  <dialog id="userAddModal">
+    <form id="userAddForm" style="padding:24px;">
+      <h3 style="margin:0 0 12px">Add GPT</h3>
+
+      <div class="row"><input id="uTitle" class="input big" placeholder="Title" required></div>
+      <div class="row"><input id="uUrl" class="input big" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
+
+      <div class="row" style="gap:10px;align-items:stretch;">
+        <input id="uIcon" class="input big" placeholder="Paste Icon URL or Upload">
+        <input id="uIconFile" type="file" accept="image/*" style="display:none">
+        <button class="btn accent" type="button" id="uIconUploadBtn" style="height:48px;">Upload</button>
+      </div>
+      <div class="muted" id="uIconPreviewWrap" style="display:flex;align-items:center;gap:10px;margin:-6px 0 10px;">
+        <img id="uIconPreview" style="width:32px;height:32px;border-radius:8px;display:none;border:1px solid var(--stroke);object-fit:cover">
+        <small id="uIconNote" style="display:none">Icon attached (retina 96×96)</small>
+      </div>
+
+      <!-- Category chips -->
+      <div class="row"><div id="uCatChips" class="chip-toolbar"></div></div>
+
+      <div class="row"><input id="uTags" class="input big" placeholder="Tags (e.g., api, web, data analysis)"></div>
+      <div class="row"><textarea id="uDesc" class="input big" placeholder="Short description" style="min-height:70px;"></textarea></div>
+
+      <!-- No Featured/Status controls for end-users -->
+
+      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:18px;">
+        <button id="uCancel" class="btn" type="button">Cancel</button>
+        <button class="btn accent" type="submit" id="uSaveBtn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
   <script>
     // === CONFIG ===
-    const API_BASE = 'https://connector-320f.onrender.com';
+    const API_BASE = 'https://connector-320f.onrender.com'; // your existing endpoint :contentReference[oaicite:4]{index=4}
 
     // === UTIL ===
     const $ = (s, el = document) => el.querySelector(s);
@@ -114,7 +160,7 @@
 
     async function init() {
       try {
-        const data = await fetchPublic();
+        const data = await fetchPublic();                // pulls from /api/gpts/public
         ALL_ITEMS = data.items || [];
         applySettings(data.settings || {});
         renderAll();
@@ -131,12 +177,12 @@
       $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); debouncedSearchTrack(state.q); });
       $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); track('filter', { filter_name:'category', filter_value: state.cat }); trackListView(); });
       $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); track('filter', { filter_name:'sort', filter_value: state.sort }); trackListView(); });
-      $('#reset').addEventListener('click', () => {
-        state.q=''; $('#q').value='';
-        state.cat='All'; $('#cat').value='All';
-        state.sort='featured'; $('#sort').value='featured';
-        renderGrid(); track('reset_filters'); trackListView();
-      });
+      $('#reset').addEventListener('click', () => { state.q=''; $('#q').value=''; state.cat='All'; $('#cat').value='All'; state.sort='featured'; $('#sort').value='featured'; renderGrid(); track('reset_filters'); trackListView(); });
+
+      // Wire up end-user Add GPT
+      $('#userAddBtn').addEventListener('click', openUserAddModal);
+      $('#uCancel').addEventListener('click', () => $('#userAddModal').close());
+      setupUserAddModal();
     }
 
     async function fetchPublic() {
@@ -211,37 +257,108 @@
       const ga = encodeURIComponent(JSON.stringify(makeItemGA(x)));
       return `
         <article class="card">
-          ${x.featured ? '<div class="badge">Featured</div>' : ''}
-          <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
-            <div class="icon"><img loading="lazy" src="${x.icon || ''}" alt="${x.title} icon"
-                 onerror="this.src='https://placehold.co/48x48/0a1324/e6ecff?text=GPT'"/></div>
-            <h3 class="title">${x.title}</h3>
-          </div>
-          <p class="desc">${x.desc}</p>
-          <div class="actions">
-            <a class="btn accent" href="${x.url}" target="_blank" rel="noopener"
-               data-url="${x.url}" data-ga="${ga}">Open</a>
+          ${x.featured ? `<span class="badge">Featured</span>` : ''}
+          <div class="icon">${x.icon ? `<img src="${x.icon}" alt="">` : ''}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative">
+            <h3 class="title">${x.title || ''}</h3>
+            <p class="desc">${x.desc || ''}</p>
+            <div class="actions">
+              <a class="btn accent" href="${x.url}" target="_blank" rel="noopener"
+                 data-url="${x.url}" data-ga="${ga}">Open</a>
+            </div>
           </div>
         </article>`;
     }
 
-    // === GA helpers ===
-    function makeItemGA(x){
-      return {
-        item_id: x.id || x.title,
-        item_name: x.title,
-        item_category: (x.categories || [])[0] || 'Uncategorized',
-        item_list_name: state.cat,
-        index: 0
-      };
+    function makeItemGA(x) { return { item_id:x.id, item_name:x.title, item_category:(x.categories||[])[0]||'NA' }; }
+    function makeItemGAInline(list){ return `{item_list_name:'${list}'}`; }
+    function trackListView(){ track('view_item_list', { item_list_name: 'grid' }); }
+
+    // ===== End-user Add Modal logic =====
+    const CATEGORY_CHOICES = [
+      'AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks',
+      'Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy',
+      'Productivity','Search','Security','Sports','Tools'
+    ];
+
+    function setupUserAddModal(){
+      // render chips
+      const wrap = $('#uCatChips');
+      wrap.innerHTML = CATEGORY_CHOICES.map(c => `<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip-btn').forEach(btn => btn.addEventListener('click',()=>btn.classList.toggle('active')));
+
+      // upload/resize
+      const iconInput=$('#uIcon'), iconFile=$('#uIconFile'), iconBtn=$('#uIconUploadBtn'), iconPrev=$('#uIconPreview'), iconNote=$('#uIconNote');
+      iconBtn.addEventListener('click',()=>iconFile.click());
+      iconFile.addEventListener('change', async ()=>{
+        const f=iconFile.files?.[0]; if(!f) return;
+        try{
+          const dataUrl = await fileToResizedSquareDataURL(f, 96); // retina asset for 48px CSS icon
+          iconInput.value = dataUrl; iconPrev.src = dataUrl;
+          iconPrev.style.display='block'; iconNote.style.display='inline';
+        }catch{ alert('Failed to process image.'); }
+      });
+
+      // submit
+      $('#userAddForm').addEventListener('submit', async (e)=>{
+        e.preventDefault(); $('#uSaveBtn').disabled = true;
+        const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
+        const payload = {
+          title: $('#uTitle').value.trim(),
+          url: $('#uUrl').value.trim(),
+          icon: $('#uIcon').value.trim(),
+          desc: $('#uDesc').value.trim(),
+          categories,
+          tags: $('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean),
+          featured: false,          // end-users cannot feature
+          status: 'live'            // always live by default
+        };
+        try{
+          const res = await fetch(`${API_BASE}/api/gpts/create`, {
+            method:'POST', mode:'cors',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+          });
+          if(!res.ok) throw new Error(await res.text());
+          $('#userAddModal').close();
+          const data = await fetchPublic();   // refresh grid from public API
+          ALL_ITEMS = data.items || [];
+          renderAll();
+          track('add_to_wishlist', { value: 1 }); // harmless custom event
+        }catch(e){
+          alert('Could not submit. The server may require admin approval.');
+        }finally{
+          $('#uSaveBtn').disabled = false;
+        }
+      });
     }
-    function makeItemGAInline(src){
-      return { item_id: src, item_name: 'Highlight click', item_category: 'Highlight', item_list_name: 'Highlights', index: 0 };
+
+    function openUserAddModal(){
+      $('#userAddForm').reset();
+      $('#uIconPreview').style.display='none';
+      $('#uIconNote').style.display='none';
+      document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));
+      $('#userAddModal').showModal();
     }
-    function trackListView(){
-      const items = [...document.querySelectorAll('#grid .card .title')].slice(0,10)
-        .map((el,i)=>({item_id: el.textContent, item_name: el.textContent, index:i, item_list_name: state.cat}));
-      track('view_item_list', { item_list_name: state.cat, items, results_count: items.length, search_term: state.q || undefined, sort: state.sort });
+
+    // Center-crop & resize to square, export PNG
+    function fileToResizedSquareDataURL(file, target=96){
+      return new Promise((resolve,reject)=>{
+        const fr=new FileReader();
+        fr.onerror=reject;
+        fr.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const s=Math.max(target/img.width, target/img.height);
+            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+            const c=document.createElement('canvas'); c.width=target; c.height=target;
+            c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, target, target);
+            resolve(c.toDataURL('image/png'));
+          };
+          img.onerror=reject; img.src=fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
     }
   </script>
 </body>
