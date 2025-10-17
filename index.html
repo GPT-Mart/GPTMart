@@ -4,112 +4,71 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title id="pageTitle">GPTMart — Curated Custom GPTs</title>
-  <meta name="description" content="A lightning-fast, keyboard-driven directory of my best Custom GPTs." />
+  <meta name="description" content="A lightning-fast, keyboard-driven directory of the best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
-
-  <!-- Google tag (gtag.js) — REAL DATA -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-6PTBJ3N2DK');
-    const track = (event, params = {}) => { try { gtag('event', event, params); } catch(e){} };
-  </script>
-
   <style>
     :root{
-      --bg:#050815; --bg-2:#080e1f; --bg-3:#0b142a;
-      --card:#0c1327; --card-2:#0e162f; --panel:#0b1a36;
-      --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --accent-2:#3b82f6;
-      --stroke:#16213a; --glow:0 0 0 2px rgba(110,168,255,.15), 0 30px 120px -40px rgba(60,120,255,.35);
-      --radius:14px; --radius-lg:18px; --shadow:0 10px 40px rgba(0,0,0,.35);
+      --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36;
+      --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --stroke:#16213a;
+      --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.35);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0; overflow-x:hidden;}
-    body{font-family:Inter,ui-sans-serif,system-ui; background:radial-gradient(1200px 600px at 80% -10%,#12244c22 0,#0000 70%), linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%); color:var(--text);}
+    *{box-sizing:border-box} html,body{height:100%;margin:0}
+    body{font-family:Inter,ui-sans-serif,system-ui;background:linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%);color:var(--text)}
     .container{width:94%;max-width:1200px;margin:0 auto}
-    .topbar{position:sticky;top:0;z-index:50;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
-    .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0; flex-wrap: wrap;}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px; text-decoration: none; color: inherit;}
-    .nav{display:flex;gap:8px; flex-wrap: wrap; align-items: center;}
-    .btn{background:linear-gradient(180deg,#1b2a55,#142447);border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;cursor:pointer}
-    .btn.accent{background:linear-gradient(180deg,#2c57c7,#21419b);border-color:#2e53b7;}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
+    .top-row{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0;flex-wrap:wrap}
+    .brand{font-weight:800;text-decoration:none;color:inherit}
+    .nav{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;cursor:pointer}
+    .btn.accent{background:#2c57c7;border-color:#2e53b7}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:var(--text); width: 100%;}
-    .hero{display:flex;gap:20px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
-    .ribbon{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .hero-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;min-width:260px}
-
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:18px}
-    .card{background:var(--card-2);border:1px solid var(--stroke);border-radius:var(--radius-lg);padding:14px;display:flex;gap:14px;align-items:flex-start;
-      transition:.2s transform, .2s box-shadow}
-    .card:hover{transform:translateY(-2px); box-shadow:var(--glow)}
-    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324; flex-shrink:0;}
+    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:var(--text);width:100%}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:18px}
+    .card{background:#0e162f;border:1px solid var(--stroke);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:flex-start;transition:.2s transform,.2s box-shadow}
+    .card:hover{transform:translateY(-2px);box-shadow:0 0 0 2px rgba(110,168,255,.15),0 30px 120px -40px rgba(60,120,255,.35)}
+    .icon{width:48px;height:48px;border-radius:10px;overflow:hidden;border:1px solid #1f2937;background:#0a1324;flex-shrink:0}
     .icon img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:800;margin:0}
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
-    .actions{margin-top:auto;display:flex;gap:8px}
     .chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #254a9b;background:#0f1a3a;color:#d5e4ff;font-size:12px;text-decoration:none}
-
-    footer{color:#94a3b8;border-top:1px solid var(--stroke);padding:18px 0;margin-top:30px;text-align:center}
-
-    /* ===== Add GPT modal (end-user) ===== */
     dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
     dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+    .input.big{height:48px;display:flex;align-items:center}
     .muted{color:#9eb0d6;font-size:12px}
-    .input.big{height:48px;display:flex;align-items:center;}
-    .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;}
-    .chip-btn{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px;}
-    .chip-btn.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset;}
+    .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px}
+    .chip-btn{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px}
+    .chip-btn.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset}
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="container top-row">
-      <a class="brand" href="/">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.39 7.36h7.73l-6.25 4.54 2.39 7.36L12 16.72 5.74 21.9l2.39-7.36L1.88 9.36h7.73L12 2z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6ea8ff"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs></svg>
-        <span id="siteLogo">GPTMart</span>
-      </a>
+      <a class="brand" href="/">GPTMart</a>
       <div class="nav">
         <a class="btn accent" href="#content">Browse</a>
-        <!-- NEW: End-user Add button -->
         <button class="btn" id="userAddBtn">Add GPT</button>
       </div>
     </div>
   </header>
 
-  <main id="content" class="container section">
-    <div class="hero">
-      <div>
-        <h1>Discover my <span style="color:var(--accent)">best Custom GPTs</span></h1>
-        <p>Keyboard-driven. Beautifully organized. Only the good stuff.</p>
-        <div class="ribbon">
-          <input id="q" class="input" type="search" placeholder="Search title, tags, categories…"/>
-          <select id="cat" class="input"></select>
-          <select id="sort" class="input">
-            <option value="featured">Featured first</option>
-            <option value="title">Title A→Z</option>
-            <option value="recent">Recently added</option>
-          </select>
-          <button class="btn" id="reset">Reset</button>
-        </div>
-      </div>
-      <div class="hero-card">
-        <strong>Highlights</strong>
-        <span id="kpiCounts" style="color:var(--muted);font-size:12px"></span>
-        <div id="highlights" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px"></div>
-      </div>
+  <main id="content" class="container" style="padding:24px 0;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <input id="q" class="input" type="search" placeholder="Search title, tags, categories…"/>
+      <select id="cat" class="input" style="max-width:260px"></select>
+      <select id="sort" class="input" style="max-width:220px">
+        <option value="featured">Featured first</option>
+        <option value="title">Title A→Z</option>
+        <option value="recent">Recently added</option>
+      </select>
+      <button class="btn" id="reset">Reset</button>
     </div>
 
     <div id="grid" class="grid"></div>
   </main>
 
-  <footer id="footer">© <span id="ftTitle">GPTMart</span> — curated Custom GPTs.</footer>
-
-  <!-- ===== End-user Add GPT Modal (no status/feature) ===== -->
+  <!-- End-user Add GPT Modal -->
   <dialog id="userAddModal">
     <form id="userAddForm" style="padding:24px;">
       <h3 style="margin:0 0 12px">Add GPT</h3>
@@ -117,7 +76,7 @@
       <div class="row"><input id="uTitle" class="input big" placeholder="Title" required></div>
       <div class="row"><input id="uUrl" class="input big" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
 
-      <div class="row" style="gap:10px;align-items:stretch;">
+      <div class="row" style="display:flex;gap:10px;align-items:stretch;margin:10px 0;">
         <input id="uIcon" class="input big" placeholder="Paste Icon URL or Upload">
         <input id="uIconFile" type="file" accept="image/*" style="display:none">
         <button class="btn accent" type="button" id="uIconUploadBtn" style="height:48px;">Upload</button>
@@ -127,175 +86,115 @@
         <small id="uIconNote" style="display:none">Icon attached (retina 96×96)</small>
       </div>
 
-      <!-- Category chips -->
       <div class="row"><div id="uCatChips" class="chip-toolbar"></div></div>
-
       <div class="row"><input id="uTags" class="input big" placeholder="Tags (e.g., api, web, data analysis)"></div>
       <div class="row"><textarea id="uDesc" class="input big" placeholder="Short description" style="min-height:70px;"></textarea></div>
 
-      <!-- No Featured/Status controls for end-users -->
-
-      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:18px;">
+      <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
         <button id="uCancel" class="btn" type="button">Cancel</button>
-        <button class="btn accent" type="submit" id="uSaveBtn">Save</button>
+        <button class="btn accent" type="submit" id="uSaveBtn">Submit</button>
       </div>
     </form>
   </dialog>
 
   <script>
-    // === CONFIG ===
-    const API_BASE = 'https://connector-320f.onrender.com'; // your existing endpoint :contentReference[oaicite:4]{index=4}
+    // ===== CONFIG =====
+    const API_BASE = 'https://connector-320f.onrender.com'; // set to your Render URL
 
-    // === UTIL ===
-    const $ = (s, el = document) => el.querySelector(s);
-    const contains = (t, q) => (t || '').toLowerCase().includes((q || '').toLowerCase());
-    const debounce = (fn, ms=400) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
-
-    // === STATE ===
+    // ===== STATE/UTIL =====
+    const $ = (s, el=document) => el.querySelector(s);
+    const contains = (t,q) => (t||'').toLowerCase().includes((q||'').toLowerCase());
     let ALL_ITEMS = [];
-    const state = { q: '', cat: 'All', sort: 'featured' };
+    const state = { q:'', cat:'All', sort:'featured' };
 
-    // === INIT ===
-    document.addEventListener('DOMContentLoaded', init);
-
-    async function init() {
-      try {
-        const data = await fetchPublic();                // pulls from /api/gpts/public
-        ALL_ITEMS = data.items || [];
-        applySettings(data.settings || {});
-        renderAll();
-        trackListView();
-      } catch (err) {
-        console.error('Failed to fetch initial data:', err);
-        $('#grid').innerHTML = '<p>Error loading content. Please try again later.</p>';
-      }
-
-      const debouncedSearchTrack = debounce(term => {
-        if ((term || '').trim().length > 1) track('search', { search_term: term });
-      });
-
-      $('#q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); debouncedSearchTrack(state.q); });
-      $('#cat').addEventListener('change', e => { state.cat = e.target.value; renderGrid(); track('filter', { filter_name:'category', filter_value: state.cat }); trackListView(); });
-      $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); track('filter', { filter_name:'sort', filter_value: state.sort }); trackListView(); });
-      $('#reset').addEventListener('click', () => { state.q=''; $('#q').value=''; state.cat='All'; $('#cat').value='All'; state.sort='featured'; $('#sort').value='featured'; renderGrid(); track('reset_filters'); trackListView(); });
-
-      // Wire up end-user Add GPT
-      $('#userAddBtn').addEventListener('click', openUserAddModal);
-      $('#uCancel').addEventListener('click', () => $('#userAddModal').close());
-      setupUserAddModal();
-    }
-
-    async function fetchPublic() {
-      const res = await fetch(`${API_BASE}/api/gpts/public`, { method:'GET', mode:'cors', cache:'no-store', headers:{'Accept':'application/json'} });
-      const text = await res.text();
-      const ctype = res.headers.get('content-type') || '';
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0,200)}`);
-      if (!ctype.includes('application/json')) throw new Error(`Expected JSON but got "${ctype}". Body: ${text.slice(0,200)}`);
-      return JSON.parse(text);
-    }
-
-    // === RENDER ===
-    function applySettings(settings) {
-      const title = settings.title || 'GPTMart';
-      document.title = `${title} — Curated Custom GPTs`;
-      $('#siteLogo').textContent = title;
-      $('#ftTitle').textContent = title;
-    }
-
-    function renderAll() {
-      renderCategories();
-      renderHighlights();
-      renderGrid();
-      $('#kpiCounts').textContent = `${ALL_ITEMS.length} live • ${ALL_ITEMS.filter(x => x.featured).length} featured`;
-    }
-
-    function renderGrid() {
-      const filtered = ALL_ITEMS.filter(x => {
-        const inQ = !state.q || [x.title, x.desc, (x.categories||[]).join(','), (x.tags||[]).join(',')].some(v => contains(v, state.q));
-        const inCat = state.cat === 'All' || (x.categories || []).includes(state.cat);
-        return inQ && inCat;
-      });
-
-      const sorted = sortList(filtered);
-      $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results found.</p>';
-
-      document.querySelectorAll('.card .btn.accent[data-url]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const payload = JSON.parse(btn.getAttribute('data-ga') || '{}');
-          track('view_item', payload);
-        }, { once:true });
-      });
-    }
-
-    function sortList(list) {
-      return list.slice().sort((a, b) => {
-        if (state.sort === 'title') return (a.title || '').localeCompare(b.title || '');
-        if (state.sort === 'recent') return (b.createdAt || 0) - (a.createdAt || 0);
-        const featDiff = (b.featured?1:0) - (a.featured?1:0);
-        if (featDiff !== 0) return featDiff;
-        return (b.createdAt || 0) - (a.createdAt || 0);
-      });
-    }
-
-    function renderCategories() {
-      const cats = [...new Set(ALL_ITEMS.flatMap(x => x.categories || []))].sort();
-      $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
-
-    function renderHighlights() {
-      const feats = ALL_ITEMS.filter(x => x.featured).slice(0, 8);
-      $('#highlights').innerHTML = feats.map(x => {
-        const ga = encodeURIComponent(JSON.stringify(makeItemGA(x)));
-        return `<a class="chip" href="${x.url}" target="_blank" rel="noopener"
-                   data-ga="${ga}"
-                   onclick="track('select_item', {item_list_name:'highlights'}); track('view_item', ${JSON.stringify(makeItemGAInline('HIGHLIGHT'))});">
-                  ${x.title}</a>`;
-      }).join('');
-    }
-
-    function cardTemplate(x) {
-      const ga = encodeURIComponent(JSON.stringify(makeItemGA(x)));
-      return `
-        <article class="card">
-          ${x.featured ? `<span class="badge">Featured</span>` : ''}
-          <div class="icon">${x.icon ? `<img src="${x.icon}" alt="">` : ''}</div>
-          <div style="display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);position:relative">
-            <h3 class="title">${x.title || ''}</h3>
-            <p class="desc">${x.desc || ''}</p>
-            <div class="actions">
-              <a class="btn accent" href="${x.url}" target="_blank" rel="noopener"
-                 data-url="${x.url}" data-ga="${ga}">Open</a>
-            </div>
-          </div>
-        </article>`;
-    }
-
-    function makeItemGA(x) { return { item_id:x.id, item_name:x.title, item_category:(x.categories||[])[0]||'NA' }; }
-    function makeItemGAInline(list){ return `{item_list_name:'${list}'}`; }
-    function trackListView(){ track('view_item_list', { item_list_name: 'grid' }); }
-
-    // ===== End-user Add Modal logic =====
     const CATEGORY_CHOICES = [
       'AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks',
       'Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy',
       'Productivity','Search','Security','Sports','Tools'
     ];
 
-    function setupUserAddModal(){
-      // render chips
-      const wrap = $('#uCatChips');
-      wrap.innerHTML = CATEGORY_CHOICES.map(c => `<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
-      wrap.querySelectorAll('.chip-btn').forEach(btn => btn.addEventListener('click',()=>btn.classList.toggle('active')));
+    document.addEventListener('DOMContentLoaded', init);
 
-      // upload/resize
+    async function init(){
+      try{
+        const data = await fetchPublic();
+        ALL_ITEMS = data.items || [];
+        renderCategories();
+        renderGrid();
+      }catch(e){
+        console.error(e);
+        $('#grid').innerHTML = '<p>Failed to load. Try again later.</p>';
+      }
+
+      $('#q').addEventListener('input', e => { state.q=e.target.value; renderGrid(); });
+      $('#cat').addEventListener('change', e => { state.cat=e.target.value; renderGrid(); });
+      $('#sort').addEventListener('change', e => { state.sort=e.target.value; renderGrid(); });
+      $('#reset').addEventListener('click', ()=>{ state.q=''; $('#q').value=''; state.cat='All'; $('#cat').value='All'; state.sort='featured'; $('#sort').value='featured'; renderGrid(); });
+
+      // End-user modal wiring
+      $('#userAddBtn').addEventListener('click', openUserAddModal);
+      $('#uCancel').addEventListener('click', ()=> $('#userAddModal').close());
+      setupUserAddModal();
+    }
+
+    async function fetchPublic(){
+      const res = await fetch(`${API_BASE}/api/gpts/public`, { cache:'no-store' });
+      if(!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    function renderCategories(){
+      const cats = [...new Set(ALL_ITEMS.flatMap(x=>x.categories||[]))].sort();
+      $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderGrid(){
+      const filtered = ALL_ITEMS.filter(x=>{
+        const inQ = !state.q || [x.title,x.desc,(x.categories||[]).join(','),(x.tags||[]).join(',')].some(v=>contains(v,state.q));
+        const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
+        return inQ && inCat;
+      });
+      const sorted = filtered.slice().sort((a,b)=>{
+        if(state.sort==='title') return (a.title||'').localeCompare(b.title||'');
+        if(state.sort==='recent') return (b.createdAt||0) - (a.createdAt||0);
+        const featDiff = (b.featured?1:0) - (a.featured?1:0);
+        if(featDiff!==0) return featDiff;
+        return (b.createdAt||0) - (a.createdAt||0);
+      });
+      $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results.</p>';
+    }
+
+    function cardTemplate(x){
+      return `
+        <article class="card">
+          ${x.featured ? `<span class="badge">Featured</span>` : ''}
+          <div class="icon">${x.icon?`<img src="${x.icon}" alt="">`:''}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;position:relative">
+            <h3 class="title">${x.title||''}</h3>
+            <p class="desc">${x.desc||''}</p>
+            <div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a></div>
+          </div>
+        </article>`;
+    }
+
+    // ===== End-user Submit =====
+    function setupUserAddModal(){
+      // chips
+      const wrap = $('#uCatChips');
+      wrap.innerHTML = CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+
+      // upload
       const iconInput=$('#uIcon'), iconFile=$('#uIconFile'), iconBtn=$('#uIconUploadBtn'), iconPrev=$('#uIconPreview'), iconNote=$('#uIconNote');
       iconBtn.addEventListener('click',()=>iconFile.click());
       iconFile.addEventListener('change', async ()=>{
         const f=iconFile.files?.[0]; if(!f) return;
         try{
-          const dataUrl = await fileToResizedSquareDataURL(f, 96); // retina asset for 48px CSS icon
-          iconInput.value = dataUrl; iconPrev.src = dataUrl;
-          iconPrev.style.display='block'; iconNote.style.display='inline';
+          const dataUrl = await fileToResizedSquareDataURL(f, 96);
+          iconInput.value = dataUrl;
+          iconPrev.src = dataUrl;
+          iconPrev.style.display='block';
+          iconNote.style.display='inline';
         }catch{ alert('Failed to process image.'); }
       });
 
@@ -309,24 +208,22 @@
           icon: $('#uIcon').value.trim(),
           desc: $('#uDesc').value.trim(),
           categories,
-          tags: $('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean),
-          featured: false,          // end-users cannot feature
-          status: 'live'            // always live by default
+          tags: $('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)
         };
         try{
-          const res = await fetch(`${API_BASE}/api/gpts/create`, {
-            method:'POST', mode:'cors',
+          const res = await fetch(`${API_BASE}/api/gpts/submit`, {
+            method:'POST',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify(payload)
           });
           if(!res.ok) throw new Error(await res.text());
+          alert('Submitted! Your GPT will appear after admin approval.');
           $('#userAddModal').close();
-          const data = await fetchPublic();   // refresh grid from public API
+          const data = await fetchPublic();
           ALL_ITEMS = data.items || [];
-          renderAll();
-          track('add_to_wishlist', { value: 1 }); // harmless custom event
+          renderCategories(); renderGrid();
         }catch(e){
-          alert('Could not submit. The server may require admin approval.');
+          alert('Could not submit. Please try again later.');
         }finally{
           $('#uSaveBtn').disabled = false;
         }
@@ -341,7 +238,7 @@
       $('#userAddModal').showModal();
     }
 
-    // Center-crop & resize to square, export PNG
+    // center-crop & resize to square (PNG)
     function fileToResizedSquareDataURL(file, target=96){
       return new Promise((resolve,reject)=>{
         const fr=new FileReader();
@@ -349,10 +246,10 @@
         fr.onload=()=>{
           const img=new Image();
           img.onload=()=>{
-            const s=Math.max(target/img.width, target/img.height);
+            const s=Math.max(target/img.width,target/img.height);
             const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
             const c=document.createElement('canvas'); c.width=target; c.height=target;
-            c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, target, target);
+            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
             resolve(c.toDataURL('image/png'));
           };
           img.onerror=reject; img.src=fr.result;
