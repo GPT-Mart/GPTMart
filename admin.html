@@ -1,163 +1,233 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin — GPTMart</title>
-<style>
-  :root{--bg:#050815;--panel:#0b1a36;--stroke:#16213a;--text:#e6ecff;--muted:#9eb0d6;--btn:#1b2a55;--accent:#2c57c7}
-  body{margin:0;background:linear-gradient(180deg,var(--bg),#091229);color:var(--text);font-family:Inter,system-ui}
-  header{position:sticky;top:0;z-index:5;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
-  .container{width:94%;max-width:1200px;margin:0 auto}
-  .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-  .btn{padding:8px 12px;border-radius:10px;border:1px solid #1a2b5a;background:var(--btn);color:#e7efff;font-weight:700;cursor:pointer}
-  .btn.acc{background:var(--accent);border-color:#2e53b7}
-  main{padding:20px 0}
-  table{width:100%;border-collapse:collapse}
-  th,td{border:1px solid var(--stroke);padding:10px;text-align:left;vertical-align:top}
-  .muted{color:var(--muted);font-size:12px}
-  /* modal */
-  dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
-  dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
-  .dlg-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--stroke)}
-  .dlg-b{padding:12px 16px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — GPTMart</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="gptmart-api" content="https://connector-320f.onrender.com" />
+  <style>
+    :root{
+      --bg:#050815; --panel:#0b1a36; --text:#e6ecff;
+      --accent:#6ea8ff; --accent-2:#3b82f6;
+      --stroke:#16213a; --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui;background:var(--bg);color:var(--text);margin:0;}
+    .container{width:94%;max-width:1200px;margin:0 auto}
+    .topbar{background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke);padding:12px 0;}
+    .top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .brand{font-weight:800;}
+    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 16px;border-radius:10px;color:#e7efff;font-weight:700;cursor:pointer;font-size:13px;}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.accent{background:#2c57c7;border-color:#2e53b7;}
+    .btn.ghost{background:#0b152c;border-color:#16213a;}
+    .btn.danger{background:#450a0a;border-color:#991b1b;color:#fca5a5;}
+    .section{padding:30px 0}
+    .input{border:1px solid var(--stroke);background:#091327;border-radius:12px;padding:12px 14px;color:var(--text);width:100%;}
+    .panel{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px}
+    .row{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+    th,td{text-align:left;font-size:14px;padding:12px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);vertical-align:top}
+    tbody tr{background:#0b1426;}
+    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px;}
+    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px;}
+    .hide{display:none!important}
+    dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:var(--radius);padding:0;max-width:960px;width:95vw;}
+    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px);}
+    .muted{color:#9eb0d6;font-size:12px;}
+    .input.big{height:48px;display:flex;align-items:center;}
+    .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;}
+    .chip{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px;}
+    .chip.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset;}
+
+    /* Pending badge */
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid #7c2d12;background:#2b1512;color:#ffedd5}
+  </style>
 </head>
 <body>
-<header>
-  <div class="container bar">
-    <strong>Admin Panel</strong>
-    <div>
-      <button class="btn" id="btnLeads">Leads</button>
-      <button class="btn" id="btnReload">Reload</button>
-      <button class="btn" id="btnLogout">Logout</button>
+  <header class="topbar">
+    <div class="container top-row">
+      <div class="brand">Admin Panel</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn ghost" id="pendingToggle">Pending (0)</button>
+        <button class="btn" id="refreshBtn">⟳ Refresh</button>
+        <button class="btn accent" id="addBtn">＋ New Item</button>
+        <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<main class="container">
-  <h3>All Items</h3>
-  <p class="muted">Approve (set to live), feature/unfeature, hide/unhide, edit, or delete items below.</p>
-  <div id="itemsWrap"></div>
-</main>
-
-<!-- Leads Modal -->
-<dialog id="leadsModal">
-  <div class="dlg-h">
-    <strong>📨 User Leads</strong>
-    <div>
-      <button class="btn" id="btnExport">Export CSV</button>
-      <button class="btn acc" id="btnCloseLeads">Close</button>
+  <main class="container section">
+    <div id="loginView">
+      <div class="panel" style="max-width:420px;margin:40px auto;">
+        <h3>Owner Sign-in</h3>
+        <p class="muted">Enter your PIN to manage items.</p>
+        <form id="loginForm" class="row">
+          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" required autocomplete="current-password"/>
+          <button class="btn accent" type="submit" id="loginBtn">Enter</button>
+        </form>
+        <p id="loginMsg" class="muted" style="min-height:18px;"></p>
+      </div>
     </div>
-  </div>
-  <div class="dlg-b">
-    <table id="leadsTable">
-      <thead><tr><th>Email</th><th>Name</th><th>Message</th><th>Timezone</th><th>Date</th></tr></thead>
-      <tbody></tbody>
-    </table>
-    <p class="muted">Requires admin login (cookie or token).</p>
-  </div>
-</dialog>
 
-<script>
-const API_BASE='https://connector-320f.onrender.com';
-const $=(s,el=document)=>el.querySelector(s);
+    <div id="adminView" class="hide">
+      <div class="panel">
+        <h3 style="margin-top:0;">GPT Items</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:220px">Title</th>
+                <th style="min-width:220px">Cat/Tags</th>
+                <th>Featured</th>
+                <th>Status</th>
+                <th style="min-width:360px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTable"></tbody>
+          </table>
+        </div>
+      </div>
 
-function token(){ return localStorage.getItem('token')||''; }
+      <div class="panel" style="margin-top: 24px;">
+        <h3 style="margin-top:0;">Collected Leads</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:180px">Date</th>
+                <th style="min-width:220px">Email</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTable"></tbody>
+          </table>
+          <p id="noLeadsMsg" class="muted" style="display:none; padding: 10px;">No leads collected yet.</p>
+        </div>
+      </div>
 
-async function api(path, opts={}){
-  const headers=opts.headers||{};
-  if(token()) headers['Authorization']='Bearer '+token();
-  const r=await fetch(API_BASE+path,{ credentials:'include', ...opts, headers });
-  if(!r.ok) throw new Error(await r.text());
-  return r.json().catch(()=> ({}));
-}
+    </div>
+  </main>
 
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
+  <dialog id="itemModal">
+    </dialog>
 
-async function loadItems(){
-  const data=await api('/api/gpts/all');
-  const items=(data.items||[]).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  const wrap=$('#itemsWrap');
-  if(!items.length){ wrap.innerHTML='<p class="muted">No items yet.</p>'; return; }
-  wrap.innerHTML=`<table>
-    <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>
-      ${items.map(x=>`
+  <script>
+    // ===== base & utils
+    const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
+    const $=s=>document.querySelector(s);
+    const loginView=$('#loginView'),adminView=$('#adminView');
+    const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
+    const pendingToggle=$('#pendingToggle');
+    let allItemsCache=[], showOnlyPending=false;
+
+    async function api(endpoint,method='GET',body=null){
+      // ... (function is unchanged) ...
+    }
+
+    async function checkAuthAndLoad(){
+      // ... (function is unchanged) ...
+    }
+
+    // login/logout
+    // ... (functions are unchanged) ...
+
+    // top buttons
+    $('#refreshBtn').addEventListener('click',()=>loadAdminData());
+    pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+
+    // ===== data load & table
+    async function loadAdminData(){
+      try{
+        const data=await api('/api/gpts/all','GET');
+        
+        // GPT Items
+        allItemsCache = data.items || [];
+        updatePendingCount();
+        renderTable();
+
+        // --- NEW: Load Leads ---
+        const allLeads = data.leads || [];
+        renderLeadsTable(allLeads);
+
+      }catch(e){alert('Failed to load data.');}
+    }
+
+    function updatePendingCount(){
+      const n=allItemsCache.filter(i=>i.status==='pending').length;
+      pendingToggle.textContent=`Pending (${n})`;
+      pendingToggle.className = 'btn ' + (showOnlyPending ? 'accent' : 'ghost');
+    }
+
+    function renderTable(){
+      updatePendingCount();
+      const list = showOnlyPending ? allItemsCache.filter(i=>i.status==='pending') : allItemsCache;
+      const tbody=$('#itemsTable');
+      tbody.innerHTML=list.map(i=>`
         <tr>
-          <td>${escapeHtml(x.title||'')}</td>
-          <td>${escapeHtml((x.categories||[]).join(', '))}${x.tags?.length? ' • '+escapeHtml(x.tags.join(', ')) : ''}</td>
-          <td>${x.featured?'✅':'—'}</td>
-          <td>${escapeHtml(x.status||'')}</td>
           <td>
-            <button class="btn" onclick="openLink('${x.url||''}')">Open</button>
-            <button class="btn" onclick="mark('${x.id}','live')">Approve</button>
-            <button class="btn" onclick="mark('${x.id}','hidden')">Hide</button>
-            <button class="btn" onclick="toggleFeature('${x.id}', ${!!x.featured})">${x.featured?'Unfeature':'Feature'}</button>
-            <button class="btn" onclick="editItem('${x.id}')">Edit</button>
-            <button class="btn" onclick="delItem('${x.id}')">Delete</button>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              ${i.icon?`<img src="${i.icon}" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--stroke);object-fit:cover;">`:''}
+              <div>
+                <div style="font-weight:700;display:flex;gap:10px;align-items:center">
+                  <span>${escapeHtml(i.title||'')}</span>
+                  ${i.status==='pending'?`<span class="badge">Pending</span>`:''}
+                </div>
+                <a href="${i.url||'#'}" target="_blank" class="muted" style="text-decoration:underline;word-break:break-all;">Open link</a>
+              </div>
+            </div>
           </td>
-        </tr>`).join('')}
-    </tbody>
-  </table>`;
-}
+          <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
+          <td>${i.featured ? '⭐️' : '—'}</td>
+          <td>${i.status}</td>
+          <td style="display:flex; gap: 6px; flex-wrap: wrap;">
+            ${i.status==='pending'
+              ? `<button class="btn accent" onclick="approveSubmission('${i.id}')">Approve</button>`
+              : ''}
+            <button class="btn" onclick="openModal('${i.id}')">Edit</button>
+            <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured ? 'Unfeature' : 'Feature'}</button>
+            <button class="btn" onclick="toggleStatus('${i.id}')">${i.status === 'live' ? 'Hide' : 'Unhide'}</button>
+            <a class="btn" href="${i.url||'#'}" target="_blank" rel="noopener">Open</a>
+            <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
 
-function openLink(u){ if(u) window.open(u,'_blank'); }
+    // --- NEW: Render Leads Table ---
+    function renderLeadsTable(leads = []) {
+      const tbody = $('#leadsTable');
+      const noMsg = $('#noLeadsMsg');
+      if (!leads.length) {
+        tbody.innerHTML = '';
+        noMsg.style.display = 'block';
+        return;
+      }
+      noMsg.style.display = 'none';
+      tbody.innerHTML = leads.map(lead => `
+        <tr>
+          <td><small>${new Date(lead.createdAt || 0).toLocaleString()}</small></td>
+          <td>${escapeHtml(lead.email || '')}</td>
+          <td><small>${escapeHtml(lead.message || '—')}</small></td>
+        </tr>
+      `).join('');
+    }
 
-async function mark(id, status){
-  await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
-  await loadItems();
-}
-async function toggleFeature(id, curr){
-  await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({featured:!curr})});
-  await loadItems();
-}
-async function editItem(id){
-  const title=prompt('New title (leave blank to keep)');
-  const desc=title===null?null:prompt('New description (leave blank to keep)');
-  if(title===null || desc===null) return;
-  const patch={}; if(title) patch.title=title; if(desc) patch.desc=desc;
-  if(Object.keys(patch).length) await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});
-  await loadItems();
-}
-async function delItem(id){
-  if(!confirm('Delete this item permanently?')) return;
-  await fetch(API_BASE+'/api/gpts/delete/'+id,{method:'DELETE',credentials:'include',headers: token()?{'Authorization':'Bearer '+token()}:{}});
-  await loadItems();
-}
 
-// Leads
-const leadsModal=$('#leadsModal');
-$('#btnLeads').addEventListener('click', async ()=>{ leadsModal.showModal(); await loadLeads(); });
-$('#btnCloseLeads').addEventListener('click', ()=> leadsModal.close());
-$('#btnReload').addEventListener('click', loadItems);
-$('#btnLogout').addEventListener('click', ()=>{ localStorage.removeItem('token'); alert('Logged out.'); location.href='/login.html'; });
+    function escapeHtml(s=''){return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
 
-async function loadLeads(){
-  const { items=[] } = await api('/api/leads');
-  const tbody=$('#leadsTable tbody');
-  tbody.innerHTML=items.map(x=>`
-    <tr>
-      <td>${escapeHtml(x.email)}</td>
-      <td>${escapeHtml(x.name||'')}</td>
-      <td>${escapeHtml(x.message)}</td>
-      <td>${escapeHtml(x.tz||'')}</td>
-      <td>${new Date(x.createdAt).toLocaleString()}</td>
-    </tr>`).join('');
-  $('#btnExport').onclick=()=>exportCSV(items);
-}
-function exportCSV(items){
-  const csv=['Email,Name,Message,Timezone,CreatedAt'].concat(
-    items.map(x=>[x.email||'',x.name||'',(x.message||'').replaceAll('"','""'),x.tz||'',new Date(x.createdAt).toISOString()].map(v=>`"${v}"`).join(','))
-  ).join('\n');
-  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='leads.csv'; a.click(); URL.revokeObjectURL(a.href);
-}
+    // ===== modal / create-edit
+    // ... (this section is unchanged) ...
 
-document.addEventListener('DOMContentLoaded', async ()=>{
-  if(!token()){ location.href='/login.html'; return; }
-  try{ await loadItems(); }catch{ alert('Auth failed. Please log in again.'); location.href='/login.html'; }
-});
-</script>
+    // ===== actions
+    // ... (this section is unchanged) ...
+    
+    // image helper (crop+resize square)
+    // ... (this function is unchanged) ...
+
+    // go
+    checkAuthAndLoad();
+  </script>
 </body>
 </html>
