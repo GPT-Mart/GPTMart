@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="gptmart-api" content="https://connector.onrender.com" />
+  <!-- CHANGE THIS IF YOUR BACKEND URL IS DIFFERENT -->
+  <meta name="gptmart-api" content="https://connector-320f.onrender.com" />
   <style>
     :root{
       --bg:#050815; --panel:#0b1a36; --text:#e6ecff;
@@ -40,8 +41,6 @@
     .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;}
     .chip{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px;}
     .chip.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset;}
-
-    /* Pending badge */
     .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid #7c2d12;background:#2b1512;color:#ffedd5}
   </style>
 </head>
@@ -52,6 +51,7 @@
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="btn ghost" id="pendingToggle">Pending (0)</button>
         <button class="btn" id="refreshBtn">⟳ Refresh</button>
+        <button class="btn" id="exportCsvBtn">⇩ Export Leads (CSV)</button>
         <button class="btn accent" id="addBtn">＋ New Item</button>
         <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
       </div>
@@ -59,6 +59,7 @@
   </header>
 
   <main class="container section">
+    <!-- Login -->
     <div id="loginView">
       <div class="panel" style="max-width:420px;margin:40px auto;">
         <h3>Owner Sign-in</h3>
@@ -71,6 +72,7 @@
       </div>
     </div>
 
+    <!-- Admin -->
     <div id="adminView" class="hide">
       <div class="panel">
         <h3 style="margin-top:0;">GPT Items</h3>
@@ -106,10 +108,10 @@
           <p id="noLeadsMsg" class="muted" style="display:none; padding: 10px;">No leads collected yet.</p>
         </div>
       </div>
-
     </div>
   </main>
 
+  <!-- Add/Edit Modal -->
   <dialog id="itemModal">
     <form id="itemForm" style="padding:24px;">
       <h3 id="modalTitle">Add GPT</h3>
@@ -155,7 +157,7 @@
     const loginView=$('#loginView'),adminView=$('#adminView');
     const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
     const pendingToggle=$('#pendingToggle');
-    let allItemsCache=[], showOnlyPending=false;
+    let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
 
     async function api(endpoint,method='GET',body=null){
       const url=`${API_BASE}${endpoint}`;
@@ -170,9 +172,11 @@
 
     async function checkAuthAndLoad(){
       try{
+        // this will throw if not logged in
         await api('/api/gpts/all','GET');
         loginView.classList.add('hide');adminView.classList.remove('hide');
-        $('#logoutBtn').style.display='block';loadAdminData();
+        $('#logoutBtn').style.display='block';
+        await loadAdminData();
       }catch{
         loginView.classList.remove('hide');adminView.classList.add('hide');
         $('#logoutBtn').style.display='none';
@@ -196,21 +200,20 @@
     // top buttons
     $('#refreshBtn').addEventListener('click',()=>loadAdminData());
     pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+    $('#exportCsvBtn').addEventListener('click', exportLeadsCsv);
 
     // ===== data load & table
     async function loadAdminData(){
       try{
         const data=await api('/api/gpts/all','GET');
-        
-        // GPT Items
         allItemsCache = data.items || [];
         updatePendingCount();
         renderTable();
 
-        // --- NEW: Load Leads ---
-        const allLeads = data.leads || [];
-        renderLeadsTable(allLeads);
-
+        // Load Leads from its own endpoint (auth required)
+        const leadsResp = await api('/api/leads','GET');
+        allLeadsCache = (leadsResp.items || []).sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+        renderLeadsTable(allLeadsCache);
       }catch(e){alert('Failed to load data.');}
     }
 
@@ -254,8 +257,8 @@
         </tr>
       `).join('');
     }
-    
-    // --- NEW: Render Leads Table ---
+
+    // Leads
     function renderLeadsTable(leads = []) {
       const tbody = $('#leadsTable');
       const noMsg = $('#noLeadsMsg');
@@ -272,6 +275,24 @@
           <td><small>${escapeHtml(lead.message || '—')}</small></td>
         </tr>
       `).join('');
+    }
+
+    function exportLeadsCsv(){
+      if(!allLeadsCache.length){ alert('No leads to export.'); return; }
+      const rows=[['Date','Email','Message']];
+      allLeadsCache.forEach(l=>{
+        rows.push([
+          new Date(l.createdAt||0).toISOString(),
+          (l.email||'').replace(/"/g,'""'),
+          (l.message||'').replace(/"/g,'""')
+        ]);
+      });
+      const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='gptmart-leads.csv'; a.click();
+      URL.revokeObjectURL(url);
     }
 
     function escapeHtml(s=''){return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
@@ -293,7 +314,7 @@
     iconFile.addEventListener('change',async()=>{
       const f=iconFile.files?.[0]; if(!f) return;
       try{
-        const dataUrl = await fileToResizedSquareDataURL(f, 96); // retina 96 for 48px CSS
+        const dataUrl = await fileToResizedSquareDataURL(f, 96);
         iconInput.value=dataUrl; iconPrev.src=dataUrl; iconPrev.style.display='block'; iconNote.style.display='inline';
       }catch{ alert('Failed to process image.'); }
     });
@@ -334,22 +355,14 @@
       finally{$('#saveBtn').disabled=false;}
     });
 
-    // ===== actions
+    // actions
     async function deleteItem(id){ if(!confirm('Delete this item?')) return; await api(`/api/gpts/delete/${id}`,'DELETE'); await loadAdminData(); }
     async function toggleFeature(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured}); await loadAdminData(); }
     async function toggleStatus(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; const ns=it.status==='live'?'hidden':'live'; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns}); await loadAdminData(); }
+    async function approveSubmission(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'}); await loadAdminData(); }
+    window.approveSubmission=approveSubmission;
 
-    // NEW: approve pending → live
-    async function approveSubmission(id){
-      const it=allItemsCache.find(i=>i.id===id); if(!it) return;
-      try{
-        await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'});
-        await loadAdminData();
-      }catch{ alert('Failed to approve item.'); }
-    }
-    window.approveSubmission=approveSubmission; // expose for inline onclick
-
-    // image helper (crop+resize square)
+    // image helper
     function fileToResizedSquareDataURL(file, target=96){
       return new Promise((resolve,reject)=>{
         const fr=new FileReader();
