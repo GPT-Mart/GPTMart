@@ -7,25 +7,9 @@
   <meta name="description" content="A lightning-fast, keyboard-driven directory of the best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
-  <!-- USE THE SAME API BASE EVERYWHERE -->
   <meta name="gptmart-api" content="https://connector.onrender.com" />
-
-  <!-- Google Analytics (optional) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-6PTBJ3N2DK');
-    const track = (event, params = {}) => { try { gtag('event', event, params); } catch(e){} };
-  </script>
-
   <style>
-    :root{
-      --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36;
-      --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --stroke:#16213a;
-      --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.35);
-    }
+    :root{ --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36; --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --stroke:#16213a; --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.35); }
     *{box-sizing:border-box} html,body{height:100%;margin:0}
     body{font-family:Inter,ui-sans-serif,system-ui;background:linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%);color:var(--text)}
     .container{width:94%;max-width:1200px;margin:0 auto}
@@ -36,7 +20,7 @@
     .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;cursor:pointer}
     .btn.accent{background:#2c57c7;border-color:#2e53b7}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:var(--text);width:100%}
+    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:#text;width:100%}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:18px}
     .card{background:#0e162f;border:1px solid var(--stroke);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:flex-start;transition:.2s transform,.2s box-shadow}
     .card:hover{transform:translateY(-2px);box-shadow:0 0 0 2px rgba(110,168,255,.15),0 30px 120px -40px rgba(60,120,255,.35)}
@@ -52,12 +36,6 @@
     .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px}
     .chip-btn{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px}
     .chip-btn.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset}
-
-    /* Welcome Modal */
-    #welcomeModal { max-width: 500px; }
-    #welcomeModal h3 { margin-top:0; font-size: 20px; }
-    #welcomeModal p { margin-bottom: 20px; color: var(--muted); }
-    #welcomeError { color: #ff9a9a; font-size: 13px; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
@@ -111,14 +89,14 @@
     </form>
   </dialog>
 
-  <!-- Mandatory Welcome Modal -->
+  <!-- Mandatory Welcome Modal (no skip) -->
   <dialog id="welcomeModal">
     <form id="welcomeForm" style="padding:28px;">
       <h3>Welcome to GPTMart 🚀</h3>
       <p>Subscribe to unlock the best curated Custom GPTs. Your email helps us share updates directly with you.</p>
       <div class="row"><input id="wEmail" class="input big" type="email" placeholder="Your email" required></div>
       <div class="row"><textarea id="wMessage" class="input" placeholder="Your short message (what do you need?)" style="min-height:70px;"></textarea></div>
-      <small id="welcomeError">Please enter a valid email.</small>
+      <small id="welcomeError" style="display:none;color:#ff9a9a;font-size:13px;margin-top:10px;">Please enter a valid email.</small>
       <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
         <button class="btn accent" type="submit" id="wSubmitBtn">Subscribe</button>
       </div>
@@ -136,6 +114,7 @@
     document.addEventListener('DOMContentLoaded', init);
 
     async function init(){
+      // Mandatory subscribe gate
       if (!localStorage.getItem('gptmart_subscribed')) {
         document.body.style.overflow = 'hidden';
         document.querySelector('main').style.filter = 'blur(10px)';
@@ -175,10 +154,18 @@
           const res=await fetch(`${API_BASE}/api/leads/create`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,message})});
           if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Submission failed');}
           localStorage.setItem('gptmart_subscribed','true');
-          modal.close();document.body.style.overflow='';document.querySelector('main').style.filter='';document.querySelector('main').style.pointerEvents='';
+          modal.close();
+          document.body.style.overflow='';
+          document.querySelector('main').style.filter='';
+          document.querySelector('main').style.pointerEvents='';
           alert('🎉 Welcome to GPTMart! You’re now subscribed.');
-        }catch(err){errorMsg.textContent=err.message;errorMsg.style.display='block';console.error('Lead submit failed:',err);}
-        finally{submitBtn.disabled=false;submitBtn.textContent='Subscribe';}
+        }catch(err){
+          errorMsg.textContent=err.message;
+          errorMsg.style.display='block';
+          console.error('Lead submit failed:',err);
+        }finally{
+          submitBtn.disabled=false;submitBtn.textContent='Subscribe';
+        }
       });
     }
 
@@ -205,8 +192,10 @@
     }
 
     function setupUserAddModal(){
-      const wrap=$('#uCatChips');wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
-      wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+      const wrap=$('#uCatChips'); if (wrap) {
+        wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
+        wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+      }
       const iconInput=$('#uIcon'),iconFile=$('#uIconFile'),iconBtn=$('#uIconUploadBtn'),iconPrev=$('#uIconPreview'),iconNote=$('#uIconNote');
       iconBtn.addEventListener('click',()=>iconFile.click());
       iconFile.addEventListener('change',async()=>{
@@ -215,12 +204,46 @@
       });
       $('#userAddForm').addEventListener('submit',async e=>{
         e.preventDefault();$('#uSaveBtn').disabled=true;
-        const categories=Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
+        const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
         const payload={title:$('#uTitle').value.trim(),url:$('#uUrl').value.trim(),icon:$('#uIcon').value.trim(),desc:$('#uDesc').value.trim(),categories,tags:$('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)};
-        try{const res=await fetch(`${API_BASE}/api/gpts/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(await res.text());alert('Submitted! Your GPT will appear after admin approval.');$('#userAddModal').close();const data=await fetch(`${API_BASE}/api/gpts/public`,{cache:'no-store'}).then(r=>r.json());ALL_ITEMS=data.items||[];renderCategories();renderGrid();}catch(e){alert('Could not submit. Please try again later.');}finally{$('#uSaveBtn').disabled=false;}  });
+        try{
+          const res=await fetch(`${API_BASE}/api/gpts/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+          if(!res.ok) throw new Error(await res.text());
+          alert('Submitted! Your GPT will appear after admin approval.');
+          $('#userAddModal').close();
+          const data=await fetch(`${API_BASE}/api/gpts/public`,{cache:'no-store'}).then(r=>r.json());
+          ALL_ITEMS=data.items||[];renderCategories();renderGrid();
+        }catch(e){ alert('Could not submit. Please try again later.'); }
+        finally{ $('#uSaveBtn').disabled=false; }
+      });
     }
-    function openUserAddModal(){$('#userAddForm').reset();$('#uIconPreview').style.display='none';$('#uIconNote').style.display='none';document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));$('#userAddModal').showModal();}
-    function fileToResizedSquareDataURL(file,target=96){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onerror=reject;fr.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.max(target/img.width,target/img.height);const sw=target/s,sh=target/s,sx=(img.width-sw)/2,sy=(img.height-sh)/2;const c=document.createElement('canvas');c.width=target;c.height=target;c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);resolve(c.toDataURL('image/png'));};img.onerror=reject;img.src=fr.result;};fr.readAsDataURL(file);});}
+
+    function openUserAddModal(){
+      $('#userAddForm').reset();
+      $('#uIconPreview')?.style && ($('#uIconPreview').style.display='none');
+      $('#uIconNote')?.style && ($('#uIconNote').style.display='none');
+      document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));
+      $('#userAddModal').showModal();
+    }
+
+    function fileToResizedSquareDataURL(file,target=96){
+      return new Promise((resolve,reject)=>{
+        const fr=new FileReader();
+        fr.onerror=reject;
+        fr.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const s=Math.max(target/img.width,target/img.height);
+            const sw=target/s,sh=target/s,sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+            const c=document.createElement('canvas');c.width=target;c.height=target;
+            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
+            resolve(c.toDataURL('image/png'));
+          };
+          img.onerror=reject; img.src=fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
+    }
   </script>
 </body>
 </html>
