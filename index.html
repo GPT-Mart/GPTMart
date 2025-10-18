@@ -7,8 +7,10 @@
   <meta name="description" content="A lightning-fast, keyboard-driven directory of the best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
+  <!-- USE THE SAME API BASE EVERYWHERE -->
+  <meta name="gptmart-api" content="https://connector.onrender.com" />
 
-  <!-- Google Analytics -->
+  <!-- Google Analytics (optional) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -44,7 +46,7 @@
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
     dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
-    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
     .input.big{height:48px;display:flex;align-items:center}
     .muted{color:#9eb0d6;font-size:12px}
     .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px}
@@ -53,7 +55,6 @@
 
     /* Welcome Modal */
     #welcomeModal { max-width: 500px; }
-    #welcomeModal::backdrop { background: rgba(5,8,21,0.85); backdrop-filter: blur(8px); }
     #welcomeModal h3 { margin-top:0; font-size: 20px; }
     #welcomeModal p { margin-bottom: 20px; color: var(--muted); }
     #welcomeError { color: #ff9a9a; font-size: 13px; margin-top: 10px; display: none; }
@@ -125,7 +126,7 @@
   </dialog>
 
   <script>
-    const API_BASE = 'https://connector.onrender.com';
+    const API_BASE = (document.querySelector('meta[name="gptmart-api"]')?.content || '').replace(/\/+$/,'');
     const $ = (s, el=document) => el.querySelector(s);
     const contains = (t,q) => (t||'').toLowerCase().includes((q||'').toLowerCase());
     let ALL_ITEMS = [];
@@ -144,7 +145,7 @@
       }
 
       try {
-        const data = await fetch(`${API_BASE}/api/gpts/public`).then(r=>r.json());
+        const data = await fetch(`${API_BASE}/api/gpts/public`, { cache:'no-store' }).then(r=>r.json());
         ALL_ITEMS = data.items || [];
         renderCategories(); renderGrid();
       } catch {
@@ -162,7 +163,7 @@
 
     function setupWelcomeModal(){
       const modal=$('#welcomeModal'),form=$('#welcomeForm'),emailInput=$('#wEmail'),msgInput=$('#wMessage'),submitBtn=$('#wSubmitBtn'),errorMsg=$('#welcomeError');
-      const emailRegex=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       modal.addEventListener('cancel', e=>e.preventDefault());
       window.addEventListener('keydown', e=>{if(e.key==='Escape')e.preventDefault();});
       form.addEventListener('submit',async e=>{
@@ -176,7 +177,8 @@
           localStorage.setItem('gptmart_subscribed','true');
           modal.close();document.body.style.overflow='';document.querySelector('main').style.filter='';document.querySelector('main').style.pointerEvents='';
           alert('🎉 Welcome to GPTMart! You’re now subscribed.');
-        }catch(err){errorMsg.textContent=err.message;errorMsg.style.display='block';}finally{submitBtn.disabled=false;submitBtn.textContent='Subscribe';}
+        }catch(err){errorMsg.textContent=err.message;errorMsg.style.display='block';console.error('Lead submit failed:',err);}
+        finally{submitBtn.disabled=false;submitBtn.textContent='Subscribe';}
       });
     }
 
@@ -215,7 +217,10 @@
         e.preventDefault();$('#uSaveBtn').disabled=true;
         const categories=Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
         const payload={title:$('#uTitle').value.trim(),url:$('#uUrl').value.trim(),icon:$('#uIcon').value.trim(),desc:$('#uDesc').value.trim(),categories,tags:$('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)};
-        try{const res=await fetch(`${API_BASE}/api/gpts/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(await res.text());alert('Submitted! Your GPT will appear after admin approval.');$('#userAddModal').close();const data=await fetch(`${API_BASE}/api/gpts/public`).then(r=>r.json());ALL_ITEMS=data.items||[];renderCategories();renderGrid();}catch(e){alert('Could not submit. Please try again later.');}finally{$('#uSaveBtn').disabled=false;}  });
-}
-function openUserAddModal(){$('#userAddForm').reset();$('#uIconPreview').style.display='none';$('#uIconNote').style.display='none';document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));$('#userAddModal').showModal();}
-function fileToResizedSquareDataURL(file,target=96){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onerror=reject;fr.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.max(target/img.width,target/img.height);const sw=target/s,sh=target/s,sx=(img.width-sw)/2,sy=(img.height-sh)/2;const c=document.createElement('canvas');c.width=target;c.height=target;c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);resolve(c.toDataURL('image/png'));};img.onerror=reject;img.src=fr.result;};fr.readAsDataURL(file);});}</script> </body> </html>
+        try{const res=await fetch(`${API_BASE}/api/gpts/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(await res.text());alert('Submitted! Your GPT will appear after admin approval.');$('#userAddModal').close();const data=await fetch(`${API_BASE}/api/gpts/public`,{cache:'no-store'}).then(r=>r.json());ALL_ITEMS=data.items||[];renderCategories();renderGrid();}catch(e){alert('Could not submit. Please try again later.');}finally{$('#uSaveBtn').disabled=false;}  });
+    }
+    function openUserAddModal(){$('#userAddForm').reset();$('#uIconPreview').style.display='none';$('#uIconNote').style.display='none';document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));$('#userAddModal').showModal();}
+    function fileToResizedSquareDataURL(file,target=96){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onerror=reject;fr.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.max(target/img.width,target/img.height);const sw=target/s,sh=target/s,sx=(img.width-sw)/2,sy=(img.height-sh)/2;const c=document.createElement('canvas');c.width=target;c.height=target;c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);resolve(c.toDataURL('image/png'));};img.onerror=reject;img.src=fr.result;};fr.readAsDataURL(file);});}
+  </script>
+</body>
+</html>
