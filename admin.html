@@ -48,18 +48,18 @@
   <header class="topbar">
     <div class="container top-row">
       <div class="brand">Admin Panel</div>
-      <div style="display:flex;gap:8px;align-items:center;">
+      <!-- AUTHED ACTIONS: hidden until login -->
+      <div id="authedBar" style="display:none;gap:8px;align-items:center;">
         <button class="btn ghost" id="pendingToggle">Pending (0)</button>
         <button class="btn" id="refreshBtn">⟳ Refresh</button>
-        <!-- RESTORED: New Item button -->
         <button class="btn accent" id="addBtn">＋ New Item</button>
-        <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
+        <button class="btn" id="logoutBtn">Logout</button>
       </div>
     </div>
   </header>
 
   <main class="container section">
-    <!-- Login -->
+    <!-- Login (only thing visible pre-auth) -->
     <div id="loginView">
       <div class="panel" style="max-width:420px;margin:40px auto;">
         <h3>Owner Sign-in</h3>
@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <!-- Admin -->
+    <!-- Admin (hidden until auth) -->
     <div id="adminView" class="hide">
       <div class="panel">
         <h3 style="margin-top:0;">GPT Items</h3>
@@ -92,7 +92,7 @@
         </div>
       </div>
 
-      <div class="panel" style="margin-top: 24px;">
+      <div class="panel" style="margin-top:24px;">
         <h3 style="margin-top:0;">Collected Leads</h3>
         <div style="overflow-x:auto">
           <table>
@@ -105,7 +105,7 @@
             </thead>
             <tbody id="leadsTable"></tbody>
           </table>
-          <p id="noLeadsMsg" class="muted" style="display:none; padding: 10px;">No leads collected yet.</p>
+          <p id="noLeadsMsg" class="muted" style="display:none;padding:10px;">No leads collected yet.</p>
         </div>
       </div>
     </div>
@@ -157,6 +157,7 @@
     const loginView=$('#loginView'),adminView=$('#adminView');
     const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
     const pendingToggle=$('#pendingToggle');
+    const authedBar=$('#authedBar');
     let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
 
     async function api(endpoint,method='GET',body=null){
@@ -174,12 +175,14 @@
       try{
         // throws if not logged in
         await api('/api/gpts/all','GET');
-        loginView.classList.add('hide');adminView.classList.remove('hide');
-        $('#logoutBtn').style.display='block';
+        loginView.classList.add('hide');
+        adminView.classList.remove('hide');
+        authedBar.style.display='flex';
         await loadAdminData();
       }catch{
-        loginView.classList.remove('hide');adminView.classList.add('hide');
-        $('#logoutBtn').style.display='none';
+        adminView.classList.add('hide');
+        loginView.classList.remove('hide');
+        authedBar.style.display='none';
       }
     }
 
@@ -195,13 +198,17 @@
       }catch{loginMsg.textContent='❌ Error connecting to server';}
       finally{loginBtn.disabled=false;}
     });
-    $('#logoutBtn').addEventListener('click',()=>{adminView.classList.add('hide');loginView.classList.remove('hide');$('#logoutBtn').style.display='none';});
+    $('#logoutBtn').addEventListener('click',()=>{
+      adminView.classList.add('hide');
+      loginView.classList.remove('hide');
+      authedBar.style.display='none';
+      // cookie expires server-side; UI just flips immediately
+    });
 
     // top buttons
-    $('#refreshBtn').addEventListener('click',()=>loadAdminData());
-    pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
-    // RESTORED: open create modal
-    $('#addBtn').addEventListener('click',()=>openModal());
+    $('#refreshBtn')?.addEventListener('click',()=>loadAdminData());
+    pendingToggle?.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+    $('#addBtn')?.addEventListener('click',()=>openModal());
 
     // ===== data load & table
     async function loadAdminData(){
@@ -214,7 +221,7 @@
 
         allLeadsCache = (db.leads || []).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
         renderLeadsTable(allLeadsCache);
-      }catch(e){alert('Failed to load data.');}
+      }catch{ alert('Failed to load data.'); }
     }
 
     function updatePendingCount(){
@@ -245,7 +252,6 @@
           <td>${i.featured ? '⭐️' : '—'}</td>
           <td>${i.status}</td>
           <td style="display:flex; gap: 6px; flex-wrap: wrap;">
-            <!-- ADDED: explicit Edit button -->
             <button class="btn" onclick="openModal('${i.id}')">Edit</button>
             ${i.status==='pending'
               ? `<button class="btn accent" onclick="approveSubmission('${i.id}')">Approve</button>`
@@ -263,11 +269,7 @@
     function renderLeadsTable(leads = []) {
       const tbody = $('#leadsTable');
       const noMsg = $('#noLeadsMsg');
-      if (!leads.length) {
-        tbody.innerHTML = '';
-        noMsg.style.display = 'block';
-        return;
-      }
+      if (!leads.length) { tbody.innerHTML = ''; noMsg.style.display = 'block'; return; }
       noMsg.style.display = 'none';
       tbody.innerHTML = leads.map(lead => `
         <tr>
