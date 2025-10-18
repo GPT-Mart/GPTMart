@@ -1,15 +1,30 @@
 <!doctype html>
 <html lang="en">
 <head>
+  
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title id="pageTitle">GPTMart — Curated Custom GPTs</title>
   <meta name="description" content="A lightning-fast, keyboard-driven directory of the best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
-  <meta name="gptmart-api" content="https://connector.onrender.com" />
+    <!-- Google tag (gtag.js) — REAL DATA -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6PTBJ3N2DK');   // your real Measurement ID
+
+    // helper for custom events
+    const track = (event, params = {}) => { try { gtag('event', event, params); } catch(e){} };
+  </script>
   <style>
-    :root{ --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36; --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --stroke:#16213a; --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.35); }
+    :root{
+      --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36;
+      --text:#e6ecff; --muted:#a9b4c7; --accent:#6ea8ff; --stroke:#16213a;
+      --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.35);
+    }
     *{box-sizing:border-box} html,body{height:100%;margin:0}
     body{font-family:Inter,ui-sans-serif,system-ui;background:linear-gradient(180deg,var(--bg),#091229 60%, #0a1333 100%);color:var(--text)}
     .container{width:94%;max-width:1200px;margin:0 auto}
@@ -20,7 +35,7 @@
     .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 14px;border-radius:12px;color:#e7efff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;cursor:pointer}
     .btn.accent{background:#2c57c7;border-color:#2e53b7}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:#text;width:100%}
+    .input{border:1px solid var(--stroke);background:#0b152c;border-radius:12px;padding:12px 14px;color:var(--text);width:100%}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:18px}
     .card{background:#0e162f;border:1px solid var(--stroke);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:flex-start;transition:.2s transform,.2s box-shadow}
     .card:hover{transform:translateY(-2px);box-shadow:0 0 0 2px rgba(110,168,255,.15),0 30px 120px -40px rgba(60,120,255,.35)}
@@ -29,8 +44,9 @@
     .title{font-weight:800;margin:0}
     .desc{color:#a7b0c0;font-size:14px;line-height:1.5}
     .badge{position:absolute;top:10px;right:10px;font-size:11px;background:#1a2c5c;border:1px solid #254a9b;color:#d5e4ff;border-radius:999px;padding:4px 8px}
+    .chip{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #254a9b;background:#0f1a3a;color:#d5e4ff;font-size:12px;text-decoration:none}
     dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
-    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
     .input.big{height:48px;display:flex;align-items:center}
     .muted{color:#9eb0d6;font-size:12px}
     .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px}
@@ -60,15 +76,18 @@
       </select>
       <button class="btn" id="reset">Reset</button>
     </div>
+
     <div id="grid" class="grid"></div>
   </main>
 
-  <!-- Add GPT Modal -->
+  <!-- End-user Add GPT Modal -->
   <dialog id="userAddModal">
     <form id="userAddForm" style="padding:24px;">
       <h3 style="margin:0 0 12px">Add GPT</h3>
+
       <div class="row"><input id="uTitle" class="input big" placeholder="Title" required></div>
       <div class="row"><input id="uUrl" class="input big" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
+
       <div class="row" style="display:flex;gap:10px;align-items:stretch;margin:10px 0;">
         <input id="uIcon" class="input big" placeholder="Paste Icon URL or Upload">
         <input id="uIconFile" type="file" accept="image/*" style="display:none">
@@ -78,10 +97,16 @@
         <img id="uIconPreview" style="width:32px;height:32px;border-radius:8px;display:none;border:1px solid var(--stroke);object-fit:cover">
         <small id="uIconNote" style="display:none">Icon attached (retina 96×96)</small>
       </div>
-      <div class="input big" style="pointer-events:none">Select one or more categories below</div>
+
+      <!-- NEW helper line to match Admin UI -->
+      <div class="input big" role="note" aria-label="Category selection hint" style="pointer-events:none">
+        Select one or more categories below
+      </div>
+
       <div class="row"><div id="uCatChips" class="chip-toolbar"></div></div>
       <div class="row"><input id="uTags" class="input big" placeholder="Tags (e.g., api, web, data analysis)"></div>
       <div class="row"><textarea id="uDesc" class="input big" placeholder="Short description" style="min-height:70px;"></textarea></div>
+
       <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
         <button id="uCancel" class="btn" type="button">Cancel</button>
         <button class="btn accent" type="submit" id="uSaveBtn">Submit</button>
@@ -89,144 +114,149 @@
     </form>
   </dialog>
 
-  <!-- Mandatory Welcome Modal (no skip) -->
-  <dialog id="welcomeModal">
-    <form id="welcomeForm" style="padding:28px;">
-      <h3>Welcome to GPTMart 🚀</h3>
-      <p>Subscribe to unlock the best curated Custom GPTs. Your email helps us share updates directly with you.</p>
-      <div class="row"><input id="wEmail" class="input big" type="email" placeholder="Your email" required></div>
-      <div class="row"><textarea id="wMessage" class="input" placeholder="Your short message (what do you need?)" style="min-height:70px;"></textarea></div>
-      <small id="welcomeError" style="display:none;color:#ff9a9a;font-size:13px;margin-top:10px;">Please enter a valid email.</small>
-      <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button class="btn accent" type="submit" id="wSubmitBtn">Subscribe</button>
-      </div>
-    </form>
-  </dialog>
-
   <script>
-    const API_BASE = (document.querySelector('meta[name="gptmart-api"]')?.content || '').replace(/\/+$/,'');
+    // ===== CONFIG =====
+    const API_BASE = 'https://connector-320f.onrender.com'; // set to your Render URL
+
+    // ===== STATE/UTIL =====
     const $ = (s, el=document) => el.querySelector(s);
     const contains = (t,q) => (t||'').toLowerCase().includes((q||'').toLowerCase());
     let ALL_ITEMS = [];
     const state = { q:'', cat:'All', sort:'featured' };
-    const CATEGORY_CHOICES = ['AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks','Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy','Productivity','Search','Security','Sports','Tools'];
+
+    const CATEGORY_CHOICES = [
+      'AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks',
+      'Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy',
+      'Productivity','Search','Security','Sports','Tools'
+    ];
 
     document.addEventListener('DOMContentLoaded', init);
 
     async function init(){
-      // Mandatory subscribe gate
-      if (!localStorage.getItem('gptmart_subscribed')) {
-        document.body.style.overflow = 'hidden';
-        document.querySelector('main').style.filter = 'blur(10px)';
-        document.querySelector('main').style.pointerEvents = 'none';
-        setupWelcomeModal();
-        $('#welcomeModal').showModal();
-      }
-
-      try {
-        const data = await fetch(`${API_BASE}/api/gpts/public`, { cache:'no-store' }).then(r=>r.json());
+      try{
+        const data = await fetchPublic();
         ALL_ITEMS = data.items || [];
-        renderCategories(); renderGrid();
-      } catch {
+        renderCategories();
+        renderGrid();
+      }catch(e){
+        console.error(e);
         $('#grid').innerHTML = '<p>Failed to load. Try again later.</p>';
       }
 
-      $('#q').addEventListener('input', e=>{state.q=e.target.value;renderGrid();});
-      $('#cat').addEventListener('change', e=>{state.cat=e.target.value;renderGrid();});
-      $('#sort').addEventListener('change', e=>{state.sort=e.target.value;renderGrid();});
-      $('#reset').addEventListener('click', ()=>{state.q='';$('#q').value='';state.cat='All';$('#cat').value='All';state.sort='featured';$('#sort').value='featured';renderGrid();});
+      $('#q').addEventListener('input', e => { state.q=e.target.value; renderGrid(); });
+      $('#cat').addEventListener('change', e => { state.cat=e.target.value; renderGrid(); });
+      $('#sort').addEventListener('change', e => { state.sort=e.target.value; renderGrid(); });
+      $('#reset').addEventListener('click', ()=>{ state.q=''; $('#q').value=''; state.cat='All'; $('#cat').value='All'; state.sort='featured'; $('#sort').value='featured'; renderGrid(); });
+
+      // End-user modal wiring
       $('#userAddBtn').addEventListener('click', openUserAddModal);
-      $('#uCancel').addEventListener('click', ()=>$('#userAddModal').close());
+      $('#uCancel').addEventListener('click', ()=> $('#userAddModal').close());
       setupUserAddModal();
     }
 
-    function setupWelcomeModal(){
-      const modal=$('#welcomeModal'),form=$('#welcomeForm'),emailInput=$('#wEmail'),msgInput=$('#wMessage'),submitBtn=$('#wSubmitBtn'),errorMsg=$('#welcomeError');
-      const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      modal.addEventListener('cancel', e=>e.preventDefault());
-      window.addEventListener('keydown', e=>{if(e.key==='Escape')e.preventDefault();});
-      form.addEventListener('submit',async e=>{
-        e.preventDefault();
-        const email=emailInput.value.trim();const message=msgInput.value.trim();
-        if(!emailRegex.test(email)){errorMsg.textContent='Please enter a valid email.';errorMsg.style.display='block';return;}
-        errorMsg.style.display='none';submitBtn.disabled=true;submitBtn.textContent='Submitting...';
-        try{
-          const res=await fetch(`${API_BASE}/api/leads/create`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,message})});
-          if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Submission failed');}
-          localStorage.setItem('gptmart_subscribed','true');
-          modal.close();
-          document.body.style.overflow='';
-          document.querySelector('main').style.filter='';
-          document.querySelector('main').style.pointerEvents='';
-          alert('🎉 Welcome to GPTMart! You’re now subscribed.');
-        }catch(err){
-          errorMsg.textContent=err.message;
-          errorMsg.style.display='block';
-          console.error('Lead submit failed:',err);
-        }finally{
-          submitBtn.disabled=false;submitBtn.textContent='Subscribe';
-        }
-      });
+    async function fetchPublic(){
+      const res = await fetch(`${API_BASE}/api/gpts/public`, { cache:'no-store' });
+      if(!res.ok) throw new Error(await res.text());
+      return res.json();
     }
 
     function renderCategories(){
-      const cats=[...new Set(ALL_ITEMS.flatMap(x=>x.categories||[]))].sort();
-      $('#cat').innerHTML='<option value="All">All Categories</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
-    }
-    function renderGrid(){
-      const filtered=ALL_ITEMS.filter(x=>{
-        const inQ=!state.q||[x.title,x.desc,(x.categories||[]).join(','),(x.tags||[]).join(',')].some(v=>contains(v,state.q));
-        const inCat=state.cat==='All'||(x.categories||[]).includes(state.cat);
-        return inQ&&inCat;
-      });
-      const sorted=filtered.slice().sort((a,b)=>{
-        if(state.sort==='title')return(a.title||'').localeCompare(b.title||'');
-        if(state.sort==='recent')return(b.createdAt||0)-(a.createdAt||0);
-        const f=(b.featured?1:0)-(a.featured?1:0);if(f!==0)return f;
-        return(b.createdAt||0)-(a.createdAt||0);
-      });
-      $('#grid').innerHTML=sorted.map(cardTemplate).join('')||'<p>No results.</p>';
-    }
-    function cardTemplate(x){
-      return`<article class="card">${x.featured?`<span class="badge">Featured</span>`:''}<div class="icon">${x.icon?`<img src="${x.icon}" alt="">`:''}</div><div style="display:flex;flex-direction:column;gap:10px;position:relative"><h3 class="title">${x.title||''}</h3><p class="desc">${x.desc||''}</p><div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a></div></div></article>`;
+      const cats = [...new Set(ALL_ITEMS.flatMap(x=>x.categories||[]))].sort();
+      $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
     }
 
-    function setupUserAddModal(){
-      const wrap=$('#uCatChips'); if (wrap) {
-        wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
-        wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
-      }
-      const iconInput=$('#uIcon'),iconFile=$('#uIconFile'),iconBtn=$('#uIconUploadBtn'),iconPrev=$('#uIconPreview'),iconNote=$('#uIconNote');
-      iconBtn.addEventListener('click',()=>iconFile.click());
-      iconFile.addEventListener('change',async()=>{
-        const f=iconFile.files?.[0];if(!f)return;
-        try{const dataUrl=await fileToResizedSquareDataURL(f,96);iconInput.value=dataUrl;iconPrev.src=dataUrl;iconPrev.style.display='block';iconNote.style.display='inline';}catch{alert('Failed to process image.');}
+    function renderGrid(){
+      const filtered = ALL_ITEMS.filter(x=>{
+        const inQ = !state.q || [x.title,x.desc,(x.categories||[]).join(','),(x.tags||[]).join(',')].some(v=>contains(v,state.q));
+        const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
+        return inQ && inCat;
       });
-      $('#userAddForm').addEventListener('submit',async e=>{
-        e.preventDefault();$('#uSaveBtn').disabled=true;
-        const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
-        const payload={title:$('#uTitle').value.trim(),url:$('#uUrl').value.trim(),icon:$('#uIcon').value.trim(),desc:$('#uDesc').value.trim(),categories,tags:$('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)};
+      const sorted = filtered.slice().sort((a,b)=>{
+        if(state.sort==='title') return (a.title||'').localeCompare(b.title||'');
+        if(state.sort==='recent') return (b.createdAt||0) - (a.createdAt||0);
+        const featDiff = (b.featured?1:0) - (a.featured?1:0);
+        if(featDiff!==0) return featDiff;
+        return (b.createdAt||0) - (a.createdAt||0);
+      });
+      $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results.</p>';
+    }
+
+    function cardTemplate(x){
+      return `
+        <article class="card">
+          ${x.featured ? `<span class="badge">Featured</span>` : ''}
+          <div class="icon">${x.icon?`<img src="${x.icon}" alt="">`:''}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;position:relative">
+            <h3 class="title">${x.title||''}</h3>
+            <p class="desc">${x.desc||''}</p>
+            <div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a></div>
+          </div>
+        </article>`;
+    }
+
+    // ===== End-user Submit =====
+    function setupUserAddModal(){
+      // chips
+      const wrap = $('#uCatChips');
+      wrap.innerHTML = CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+
+      // upload
+      const iconInput=$('#uIcon'), iconFile=$('#uIconFile'), iconBtn=$('#uIconUploadBtn'), iconPrev=$('#uIconPreview'), iconNote=$('#uIconNote');
+      iconBtn.addEventListener('click',()=>iconFile.click());
+      iconFile.addEventListener('change', async ()=>{
+        const f=iconFile.files?.[0]; if(!f) return;
         try{
-          const res=await fetch(`${API_BASE}/api/gpts/submit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+          const dataUrl = await fileToResizedSquareDataURL(f, 96);
+          iconInput.value = dataUrl;
+          iconPrev.src = dataUrl;
+          iconPrev.style.display='block';
+          iconNote.style.display='inline';
+        }catch{ alert('Failed to process image.'); }
+      });
+
+      // submit
+      $('#userAddForm').addEventListener('submit', async (e)=>{
+        e.preventDefault(); $('#uSaveBtn').disabled = true;
+        const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
+        const payload = {
+          title: $('#uTitle').value.trim(),
+          url: $('#uUrl').value.trim(),
+          icon: $('#uIcon').value.trim(),
+          desc: $('#uDesc').value.trim(),
+          categories,
+          tags: $('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)
+        };
+        try{
+          const res = await fetch(`${API_BASE}/api/gpts/submit`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+          });
           if(!res.ok) throw new Error(await res.text());
           alert('Submitted! Your GPT will appear after admin approval.');
           $('#userAddModal').close();
-          const data=await fetch(`${API_BASE}/api/gpts/public`,{cache:'no-store'}).then(r=>r.json());
-          ALL_ITEMS=data.items||[];renderCategories();renderGrid();
-        }catch(e){ alert('Could not submit. Please try again later.'); }
-        finally{ $('#uSaveBtn').disabled=false; }
+          const data = await fetchPublic();
+          ALL_ITEMS = data.items || [];
+          renderCategories(); renderGrid();
+        }catch(e){
+          alert('Could not submit. Please try again later.');
+        }finally{
+          $('#uSaveBtn').disabled = false;
+        }
       });
     }
 
     function openUserAddModal(){
       $('#userAddForm').reset();
-      $('#uIconPreview')?.style && ($('#uIconPreview').style.display='none');
-      $('#uIconNote')?.style && ($('#uIconNote').style.display='none');
+      $('#uIconPreview').style.display='none';
+      $('#uIconNote').style.display='none';
       document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));
       $('#userAddModal').showModal();
     }
 
-    function fileToResizedSquareDataURL(file,target=96){
+    // center-crop & resize to square (PNG)
+    function fileToResizedSquareDataURL(file, target=96){
       return new Promise((resolve,reject)=>{
         const fr=new FileReader();
         fr.onerror=reject;
@@ -234,8 +264,8 @@
           const img=new Image();
           img.onload=()=>{
             const s=Math.max(target/img.width,target/img.height);
-            const sw=target/s,sh=target/s,sx=(img.width-sw)/2,sy=(img.height-sh)/2;
-            const c=document.createElement('canvas');c.width=target;c.height=target;
+            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+            const c=document.createElement('canvas'); c.width=target; c.height=target;
             c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
             resolve(c.toDataURL('image/png'));
           };
