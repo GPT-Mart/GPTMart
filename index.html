@@ -54,6 +54,7 @@
 
     /* --- NEW WELCOME MODAL STYLES --- */
     #welcomeModal { max-width: 500px; }
+    /* Darker, un-closable backdrop */
     #welcomeModal::backdrop { background: rgba(5, 8, 21, 0.8); backdrop-filter: blur(8px); }
     #welcomeModal h3 { margin-top:0; font-size: 20px; }
     #welcomeModal p { margin-bottom: 20px; color: var(--muted); }
@@ -92,6 +93,28 @@
   <dialog id="userAddModal">
     <form id="userAddForm" style="padding:24px;">
       <h3 style="margin:0 0 12px">Add GPT</h3>
+
+      <div class="row"><input id="uTitle" class="input big" placeholder="Title" required></div>
+      <div class="row"><input id="uUrl" class="input big" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
+
+      <div class="row" style="display:flex;gap:10px;align-items:stretch;margin:10px 0;">
+        <input id="uIcon" class="input big" placeholder="Paste Icon URL or Upload">
+        <input id="uIconFile" type="file" accept="image/*" style="display:none">
+        <button class="btn accent" type="button" id="uIconUploadBtn" style="height:48px;">Upload</button>
+      </div>
+      <div class="muted" id="uIconPreviewWrap" style="display:flex;align-items:center;gap:10px;margin:-6px 0 10px;">
+        <img id="uIconPreview" style="width:32px;height:32px;border-radius:8px;display:none;border:1px solid var(--stroke);object-fit:cover">
+        <small id="uIconNote" style="display:none">Icon attached (retina 96×96)</small>
+      </div>
+
+      <div class="input big" role="note" aria-label="Category selection hint" style="pointer-events:none">
+        Select one or more categories below
+      </div>
+
+      <div class="row"><div id="uCatChips" class="chip-toolbar"></div></div>
+      <div class="row"><input id="uTags" class="input big" placeholder="Tags (e.g., api, web, data analysis)"></div>
+      <div class="row"><textarea id="uDesc" class="input big" placeholder="Short description" style="min-height:70px;"></textarea></div>
+
       <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
         <button id="uCancel" class="btn" type="button">Cancel</button>
         <button class="btn accent" type="submit" id="uSaveBtn">Submit</button>
@@ -119,10 +142,10 @@
     </form>
   </dialog>
 
-
   <script>
     // ===== CONFIG =====
-    const API_BASE = 'https://connector-320f.onrender.com'; // set to your Render URL
+    // IMPORTANT: Make sure this points to YOUR backend URL
+    const API_BASE = 'https://connector.onrender.com'; // set to your Render URL
 
     // ===== STATE/UTIL =====
     const $ = (s, el=document) => el.querySelector(s);
@@ -146,6 +169,7 @@
         $('#welcomeModal').showModal();
       }
 
+      // Load main content
       try{
         const data = await fetchPublic();
         ALL_ITEMS = data.items || [];
@@ -166,7 +190,7 @@
       $('#uCancel').addEventListener('click', ()=> $('#userAddModal').close());
       setupUserAddModal();
     }
-
+    
     // --- NEW: Welcome Modal Setup ---
     function setupWelcomeModal() {
       const modal = $('#welcomeModal');
@@ -175,9 +199,10 @@
       const msgInput = $('#wMessage');
       const submitBtn = $('#wSubmitBtn');
       const errorMsg = $('#welcomeError');
+      // Regex for basic email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Prevent closing via 'Esc' key
+      // Prevent closing via 'Esc' key or clicking backdrop
       modal.addEventListener('cancel', (e) => e.preventDefault());
 
       form.addEventListener('submit', async (e) => {
@@ -187,7 +212,7 @@
         
         // Validate email
         if (!emailRegex.test(email)) {
-          errorMsg.textContent = 'Please enter a valid email.';
+          errorMsg.textContent = 'Please enter a valid email format.';
           errorMsg.style.display = 'block';
           return;
         }
@@ -207,7 +232,7 @@
             throw new Error(err.error || 'Submission failed. Please try again.');
           }
 
-          // Success
+          // Success! Set flag and close modal
           localStorage.setItem('gptmart_subscribed', 'true');
           modal.close();
 
@@ -228,29 +253,118 @@
     }
 
     function renderCategories(){
-      // ... (rest of the function is unchanged) ...
+      const cats = [...new Set(ALL_ITEMS.flatMap(x=>x.categories||[]))].sort();
+      $('#cat').innerHTML = '<option value="All">All Categories</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
     }
 
     function renderGrid(){
-      // ... (rest of the function is unchanged) ...
+      const filtered = ALL_ITEMS.filter(x=>{
+        const inQ = !state.q || [x.title,x.desc,(x.categories||[]).join(','),(x.tags||[]).join(',')].some(v=>contains(v,state.q));
+        const inCat = state.cat==='All' || (x.categories||[]).includes(state.cat);
+        return inQ && inCat;
+      });
+      const sorted = filtered.slice().sort((a,b)=>{
+        if(state.sort==='title') return (a.title||'').localeCompare(b.title||'');
+        if(state.sort==='recent') return (b.createdAt||0) - (a.createdAt||0);
+        const featDiff = (b.featured?1:0) - (a.featured?1:0);
+        if(featDiff!==0) return featDiff;
+        return (b.createdAt||0) - (a.createdAt||0);
+      });
+      $('#grid').innerHTML = sorted.map(cardTemplate).join('') || '<p>No results.</p>';
     }
 
     function cardTemplate(x){
-      // ... (rest of the function is unchanged) ...
+      return `
+        <article class="card">
+          ${x.featured ? `<span class="badge">Featured</span>` : ''}
+          <div class="icon">${x.icon?`<img src="${x.icon}" alt="">`:''}</div>
+          <div style="display:flex;flex-direction:column;gap:10px;position:relative">
+            <h3 class="title">${x.title||''}</h3>
+            <p class="desc">${x.desc||''}</p>
+            <div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a></div>
+          </div>
+        </article>`;
     }
 
     // ===== End-user Submit =====
     function setupUserAddModal(){
-      // ... (rest of the function is unchanged) ...
+      // chips
+      const wrap = $('#uCatChips');
+      wrap.innerHTML = CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+
+      // upload
+      const iconInput=$('#uIcon'), iconFile=$('#uIconFile'), iconBtn=$('#uIconUploadBtn'), iconPrev=$('#uIconPreview'), iconNote=$('#uIconNote');
+      iconBtn.addEventListener('click',()=>iconFile.click());
+      iconFile.addEventListener('change', async ()=>{
+        const f=iconFile.files?.[0]; if(!f) return;
+        try{
+          const dataUrl = await fileToResizedSquareDataURL(f, 96);
+          iconInput.value = dataUrl;
+          iconPrev.src = dataUrl;
+          iconPrev.style.display='block';
+          iconNote.style.display='inline';
+        }catch{ alert('Failed to process image.'); }
+      });
+
+      // submit
+      $('#userAddForm').addEventListener('submit', async (e)=>{
+        e.preventDefault(); $('#uSaveBtn').disabled = true;
+        const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
+        const payload = {
+          title: $('#uTitle').value.trim(),
+          url: $('#uUrl').value.trim(),
+          icon: $('#uIcon').value.trim(),
+          desc: $('#uDesc').value.trim(),
+          categories,
+          tags: $('#uTags').value.split(',').map(s=>s.trim()).filter(Boolean)
+        };
+        try{
+          const res = await fetch(`${API_BASE}/api/gpts/submit`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+          });
+          if(!res.ok) throw new Error(await res.text());
+          alert('Submitted! Your GPT will appear after admin approval.');
+          $('#userAddModal').close();
+          const data = await fetchPublic();
+          ALL_ITEMS = data.items || [];
+          renderCategories(); renderGrid();
+        }catch(e){
+          alert('Could not submit. Please try again later.');
+        }finally{
+          $('#uSaveBtn').disabled = false;
+        }
+      });
     }
 
     function openUserAddModal(){
-      // ... (rest of the function is unchanged) ...
+      $('#userAddForm').reset();
+      $('#uIconPreview').style.display='none';
+      $('#uIconNote').style.display='none';
+      document.querySelectorAll('#uCatChips .chip-btn.active').forEach(b=>b.classList.remove('active'));
+      $('#userAddModal').showModal();
     }
 
     // center-crop & resize to square (PNG)
     function fileToResizedSquareDataURL(file, target=96){
-      // ... (rest of the function is unchanged) ...
+      return new Promise((resolve,reject)=>{
+        const fr=new FileReader();
+        fr.onerror=reject;
+        fr.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const s=Math.max(target/img.width,target/img.height);
+            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+            const c=document.createElement('canvas'); c.width=target; c.height=target;
+            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
+            resolve(c.toDataURL('image/png'));
+          };
+          img.onerror=reject; img.src=fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
     }
   </script>
 </body>
