@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow" />
-  <!-- Point this to YOUR connector base URL -->
+  <!-- Point this to YOUR connector URL -->
   <meta name="gptmart-api" content="https://connector.onrender.com" />
   <style>
     :root{
       --bg:#050815; --panel:#0b1a36; --text:#e6ecff;
-      --accent:#6ea8ff; --accent-2:#3b82f6;
-      --stroke:#16213a; --radius:14px;
+      --accent:#6ea8ff; --stroke:#16213a; --radius:14px;
     }
     *{box-sizing:border-box}
     body{font-family:Inter,ui-sans-serif,system-ui;background:var(--bg);color:var(--text);margin:0;}
@@ -48,18 +47,17 @@
   <header class="topbar">
     <div class="container top-row">
       <div class="brand">Admin Panel</div>
-      <!-- AUTHED ACTIONS: hidden until login -->
-      <div id="authedBar" style="display:none;gap:8px;align-items:center;">
+      <div style="display:flex;gap:8px;align-items:center;">
         <button class="btn ghost" id="pendingToggle">Pending (0)</button>
         <button class="btn" id="refreshBtn">⟳ Refresh</button>
         <button class="btn accent" id="addBtn">＋ New Item</button>
-        <button class="btn" id="logoutBtn">Logout</button>
+        <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
       </div>
     </div>
   </header>
 
   <main class="container section">
-    <!-- Login (only thing visible pre-auth) -->
+    <!-- Login view only -->
     <div id="loginView">
       <div class="panel" style="max-width:420px;margin:40px auto;">
         <h3>Owner Sign-in</h3>
@@ -72,7 +70,7 @@
       </div>
     </div>
 
-    <!-- Admin (hidden until auth) -->
+    <!-- Hidden until authenticated -->
     <div id="adminView" class="hide">
       <div class="panel">
         <h3 style="margin-top:0;">GPT Items</h3>
@@ -92,7 +90,7 @@
         </div>
       </div>
 
-      <div class="panel" style="margin-top:24px;">
+      <div class="panel" style="margin-top: 24px;">
         <h3 style="margin-top:0;">Collected Leads</h3>
         <div style="overflow-x:auto">
           <table>
@@ -105,7 +103,7 @@
             </thead>
             <tbody id="leadsTable"></tbody>
           </table>
-          <p id="noLeadsMsg" class="muted" style="display:none;padding:10px;">No leads collected yet.</p>
+          <p id="noLeadsMsg" class="muted" style="display:none; padding: 10px;">No leads collected yet.</p>
         </div>
       </div>
     </div>
@@ -116,7 +114,6 @@
     <form id="itemForm" style="padding:24px;">
       <h3 id="modalTitle">Add GPT</h3>
       <input type="hidden" id="itemId">
-
       <div class="row"><input id="mTitle" class="input big" placeholder="Title" required></div>
       <div class="row"><input id="mUrl" class="input big" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
 
@@ -150,85 +147,222 @@
     </form>
   </dialog>
 
- <script>
-  // ===== base & utils
-  const API_BASE = (document.querySelector('meta[name="gptmart-api"]')?.content || '').replace(/\/+$/,'');
-  const $ = s => document.querySelector(s);
+  <script>
+    // ===== base & utils
+    const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
+    const $=s=>document.querySelector(s);
+    const loginView=$('#loginView'),adminView=$('#adminView');
+    const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
+    const pendingToggle=$('#pendingToggle');
+    let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
 
-  // Persisted auth token (avoids blocked third-party cookies)
-  const AUTH = { token: localStorage.getItem('gptmart_token') || '' };
+    // Bearer token (avoid third-party cookie issues)
+    const AUTH = { token: localStorage.getItem('gptmart_token') || '' };
 
-  async function api(endpoint, method='GET', body=null){
-    const url = `${API_BASE}${endpoint}`;
-    const opts = { method, credentials:'include', headers:{} };
-    if (AUTH.token) opts.headers['Authorization'] = `Bearer ${AUTH.token}`;
-    if (body){ opts.headers['Content-Type']='application/json'; opts.body = JSON.stringify(body); }
-
-    const res = await fetch(url, opts);
-    if (res.status === 401) throw new Error('unauthorized');
-    if (res.status === 204) return null;
-    if (!res.ok) throw new Error(await res.text().catch(()=>res.statusText));
-    return res.json();
-  }
-
-  async function checkAuthAndLoad(){
-    try{
-      await api('/api/gpts/all','GET');            // works if token is set
-      document.getElementById('loginView').classList.add('hide');
-      document.getElementById('adminView').classList.remove('hide');
-      document.getElementById('logoutBtn').style.display='block';
-      await loadAdminData();
-    }catch{
-      document.getElementById('loginView').classList.remove('hide');
-      document.getElementById('adminView').classList.add('hide');
-      document.getElementById('logoutBtn').style.display='none';
+    async function api(endpoint,method='GET',body=null){
+      const url=`${API_BASE}${endpoint}`;
+      const opts={method,credentials:'include',headers:{}};
+      if (AUTH.token) opts.headers['Authorization'] = `Bearer ${AUTH.token}`;
+      if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+      const res=await fetch(url,opts);
+      if(res.status===401)throw new Error('unauthorized');
+      if(res.status===204)return null;
+      if(!res.ok)throw new Error(await res.text().catch(()=>res.statusText));
+      return res.json();
     }
-  }
 
-  // --- Login
-  document.getElementById('loginForm').addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const pin = document.getElementById('pin').value.trim();
-    const btn = document.getElementById('loginBtn');
-    const msg = document.getElementById('loginMsg');
-    if(!pin) return;
-    btn.disabled = true; msg.textContent = 'Signing in…';
-    try{
-      const res = await fetch(`${API_BASE}/api/login`, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        credentials:'include',
-        body: JSON.stringify({ pin })
-      });
-      const data = await res.json().catch(()=>({}));
-      if (res.ok && data.success && data.token){
-        AUTH.token = data.token;
-        localStorage.setItem('gptmart_token', AUTH.token);   // persist bearer
-        msg.textContent = '✅ Logged in';
-        await checkAuthAndLoad();
-      } else {
-        msg.textContent = '❌ ' + (data.error || 'Login failed');
+    async function checkAuthAndLoad(){
+      try{
+        await api('/api/gpts/all','GET');
+        loginView.classList.add('hide');adminView.classList.remove('hide');
+        $('#logoutBtn').style.display='block';
+        await loadAdminData();
+      }catch{
+        loginView.classList.remove('hide');adminView.classList.add('hide');
+        $('#logoutBtn').style.display='none';
       }
-    }catch{
-      msg.textContent = '❌ Error connecting to server';
-    }finally{
-      btn.disabled = false;
     }
-  });
 
-  // --- Logout
-  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
-    localStorage.removeItem('gptmart_token');
-    AUTH.token = '';
-    try { await fetch(`${API_BASE}/api/logout`, { method:'POST', credentials:'include' }); } catch {}
-    document.getElementById('adminView').classList.add('hide');
-    document.getElementById('loginView').classList.remove('hide');
-    document.getElementById('logoutBtn').style.display='none';
-  });
+    // login/logout
+    $('#loginForm').addEventListener('submit',async e=>{
+      e.preventDefault();const pin=$('#pin').value.trim();if(!pin)return;
+      loginBtn.disabled=true;loginMsg.textContent='Signing in…';
+      try{
+        const res=await fetch(`${API_BASE}/api/login`,{
+          method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({pin})
+        });
+        const data=await res.json().catch(()=>({}));
+        if(res.ok&&data.success&&data.token){ AUTH.token=data.token; localStorage.setItem('gptmart_token',data.token); loginMsg.textContent='✅ Logged in'; await checkAuthAndLoad(); }
+        else{ loginMsg.textContent='❌ '+(data.error||'Login failed'); }
+      }catch{ loginMsg.textContent='❌ Error connecting to server'; }
+      finally{ loginBtn.disabled=false; }
+    });
+    $('#logoutBtn').addEventListener('click',async()=>{
+      localStorage.removeItem('gptmart_token'); AUTH.token='';
+      try{ await fetch(`${API_BASE}/api/logout`,{method:'POST',credentials:'include'}); }catch{}
+      adminView.classList.add('hide'); loginView.classList.remove('hide'); $('#logoutBtn').style.display='none';
+    });
 
-  // … keep the rest of your admin JS (rendering, modal, actions, etc.) …
-  checkAuthAndLoad();
-</script>
+    // top buttons
+    $('#refreshBtn').addEventListener('click',()=>loadAdminData());
+    pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+    $('#addBtn').addEventListener('click',()=>openModal());
 
+    // ===== data load & table
+    async function loadAdminData(){
+      try{
+        const db=await api('/api/gpts/all','GET');
+        allItemsCache = db.items || [];
+        updatePendingCount(); renderTable();
+        allLeadsCache = (db.leads || []).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderLeadsTable(allLeadsCache);
+      }catch(e){alert('Failed to load data.');}
+    }
+
+    function updatePendingCount(){
+      const n=allItemsCache.filter(i=>i.status==='pending').length;
+      pendingToggle.textContent=`Pending (${n})`;
+      pendingToggle.className = 'btn ' + (showOnlyPending ? 'accent' : 'ghost');
+    }
+
+    function renderTable(){
+      updatePendingCount();
+      const list = showOnlyPending ? allItemsCache.filter(i=>i.status==='pending') : allItemsCache;
+      const tbody=$('#itemsTable');
+      tbody.innerHTML=list.map(i=>`
+        <tr>
+          <td>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              ${i.icon?`<img src="${i.icon}" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--stroke);object-fit:cover;">`:''}
+              <div>
+                <div style="font-weight:700;display:flex;gap:10px;align-items:center">
+                  <span>${escapeHtml(i.title||'')}</span>
+                  ${i.status==='pending'?`<span class="badge">Pending</span>`:''}
+                </div>
+                <a href="${i.url||'#'}" target="_blank" class="muted" style="text-decoration:underline;word-break:break-all;">${i.url||''}</a>
+              </div>
+            </div>
+          </td>
+          <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
+          <td>${i.featured ? '⭐️' : '—'}</td>
+          <td>${i.status}</td>
+          <td style="display:flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn" onclick="openModal('${i.id}')">Edit</button>
+            ${i.status==='pending'
+              ? `<button class="btn accent" onclick="approveSubmission('${i.id}')">Approve</button>`
+              : ''}
+            <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured ? 'Unfeature' : 'Feature'}</button>
+            <button class="btn" onclick="toggleStatus('${i.id}')">${i.status === 'live' ? 'Hide' : 'Unhide'}</button>
+            <a class="btn" href="${i.url||'#'}" target="_blank" rel="noopener">Open</a>
+            <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Leads table
+    function renderLeadsTable(leads = []) {
+      const tbody = $('#leadsTable');
+      const noMsg = $('#noLeadsMsg');
+      if (!leads.length) { tbody.innerHTML = ''; noMsg.style.display = 'block'; return; }
+      noMsg.style.display = 'none';
+      tbody.innerHTML = leads.map(lead => `
+        <tr>
+          <td><small>${new Date(lead.createdAt || 0).toLocaleString()}</small></td>
+          <td>${escapeHtml(lead.email || '')}</td>
+          <td><small>${escapeHtml(lead.message || '—')}</small></td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(s=''){return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+    // ===== modal / create-edit
+    const modal=$('#itemModal');$('#mCancel').addEventListener('click',()=>modal.close());
+
+    const CATEGORY_CHOICES=['AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks','Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy','Productivity','Search','Security','Sports','Tools'];
+    function renderCategoryChips(selected=[]){
+      const wrap=$('#catChips');
+      wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip ${selected.includes(c)?'active':''}" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+    }
+    function getSelectedCategories(){return Array.from(document.querySelectorAll('#catChips .chip.active')).map(b=>b.dataset.val);}
+
+    const iconInput=$('#mIcon'),iconFile=$('#mIconFile'),iconBtn=$('#mIconUploadBtn'),iconPrev=$('#mIconPreview'),iconNote=$('#mIconNote');
+    iconBtn.addEventListener('click',()=>iconFile.click());
+    iconFile?.addEventListener('change',async()=>{
+      const f=iconFile.files?.[0]; if(!f) return;
+      try{
+        const dataUrl = await fileToResizedSquareDataURL(f, 96);
+        iconInput.value=dataUrl; iconPrev.src=dataUrl; iconPrev.style.display='block'; iconNote.style.display='inline';
+      }catch{ alert('Failed to process image.'); }
+    });
+
+    function openModal(id=null){
+      $('#itemForm').reset();$('#itemId').value='';
+      let selected=[]; if(id){
+        $('#modalTitle').textContent='Edit GPT';
+        const it=allItemsCache.find(i=>i.id===id)||{};
+        $('#itemId').value=it.id||''; $('#mTitle').value=it.title||''; $('#mUrl').value=it.url||'';
+        $('#mIcon').value=it.icon||''; $('#mDesc').value=it.desc||''; $('#mTags').value=(it.tags||[]).join(', ');
+        $('#mFeat').checked=!!it.featured; $('#mStatus').value=it.status||'hidden'; selected=it.categories||[];
+      } else {
+        $('#modalTitle').textContent='Add GPT';
+        $('#mStatus').value='live';
+      }
+      renderCategoryChips(selected);
+      const val=$('#mIcon').value.trim();
+      if(val){iconPrev.src=val;iconPrev.style.display='block';iconNote.style.display=val.startsWith('data:')?'inline':'none';}
+      else{iconPrev.style.display='none';iconNote.style.display='none';}
+      modal.showModal();
+    }
+    window.openModal=openModal;
+
+    $('#itemForm').addEventListener('submit',async e=>{
+      e.preventDefault();$('#saveBtn').disabled=true;
+      const cats=getSelectedCategories();
+      const id=$('#itemId').value;
+      const itemData={
+        title:$('#mTitle').value.trim(), url:$('#mUrl').value.trim(), icon:$('#mIcon').value.trim(),
+        desc:$('#mDesc').value.trim(), categories:cats,
+        tags:$('#mTags').value.split(',').map(s=>s.trim()).filter(Boolean),
+        featured:$('#mFeat').checked, status:$('#mStatus').value
+      };
+      const ep=id?`/api/gpts/update/${id}`:'/api/gpts/create';
+      const method=id?'PUT':'POST';
+      try{await api(ep,method,itemData);modal.close();await loadAdminData();}
+      catch{alert('Failed to save item.');}
+      finally{$('#saveBtn').disabled=false;}
+    });
+
+    // ===== actions
+    async function deleteItem(id){ if(!confirm('Delete this item?')) return; await api(`/api/gpts/delete/${id}`,'DELETE'); await loadAdminData(); }
+    async function toggleFeature(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured}); await loadAdminData(); }
+    async function toggleStatus(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; const ns=it.status==='live'?'hidden':'live'; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns}); await loadAdminData(); }
+    async function approveSubmission(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'}); await loadAdminData(); }
+    window.deleteItem=deleteItem; window.toggleFeature=toggleFeature; window.toggleStatus=toggleStatus; window.approveSubmission=approveSubmission;
+
+    function fileToResizedSquareDataURL(file, target=96){
+      return new Promise((resolve,reject)=>{
+        const fr=new FileReader();
+        fr.onerror=reject;
+        fr.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const s=Math.max(target/img.width,target/img.height);
+            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+            const c=document.createElement('canvas'); c.width=target; c.height=target;
+            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
+            resolve(c.toDataURL('image/png'));
+          };
+          img.onerror=reject; img.src=fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
+    }
+
+    // start
+    checkAuthAndLoad();
+  </script>
 </body>
 </html>
