@@ -5,117 +5,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Admin — GPTMart</title>
 <style>
-  :root{--bg:#050815;--panel:#0b1a36;--stroke:#16213a;--text:#e6ecff;--muted:#9eb0d6;--primary:#2c57c7;}
+  :root{--bg:#050815;--panel:#0b1a36;--stroke:#16213a;--text:#e6ecff;--muted:#9eb0d6;--btn:#1b2a55;--accent:#2c57c7}
   body{margin:0;background:linear-gradient(180deg,var(--bg),#091229);color:var(--text);font-family:Inter,system-ui}
   header{position:sticky;top:0;z-index:5;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
   .container{width:94%;max-width:1200px;margin:0 auto}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-  .btn{padding:10px 14px;border-radius:12px;border:1px solid #1a2b5a;background:#1b2a55;color:#e7efff;font-weight:700;cursor:pointer}
-  .btn.primary{background:var(--primary);border-color:#2e53b7}
-  .actions{display:flex;gap:10px}
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .btn{padding:8px 12px;border-radius:10px;border:1px solid #1a2b5a;background:var(--btn);color:#e7efff;font-weight:700;cursor:pointer}
+  .btn.acc{background:var(--accent);border-color:#2e53b7}
   main{padding:20px 0}
-  /* Leads modal */
+  table{width:100%;border-collapse:collapse}
+  th,td{border:1px solid var(--stroke);padding:10px;text-align:left;vertical-align:top}
+  .muted{color:var(--muted);font-size:12px}
+  /* modal */
   dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
   dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
-  .dlg-head{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--stroke)}
-  .dlg-body{padding:16px}
-  table{width:100%;border-collapse:collapse}
-  th,td{border:1px solid var(--stroke);padding:8px;text-align:left;vertical-align:top}
-  .muted{color:var(--muted);font-size:12px}
+  .dlg-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--stroke)}
+  .dlg-b{padding:12px 16px}
 </style>
 </head>
 <body>
-  <header>
-    <div class="container top">
-      <h3 style="margin:0">Admin Panel</h3>
-      <div class="actions">
-        <button class="btn" id="btnLeads">Leads</button>
-        <!-- your existing Logout button can remain as-is -->
-        <button class="btn" id="btnLogout">Logout</button>
-      </div>
+<header>
+  <div class="container bar">
+    <strong>Admin Panel</strong>
+    <div>
+      <button class="btn" id="btnLeads">Leads</button>
+      <button class="btn" id="btnReload">Reload</button>
+      <button class="btn" id="btnLogout">Logout</button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="container">
-    <!-- 👇 KEEP your existing Admin UI here (items table, create/edit/etc). Nothing changed. -->
-    <section>
-      <h4>All Items</h4>
-      <p class="muted">Your existing items list, feature/hide, edit, delete… remains unchanged.</p>
-      <!-- (Your current admin markup goes here) -->
-    </section>
-  </main>
+<main class="container">
+  <h3>All Items</h3>
+  <p class="muted">Approve (set to live), feature/unfeature, hide/unhide, edit, or delete items below.</p>
+  <div id="itemsWrap"></div>
+</main>
 
-  <!-- Leads Modal -->
-  <dialog id="leadsModal">
-    <div class="dlg-head">
-      <strong>📨 User Leads</strong>
-      <div>
-        <button class="btn" id="btnExport">Export CSV</button>
-        <button class="btn primary" id="btnCloseLeads">Close</button>
-      </div>
+<!-- Leads Modal -->
+<dialog id="leadsModal">
+  <div class="dlg-h">
+    <strong>📨 User Leads</strong>
+    <div>
+      <button class="btn" id="btnExport">Export CSV</button>
+      <button class="btn acc" id="btnCloseLeads">Close</button>
     </div>
-    <div class="dlg-body">
-      <table id="leadsTable">
-        <thead><tr><th>Email</th><th>Name</th><th>Message</th><th>Timezone</th><th>Date</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <p class="muted" id="leadsHint" style="margin-top:8px">Tip: make sure you’re logged in; Leads uses your existing admin login (cookie or token).</p>
-    </div>
-  </dialog>
+  </div>
+  <div class="dlg-b">
+    <table id="leadsTable">
+      <thead><tr><th>Email</th><th>Name</th><th>Message</th><th>Timezone</th><th>Date</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="muted">Requires admin login (cookie or token).</p>
+  </div>
+</dialog>
 
 <script>
-const API_BASE = 'https://connector-320f.onrender.com';
+const API_BASE='https://connector-320f.onrender.com';
+const $=(s,el=document)=>el.querySelector(s);
 
-// Try to reuse whichever token your page already uses
-function getToken(){
-  return localStorage.getItem('token') || localStorage.getItem('admintoken') || '';
+function token(){ return localStorage.getItem('token')||''; }
+
+async function api(path, opts={}){
+  const headers=opts.headers||{};
+  if(token()) headers['Authorization']='Bearer '+token();
+  const r=await fetch(API_BASE+path,{ credentials:'include', ...opts, headers });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json().catch(()=> ({}));
 }
 
-// Logout (leave your existing logic; here’s a safe default)
-document.getElementById('btnLogout').addEventListener('click', ()=> {
-  localStorage.removeItem('token'); localStorage.removeItem('admintoken');
-  alert('Logged out (token cleared). Refresh to re-login.');
-});
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
 
-// Leads button -> open modal + load
-const leadsModal = document.getElementById('leadsModal');
-document.getElementById('btnLeads').addEventListener('click', async ()=>{
-  leadsModal.showModal();
-  await loadLeads();
-});
-document.getElementById('btnCloseLeads').addEventListener('click', ()=> leadsModal.close());
+async function loadItems(){
+  const data=await api('/api/gpts/all');
+  const items=(data.items||[]).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const wrap=$('#itemsWrap');
+  if(!items.length){ wrap.innerHTML='<p class="muted">No items yet.</p>'; return; }
+  wrap.innerHTML=`<table>
+    <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      ${items.map(x=>`
+        <tr>
+          <td>${escapeHtml(x.title||'')}</td>
+          <td>${escapeHtml((x.categories||[]).join(', '))}${x.tags?.length? ' • '+escapeHtml(x.tags.join(', ')) : ''}</td>
+          <td>${x.featured?'✅':'—'}</td>
+          <td>${escapeHtml(x.status||'')}</td>
+          <td>
+            <button class="btn" onclick="openLink('${x.url||''}')">Open</button>
+            <button class="btn" onclick="mark('${x.id}','live')">Approve</button>
+            <button class="btn" onclick="mark('${x.id}','hidden')">Hide</button>
+            <button class="btn" onclick="toggleFeature('${x.id}', ${!!x.featured})">${x.featured?'Unfeature':'Feature'}</button>
+            <button class="btn" onclick="editItem('${x.id}')">Edit</button>
+            <button class="btn" onclick="delItem('${x.id}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function openLink(u){ if(u) window.open(u,'_blank'); }
+
+async function mark(id, status){
+  await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+  await loadItems();
+}
+async function toggleFeature(id, curr){
+  await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({featured:!curr})});
+  await loadItems();
+}
+async function editItem(id){
+  const title=prompt('New title (leave blank to keep)');
+  const desc=title===null?null:prompt('New description (leave blank to keep)');
+  if(title===null || desc===null) return;
+  const patch={}; if(title) patch.title=title; if(desc) patch.desc=desc;
+  if(Object.keys(patch).length) await api('/api/gpts/update/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});
+  await loadItems();
+}
+async function delItem(id){
+  if(!confirm('Delete this item permanently?')) return;
+  await fetch(API_BASE+'/api/gpts/delete/'+id,{method:'DELETE',credentials:'include',headers: token()?{'Authorization':'Bearer '+token()}:{}});
+  await loadItems();
+}
+
+// Leads
+const leadsModal=$('#leadsModal');
+$('#btnLeads').addEventListener('click', async ()=>{ leadsModal.showModal(); await loadLeads(); });
+$('#btnCloseLeads').addEventListener('click', ()=> leadsModal.close());
+$('#btnReload').addEventListener('click', loadItems);
+$('#btnLogout').addEventListener('click', ()=>{ localStorage.removeItem('token'); alert('Logged out.'); location.href='/login.html'; });
 
 async function loadLeads(){
-  const headers = {};
-  const t = getToken();
-  if (t) headers['Authorization'] = `Bearer ${t}`;
-  const r = await fetch(`${API_BASE}/api/leads`, { headers, credentials:'include' }); // cookie works too
-  if(!r.ok){ alert('Failed to load leads'); return; }
-  const { items = [] } = await r.json();
-  const tbody = document.querySelector('#leadsTable tbody');
-  tbody.innerHTML = items.map(x => `
+  const { items=[] } = await api('/api/leads');
+  const tbody=$('#leadsTable tbody');
+  tbody.innerHTML=items.map(x=>`
     <tr>
-      <td>${escapeHtml(x.email||'')}</td>
+      <td>${escapeHtml(x.email)}</td>
       <td>${escapeHtml(x.name||'')}</td>
-      <td>${escapeHtml(x.message||'')}</td>
+      <td>${escapeHtml(x.message)}</td>
       <td>${escapeHtml(x.tz||'')}</td>
       <td>${new Date(x.createdAt).toLocaleString()}</td>
-    </tr>
-  `).join('');
-  document.getElementById('btnExport').onclick = () => exportCSV(items);
+    </tr>`).join('');
+  $('#btnExport').onclick=()=>exportCSV(items);
 }
-
 function exportCSV(items){
-  const csv = ['Email,Name,Message,Timezone,CreatedAt'].concat(
-    items.map(x => [x.email||'', x.name||'', (x.message||'').replaceAll('"','""'), x.tz||'', new Date(x.createdAt).toISOString()]
-      .map(v => `"${v}"`).join(','))
+  const csv=['Email,Name,Message,Timezone,CreatedAt'].concat(
+    items.map(x=>[x.email||'',x.name||'',(x.message||'').replaceAll('"','""'),x.tz||'',new Date(x.createdAt).toISOString()].map(v=>`"${v}"`).join(','))
   ).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'leads.csv'; a.click(); URL.revokeObjectURL(a.href);
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='leads.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 
-function escapeHtml(s){return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(!token()){ location.href='/login.html'; return; }
+  try{ await loadItems(); }catch{ alert('Auth failed. Please log in again.'); location.href='/login.html'; }
+});
 </script>
 </body>
 </html>
