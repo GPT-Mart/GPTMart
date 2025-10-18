@@ -5,79 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="gptmart-api" content="https://connector-320f.onrender.com" />
-
+  <meta name="gptmart-api" content="https://connector.onrender.com" />
   <style>
-    :root{
-      --bg:#050815;--panel:#0b1a36;--text:#e6ecff;
-      --accent:#6ea8ff;--accent-2:#3b82f6;
-      --stroke:#16213a;--radius:14px;
-    }
+    :root{ --bg:#050815; --panel:#0b1a36; --text:#e6ecff; --accent:#6ea8ff; --stroke:#16213a; --radius:14px; }
     *{box-sizing:border-box}
-    body{font-family:Inter,ui-sans-serif,system-ui;background:var(--bg);color:var(--text);margin:0;}
+    html[data-auth="0"] #adminView{ display:none !important; }
+    html[data-auth="1"] #loginView{ display:none !important; }
+    body{font-family:Inter,ui-sans-serif,system-ui;background:var(--bg);color:var(--text);margin:0}
     .container{width:94%;max-width:1200px;margin:0 auto}
-    .topbar{background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke);padding:12px 0;}
+    .topbar{background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke);padding:12px 0}
     .top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .brand{font-weight:800;}
-    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 16px;border-radius:10px;color:#e7efff;font-weight:700;cursor:pointer;font-size:13px;}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .btn.accent{background:#2c57c7;border-color:#2e53b7;}
-    .btn.ghost{background:#0b152c;border-color:#16213a;}
-    .btn.danger{background:#450a0a;border-color:#991b1b;color:#fca5a5;}
+    .brand{font-weight:800}
+    .btn{background:#1b2a55;border:1px solid #1a2b5a;padding:10px 16px;border-radius:10px;color:#e7efff;font-weight:700;cursor:pointer;font-size:13px}
+    .btn.accent{background:#2c57c7;border-color:#2e53b7}
+    .btn.ghost{background:#0b152c;border-color:#16213a}
+    .btn.danger{background:#450a0a;border-color:#991b1b;color:#fca5a5}
     .section{padding:30px 0}
-    .input{border:1px solid var(--stroke);background:#091327;border-radius:12px;padding:12px 14px;color:var(--text);width:100%;}
+    .input{border:1px solid var(--stroke);background:#091327;border-radius:12px;padding:12px 14px;color:var(--text);width:100%}
     .panel{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px}
-    .row{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
-    table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+    .row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{text-align:left;font-size:14px;padding:12px;border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);vertical-align:top}
-    tbody tr{background:#0b1426;}
-    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px;}
-    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px;}
-    .hide{display:none!important}
-    dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:var(--radius);padding:0;max-width:960px;width:95vw;}
-    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px);}
-    .muted{color:#9eb0d6;font-size:12px;}
-    .input.big{height:48px;display:flex;align-items:center;}
-    .chip-toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;}
-    .chip{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px;}
-    .chip.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset;}
+    tbody tr{background:#0b1426}
+    tbody tr td:first-child{border-left:1px solid var(--stroke);border-top-left-radius:10px;border-bottom-left-radius:10px}
+    tbody tr td:last-child{border-right:1px solid var(--stroke);border-top-right-radius:10px;border-bottom-right-radius:10px}
     .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid #7c2d12;background:#2b1512;color:#ffedd5}
   </style>
 </head>
-
 <body>
   <header class="topbar">
     <div class="container top-row">
       <div class="brand">Admin Panel</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="btn ghost" id="pendingToggle">Pending (0)</button>
-        <button class="btn accent" id="seedBtn">🌱 Seed GPTs</button>
         <button class="btn" id="refreshBtn">⟳ Refresh</button>
+        <button class="btn accent" id="addBtn">＋ New Item</button>
         <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
       </div>
     </div>
   </header>
 
   <main class="container section">
+    <!-- Login -->
     <div id="loginView">
       <div class="panel" style="max-width:420px;margin:40px auto;">
         <h3>Owner Sign-in</h3>
-        <p class="muted">Enter your PIN to manage GPTs.</p>
+        <p class="muted">Enter your PIN to manage items.</p>
         <form id="loginForm" class="row">
-          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" required autocomplete="current-password"/>
+          <input id="pin" type="password" placeholder="Enter owner PIN" class="input" required />
           <button class="btn accent" type="submit" id="loginBtn">Enter</button>
         </form>
         <p id="loginMsg" class="muted" style="min-height:18px;"></p>
       </div>
     </div>
 
-    <div id="adminView" class="hide">
+    <!-- Admin -->
+    <div id="adminView">
       <div class="panel">
-        <h3>GPT Items</h3>
+        <h3 style="margin-top:0;">GPT Items</h3>
         <div style="overflow-x:auto">
           <table>
             <thead>
-              <tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr>
+              <tr>
+                <th style="min-width:220px">Title</th>
+                <th style="min-width:220px">Cat/Tags</th>
+                <th>Featured</th>
+                <th>Status</th>
+                <th style="min-width:420px">Actions</th>
+              </tr>
             </thead>
             <tbody id="itemsTable"></tbody>
           </table>
@@ -85,10 +80,16 @@
       </div>
 
       <div class="panel" style="margin-top:24px;">
-        <h3>Collected Leads</h3>
+        <h3 style="margin-top:0;">Collected Leads</h3>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Date</th><th>Email</th><th>Message</th></tr></thead>
+            <thead>
+              <tr>
+                <th style="min-width:180px">Date</th>
+                <th style="min-width:220px">Email</th>
+                <th>Message</th>
+              </tr>
+            </thead>
             <tbody id="leadsTable"></tbody>
           </table>
           <p id="noLeadsMsg" class="muted" style="display:none;padding:10px;">No leads collected yet.</p>
@@ -97,115 +98,264 @@
     </div>
   </main>
 
-<script>
-const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
-const $=s=>document.querySelector(s);
-const loginView=$('#loginView'),adminView=$('#adminView');
-const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
-const pendingToggle=$('#pendingToggle');
-let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
+  <!-- Add/Edit Modal -->
+  <dialog id="itemModal">
+    <form id="itemForm" style="padding:24px;">
+      <h3 id="modalTitle">Add GPT</h3>
+      <input type="hidden" id="itemId">
 
-async function api(endpoint,method='GET',body=null){
-  const url=`${API_BASE}${endpoint}`;
-  const opts={method,credentials:'include',headers:{}};
-  if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
-  const res=await fetch(url,opts);
-  if(!res.ok)throw new Error(await res.text());
-  if(res.status===204)return null;
-  return res.json();
-}
+      <div class="row"><input id="mTitle" class="input" placeholder="Title" required></div>
+      <div class="row"><input id="mUrl" class="input" placeholder="ChatGPT link (https://chatgpt.com/g/...)" required></div>
 
-async function checkAuthAndLoad(){
-  try{
-    await api('/api/gpts/all');
-    loginView.classList.add('hide');adminView.classList.remove('hide');
-    $('#logoutBtn').style.display='block';
-    await loadAdminData();
-  }catch{
-    loginView.classList.remove('hide');adminView.classList.add('hide');
-    $('#logoutBtn').style.display='none';
-  }
-}
+      <div class="row" style="gap:10px;align-items:stretch;">
+        <input id="mIcon" class="input" placeholder="Paste Icon URL or Upload">
+        <input id="mIconFile" type="file" accept="image/*" style="display:none">
+        <button class="btn accent" type="button" id="mIconUploadBtn" style="height:48px;">Upload</button>
+      </div>
+      <div class="muted" id="mIconPreviewWrap" style="display:flex;align-items:center;gap:10px;margin:-6px 0 10px;">
+        <img id="mIconPreview" style="width:32px;height:32px;border-radius:8px;display:none;border:1px solid var(--stroke);object-fit:cover">
+        <small id="mIconNote" style="display:none">Icon attached (retina 96×96)</small>
+      </div>
 
-// login/logout
-$('#loginForm').addEventListener('submit',async e=>{
-  e.preventDefault();const pin=$('#pin').value.trim();if(!pin)return;
-  loginBtn.disabled=true;loginMsg.textContent='Signing in…';
-  try{
-    const res=await api('/api/login','POST',{pin});
-    if(res.success){loginMsg.textContent='✅ Logged in';await checkAuthAndLoad();}
-    else{loginMsg.textContent='❌ '+(res.error||'Login failed');}
-  }catch{loginMsg.textContent='❌ Server error';}
-  finally{loginBtn.disabled=false;}
-});
-$('#logoutBtn').addEventListener('click',()=>{adminView.classList.add('hide');loginView.classList.remove('hide');$('#logoutBtn').style.display='none';});
+      <div class="row"><div id="catChips" class="chip-toolbar"></div></div>
+      <div class="row"><input id="mTags" class="input" placeholder="Tags (e.g., api, web, data analysis)"></div>
+      <div class="row"><textarea id="mDesc" class="input" placeholder="Short description" style="min-height:70px;"></textarea></div>
 
-// buttons
-$('#refreshBtn').addEventListener('click',()=>loadAdminData());
-$('#seedBtn').addEventListener('click',async()=>{
-  if(!confirm('Seed all GPTs?'))return;
-  try{await api('/api/gpts/seed-defaults','POST');alert('✅ GPTs seeded successfully!');await loadAdminData();}
-  catch{alert('Failed to seed GPTs.');}
-});
-pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+      <div class="row" style="justify-content:space-between;">
+        <label><input id="mFeat" type="checkbox"> Featured</label>
+        <select id="mStatus" class="input" style="width:160px;">
+          <option value="live">Live</option>
+          <option value="hidden">Hidden</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
 
-async function loadAdminData(){
-  try{
-    const data=await api('/api/gpts/all');
-    allItemsCache=data.items||[];
-    updatePendingCount();renderTable();
-    const leads=await api('/api/leads/all').catch(()=>({items:[]}));
-    allLeadsCache=leads.items||[];
-    renderLeadsTable(allLeadsCache);
-  }catch{alert('Failed to load data');}
-}
+      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:18px;">
+        <button id="mCancel" class="btn" type="button">Cancel</button>
+        <button class="btn accent" type="submit" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </dialog>
 
-function updatePendingCount(){
-  const n=allItemsCache.filter(i=>i.status==='pending').length;
-  pendingToggle.textContent=`Pending (${n})`;
-  pendingToggle.className='btn '+(showOnlyPending?'accent':'ghost');
-}
+  <script>
+    // Initial state: not authenticated (prevents any admin content flash)
+    document.documentElement.setAttribute('data-auth','0');
 
-function renderTable(){
-  updatePendingCount();
-  const list=showOnlyPending?allItemsCache.filter(i=>i.status==='pending'):allItemsCache;
-  $('#itemsTable').innerHTML=list.map(i=>`
-    <tr>
-      <td><b>${escapeHtml(i.title||'')}</b><br>
-        <a href="${i.url||'#'}" target="_blank" class="muted">${i.url}</a>
-      </td>
-      <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
-      <td>${i.featured?'⭐️':'—'}</td>
-      <td>${i.status}</td>
-      <td>
-        ${i.status==='pending'?`<button class="btn accent" onclick="approve('${i.id}')">Approve</button>`:''}
-        <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured?'Unfeature':'Feature'}</button>
-        <button class="btn" onclick="toggleStatus('${i.id}')">${i.status==='live'?'Hide':'Unhide'}</button>
-        <a class="btn" href="${i.url}" target="_blank">Open</a>
-        <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
-      </td>
-    </tr>`).join('');
-}
+    const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
+    const $=s=>document.querySelector(s);
+    const loginView=$('#loginView'),adminView=$('#adminView');
+    const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
+    const pendingToggle=$('#pendingToggle');
+    let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
 
-function renderLeadsTable(leads=[]){
-  const tbody=$('#leadsTable'),noMsg=$('#noLeadsMsg');
-  if(!leads.length){tbody.innerHTML='';noMsg.style.display='block';return;}
-  noMsg.style.display='none';
-  tbody.innerHTML=leads.map(l=>`
-    <tr>
-      <td><small>${new Date(l.createdAt||0).toLocaleString()}</small></td>
-      <td>${escapeHtml(l.email||'')}</td>
-      <td><small>${escapeHtml(l.message||'—')}</small></td>
-    </tr>`).join('');
-}
+    async function api(endpoint,method='GET',body=null){
+      const url=`${API_BASE}${endpoint}`;
+      const opts={method,credentials:'include',headers:{}};
+      if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+      const res=await fetch(url,opts);
+      if(res.status===401)throw new Error('unauthorized');
+      if(res.status===204)return null;
+      if(!res.ok)throw new Error(await res.text().catch(()=>res.statusText));
+      return res.json();
+    }
 
-function escapeHtml(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+    async function checkAuthAndLoad(){
+      try{
+        await api('/api/gpts/all','GET'); // throws if not logged in
+        document.documentElement.setAttribute('data-auth','1');
+        $('#logoutBtn').style.display='block';
+        await loadAdminData();
+      }catch{
+        document.documentElement.setAttribute('data-auth','0');
+        $('#logoutBtn').style.display='none';
+      }
+    }
 
-async function deleteItem(id){if(!confirm('Delete this GPT?'))return;await api(`/api/gpts/delete/${id}`,'DELETE');await loadAdminData();}
-async function toggleFeature(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured});await loadAdminData();}
-async function toggleStatus(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;const ns=it.status==='live'?'hidden':'live';await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns});await loadAdminData();}
-async function approve(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'});await loadAdminData();}
-checkAuthAndLoad();
-</script>
+    // login/logout
+    $('#loginForm').addEventListener('submit',async e=>{
+      e.preventDefault();const pin=$('#pin').value.trim();if(!pin)return;
+      loginBtn.disabled=true;loginMsg.textContent='Signing in…';
+      try{
+        const res=await fetch(`${API_BASE}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({pin})});
+        const data=await res.json().catch(()=>({}));
+        if(res.ok&&data.success){loginMsg.textContent='✅ Logged in';await checkAuthAndLoad();}
+        else{loginMsg.textContent='❌ '+(data.error||'Login failed');}
+      }catch{loginMsg.textContent='❌ Error connecting to server';}
+      finally{loginBtn.disabled=false;}
+    });
+    $('#logoutBtn').addEventListener('click',()=>{
+      // client-side "logout": drop session cookie by overwriting (server is stateless for delete)
+      document.cookie='session=; Path=/; Max-Age=0; SameSite=None; Secure';
+      document.documentElement.setAttribute('data-auth','0');
+    });
+
+    // top buttons
+    $('#refreshBtn').addEventListener('click',()=>loadAdminData());
+    pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
+    $('#addBtn').addEventListener('click',()=>openModal());
+
+    // data load & tables
+    async function loadAdminData(){
+      try{
+        const db=await api('/api/gpts/all','GET');
+        allItemsCache = db.items || [];
+        updatePendingCount();
+        renderTable();
+        allLeadsCache = (db.leads || []).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        renderLeadsTable(allLeadsCache);
+      }catch(e){alert('Failed to load data.');}
+    }
+
+    function updatePendingCount(){
+      const n=allItemsCache.filter(i=>i.status==='pending').length;
+      pendingToggle.textContent=`Pending (${n})`;
+      pendingToggle.className = 'btn ' + (showOnlyPending ? 'accent' : 'ghost');
+    }
+
+    function renderTable(){
+      updatePendingCount();
+      const list = showOnlyPending ? allItemsCache.filter(i=>i.status==='pending') : allItemsCache;
+      const tbody=$('#itemsTable');
+      tbody.innerHTML=list.map(i=>`
+        <tr>
+          <td>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              ${i.icon?`<img src="${i.icon}" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--stroke);object-fit:cover;">`:''}
+              <div>
+                <div style="font-weight:700;display:flex;gap:10px;align-items:center">
+                  <span>${escapeHtml(i.title||'')}</span>
+                  ${i.status==='pending'?`<span class="badge">Pending</span>`:''}
+                </div>
+                <a href="${i.url||'#'}" target="_blank" class="muted" style="text-decoration:underline;word-break:break-all;">${i.url||''}</a>
+              </div>
+            </div>
+          </td>
+          <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
+          <td>${i.featured ? '⭐️' : '—'}</td>
+          <td>${i.status}</td>
+          <td style="display:flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn" onclick="openModal('${i.id}')">Edit</button>
+            ${i.status==='pending'
+              ? `<button class="btn accent" onclick="approveSubmission('${i.id}')">Approve</button>`
+              : ''}
+            <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured ? 'Unfeature' : 'Feature'}</button>
+            <button class="btn" onclick="toggleStatus('${i.id}')">${i.status === 'live' ? 'Hide' : 'Unhide'}</button>
+            <a class="btn" href="${i.url||'#'}" target="_blank" rel="noopener">Open</a>
+            <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderLeadsTable(leads = []) {
+      const tbody = $('#leadsTable');
+      const noMsg = $('#noLeadsMsg');
+      if (!leads.length) {
+        tbody.innerHTML = '';
+        noMsg.style.display = 'block';
+        return;
+      }
+      noMsg.style.display = 'none';
+      tbody.innerHTML = leads.map(lead => `
+        <tr>
+          <td><small>${new Date(lead.createdAt || 0).toLocaleString()}</small></td>
+          <td>${escapeHtml(lead.email || '')}</td>
+          <td><small>${escapeHtml(lead.message || '—')}</small></td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(s=''){return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+    // modal
+    const modal=$('#itemModal');$('#mCancel').addEventListener('click',()=>modal.close());
+    const CATEGORY_CHOICES=['AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks','Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy','Productivity','Search','Security','Sports','Tools'];
+    function renderCategoryChips(selected=[]){
+      const wrap=$('#catChips');
+      wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip ${selected.includes(c)?'active':''}" data-val="${c}">${c}</button>`).join('');
+      wrap.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
+    }
+    function getSelectedCategories(){return Array.from(document.querySelectorAll('#catChips .chip.active')).map(b=>b.dataset.val);}
+
+    const iconInput=$('#mIcon'),iconFile=$('#mIconFile'),iconBtn=$('#mIconUploadBtn'),iconPrev=$('#mIconPreview'),iconNote=$('#mIconNote');
+    iconBtn.addEventListener('click',()=>iconFile.click());
+    iconFile?.addEventListener('change',async()=>{
+      const f=iconFile.files?.[0]; if(!f) return;
+      try{
+        const dataUrl = await fileToResizedSquareDataURL(f, 96);
+        iconInput.value=dataUrl; iconPrev.src=dataUrl; iconPrev.style.display='block'; iconNote.style.display='inline';
+      }catch{ alert('Failed to process image.'); }
+    });
+
+    function openModal(id=null){
+      $('#itemForm').reset();$('#itemId').value='';
+      let selected=[]; if(id){
+        $('#modalTitle').textContent='Edit GPT';
+        const it=allItemsCache.find(i=>i.id===id)||{};
+        $('#itemId').value=it.id||''; $('#mTitle').value=it.title||''; $('#mUrl').value=it.url||'';
+        $('#mIcon').value=it.icon||''; $('#mDesc').value=it.desc||''; $('#mTags').value=(it.tags||[]).join(', ');
+        $('#mFeat').checked=!!it.featured; $('#mStatus').value=it.status||'hidden'; selected=it.categories||[];
+      } else {
+        $('#modalTitle').textContent='Add GPT';
+        $('#mStatus').value='live';
+      }
+      renderCategoryChips(selected);
+      const val=$('#mIcon').value.trim();
+      if(val){iconPrev.src=val;iconPrev.style.display='block';iconNote.style.display=val.startsWith('data:')?'inline':'none';}
+      else{iconPrev.style.display='none';iconNote.style.display='none';}
+      modal.showModal();
+    }
+    window.openModal=openModal;
+
+    $('#itemForm').addEventListener('submit',async e=>{
+      e.preventDefault();$('#saveBtn').disabled=true;
+      const cats=getSelectedCategories();
+      const id=$('#itemId').value;
+      const itemData={
+        title:$('#mTitle').value.trim(), url:$('#mUrl').value.trim(), icon:$('#mIcon').value.trim(),
+        desc:$('#mDesc').value.trim(), categories:cats,
+        tags:$('#mTags').value.split(',').map(s=>s.trim()).filter(Boolean),
+        featured:$('#mFeat').checked, status:$('#mStatus').value
+      };
+      const ep=id?`/api/gpts/update/${id}`:'/api/gpts/create';
+      const method=id?'PUT':'POST';
+      try{await api(ep,method,itemData);modal.close();await loadAdminData();}
+      catch{alert('Failed to save item.');}
+      finally{$('#saveBtn').disabled=false;}
+    });
+
+    // actions
+    async function deleteItem(id){ if(!confirm('Delete this item?')) return; await api(`/api/gpts/delete/${id}`,'DELETE'); await loadAdminData(); }
+    async function toggleFeature(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured}); await loadAdminData(); }
+    async function toggleStatus(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; const ns=it.status==='live'?'hidden':'live'; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns}); await loadAdminData(); }
+    async function approveSubmission(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'}); await loadAdminData(); }
+    window.deleteItem=deleteItem;
+    window.toggleFeature=toggleFeature;
+    window.toggleStatus=toggleStatus;
+    window.approveSubmission=approveSubmission;
+
+    // image helper
+    function fileToResizedSquareDataURL(file, target=96){
+      return new Promise((resolve,reject)=>{
+        const fr=new FileReader();
+        fr.onerror=reject;
+        fr.onload=()=>{
+          const img=new Image();
+          img.onload=()=>{
+            const s=Math.max(target/img.width,target/img.height);
+            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
+            const c=document.createElement('canvas'); c.width=target; c.height=target;
+            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
+            resolve(c.toDataURL('image/png'));
+          };
+          img.onerror=reject; img.src=fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
+    }
+
+    // boot
+    checkAuthAndLoad();
+  </script>
 </body>
 </html>
