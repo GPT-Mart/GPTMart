@@ -150,228 +150,85 @@
     </form>
   </dialog>
 
-  <script>
-    // ===== base & utils
-    const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
-    const $=s=>document.querySelector(s);
-    const loginView=$('#loginView'),adminView=$('#adminView');
-    const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
-    const pendingToggle=$('#pendingToggle');
-    const authedBar=$('#authedBar');
-    let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
+ <script>
+  // ===== base & utils
+  const API_BASE = (document.querySelector('meta[name="gptmart-api"]')?.content || '').replace(/\/+$/,'');
+  const $ = s => document.querySelector(s);
 
-    async function api(endpoint,method='GET',body=null){
-      const url=`${API_BASE}${endpoint}`;
-      const opts={method,credentials:'include',headers:{}};
-      if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
-      const res=await fetch(url,opts);
-      if(res.status===401)throw new Error('unauthorized');
-      if(res.status===204)return null;
-      if(!res.ok)throw new Error(await res.text().catch(()=>res.statusText));
-      return res.json();
+  // Persisted auth token (avoids blocked third-party cookies)
+  const AUTH = { token: localStorage.getItem('gptmart_token') || '' };
+
+  async function api(endpoint, method='GET', body=null){
+    const url = `${API_BASE}${endpoint}`;
+    const opts = { method, credentials:'include', headers:{} };
+    if (AUTH.token) opts.headers['Authorization'] = `Bearer ${AUTH.token}`;
+    if (body){ opts.headers['Content-Type']='application/json'; opts.body = JSON.stringify(body); }
+
+    const res = await fetch(url, opts);
+    if (res.status === 401) throw new Error('unauthorized');
+    if (res.status === 204) return null;
+    if (!res.ok) throw new Error(await res.text().catch(()=>res.statusText));
+    return res.json();
+  }
+
+  async function checkAuthAndLoad(){
+    try{
+      await api('/api/gpts/all','GET');            // works if token is set
+      document.getElementById('loginView').classList.add('hide');
+      document.getElementById('adminView').classList.remove('hide');
+      document.getElementById('logoutBtn').style.display='block';
+      await loadAdminData();
+    }catch{
+      document.getElementById('loginView').classList.remove('hide');
+      document.getElementById('adminView').classList.add('hide');
+      document.getElementById('logoutBtn').style.display='none';
     }
+  }
 
-    async function checkAuthAndLoad(){
-      try{
-        // throws if not logged in
-        await api('/api/gpts/all','GET');
-        loginView.classList.add('hide');
-        adminView.classList.remove('hide');
-        authedBar.style.display='flex';
-        await loadAdminData();
-      }catch{
-        adminView.classList.add('hide');
-        loginView.classList.remove('hide');
-        authedBar.style.display='none';
-      }
-    }
-
-    // login/logout
-    $('#loginForm').addEventListener('submit',async e=>{
-      e.preventDefault();const pin=$('#pin').value.trim();if(!pin)return;
-      loginBtn.disabled=true;loginMsg.textContent='Signing in…';
-      try{
-        const res=await fetch(`${API_BASE}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({pin})});
-        const data=await res.json().catch(()=>({}));
-        if(res.ok&&data.success){loginMsg.textContent='✅ Logged in';await checkAuthAndLoad();}
-        else{loginMsg.textContent='❌ '+(data.error||'Login failed');}
-      }catch{loginMsg.textContent='❌ Error connecting to server';}
-      finally{loginBtn.disabled=false;}
-    });
-    $('#logoutBtn').addEventListener('click',()=>{
-      adminView.classList.add('hide');
-      loginView.classList.remove('hide');
-      authedBar.style.display='none';
-      // cookie expires server-side; UI just flips immediately
-    });
-
-    // top buttons
-    $('#refreshBtn')?.addEventListener('click',()=>loadAdminData());
-    pendingToggle?.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
-    $('#addBtn')?.addEventListener('click',()=>openModal());
-
-    // ===== data load & table
-    async function loadAdminData(){
-      try{
-        const db=await api('/api/gpts/all','GET');
-
-        allItemsCache = db.items || [];
-        updatePendingCount();
-        renderTable();
-
-        allLeadsCache = (db.leads || []).slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-        renderLeadsTable(allLeadsCache);
-      }catch{ alert('Failed to load data.'); }
-    }
-
-    function updatePendingCount(){
-      const n=allItemsCache.filter(i=>i.status==='pending').length;
-      pendingToggle.textContent=`Pending (${n})`;
-      pendingToggle.className = 'btn ' + (showOnlyPending ? 'accent' : 'ghost');
-    }
-
-    function renderTable(){
-      updatePendingCount();
-      const list = showOnlyPending ? allItemsCache.filter(i=>i.status==='pending') : allItemsCache;
-      const tbody=$('#itemsTable');
-      tbody.innerHTML=list.map(i=>`
-        <tr>
-          <td>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              ${i.icon?`<img src="${i.icon}" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--stroke);object-fit:cover;">`:''}
-              <div>
-                <div style="font-weight:700;display:flex;gap:10px;align-items:center">
-                  <span>${escapeHtml(i.title||'')}</span>
-                  ${i.status==='pending'?`<span class="badge">Pending</span>`:''}
-                </div>
-                <a href="${i.url||'#'}" target="_blank" class="muted" style="text-decoration:underline;word-break:break-all;">${i.url||''}</a>
-              </div>
-            </div>
-          </td>
-          <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
-          <td>${i.featured ? '⭐️' : '—'}</td>
-          <td>${i.status}</td>
-          <td style="display:flex; gap: 6px; flex-wrap: wrap;">
-            <button class="btn" onclick="openModal('${i.id}')">Edit</button>
-            ${i.status==='pending'
-              ? `<button class="btn accent" onclick="approveSubmission('${i.id}')">Approve</button>`
-              : ''}
-            <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured ? 'Unfeature' : 'Feature'}</button>
-            <button class="btn" onclick="toggleStatus('${i.id}')">${i.status === 'live' ? 'Hide' : 'Unhide'}</button>
-            <a class="btn" href="${i.url||'#'}" target="_blank" rel="noopener">Open</a>
-            <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // Leads table
-    function renderLeadsTable(leads = []) {
-      const tbody = $('#leadsTable');
-      const noMsg = $('#noLeadsMsg');
-      if (!leads.length) { tbody.innerHTML = ''; noMsg.style.display = 'block'; return; }
-      noMsg.style.display = 'none';
-      tbody.innerHTML = leads.map(lead => `
-        <tr>
-          <td><small>${new Date(lead.createdAt || 0).toLocaleString()}</small></td>
-          <td>${escapeHtml(lead.email || '')}</td>
-          <td><small>${escapeHtml(lead.message || '—')}</small></td>
-        </tr>
-      `).join('');
-    }
-
-    function escapeHtml(s=''){return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
-
-    // ===== modal / create-edit
-    const modal=$('#itemModal');$('#mCancel').addEventListener('click',()=>modal.close());
-
-    const CATEGORY_CHOICES=['AI & Automation','Automation','Backend','Careers','Data','Design','Frameworks','Frontend','Humor','Interviews','Languages','Learning','Lifestyle','Philosophy','Productivity','Search','Security','Sports','Tools'];
-    function renderCategoryChips(selected=[]){
-      const wrap=$('#catChips');
-      wrap.innerHTML=CATEGORY_CHOICES.map(c=>`<button type="button" class="chip ${selected.includes(c)?'active':''}" data-val="${c}">${c}</button>`).join('');
-      wrap.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
-    }
-    function getSelectedCategories(){return Array.from(document.querySelectorAll('#catChips .chip.active')).map(b=>b.dataset.val);}
-
-    const iconInput=$('#mIcon'),iconFile=$('#mIconFile'),iconBtn=$('#mIconUploadBtn'),iconPrev=$('#mIconPreview'),iconNote=$('#mIconNote');
-    iconBtn.addEventListener('click',()=>iconFile.click());
-    iconFile?.addEventListener('change',async()=>{
-      const f=iconFile.files?.[0]; if(!f) return;
-      try{
-        const dataUrl = await fileToResizedSquareDataURL(f, 96);
-        iconInput.value=dataUrl; iconPrev.src=dataUrl; iconPrev.style.display='block'; iconNote.style.display='inline';
-      }catch{ alert('Failed to process image.'); }
-    });
-
-    function openModal(id=null){
-      $('#itemForm').reset();$('#itemId').value='';
-      let selected=[]; if(id){
-        $('#modalTitle').textContent='Edit GPT';
-        const it=allItemsCache.find(i=>i.id===id)||{};
-        $('#itemId').value=it.id||''; $('#mTitle').value=it.title||''; $('#mUrl').value=it.url||'';
-        $('#mIcon').value=it.icon||''; $('#mDesc').value=it.desc||''; $('#mTags').value=(it.tags||[]).join(', ');
-        $('#mFeat').checked=!!it.featured; $('#mStatus').value=it.status||'hidden'; selected=it.categories||[];
-      } else {
-        $('#modalTitle').textContent='Add GPT';
-        $('#mStatus').value='live';
-      }
-      renderCategoryChips(selected);
-      const val=$('#mIcon').value.trim();
-      if(val){iconPrev.src=val;iconPrev.style.display='block';iconNote.style.display=val.startsWith('data:')?'inline':'none';}
-      else{iconPrev.style.display='none';iconNote.style.display='none';}
-      modal.showModal();
-    }
-    window.openModal=openModal;
-
-    $('#itemForm').addEventListener('submit',async e=>{
-      e.preventDefault();$('#saveBtn').disabled=true;
-      const cats=getSelectedCategories();
-      const id=$('#itemId').value;
-      const itemData={
-        title:$('#mTitle').value.trim(), url:$('#mUrl').value.trim(), icon:$('#mIcon').value.trim(),
-        desc:$('#mDesc').value.trim(), categories:cats,
-        tags:$('#mTags').value.split(',').map(s=>s.trim()).filter(Boolean),
-        featured:$('#mFeat').checked, status:$('#mStatus').value
-      };
-      const ep=id?`/api/gpts/update/${id}`:'/api/gpts/create';
-      const method=id?'PUT':'POST';
-      try{await api(ep,method,itemData);modal.close();await loadAdminData();}
-      catch{alert('Failed to save item.');}
-      finally{$('#saveBtn').disabled=false;}
-    });
-
-    // ===== actions
-    async function deleteItem(id){ if(!confirm('Delete this item?')) return; await api(`/api/gpts/delete/${id}`,'DELETE'); await loadAdminData(); }
-    async function toggleFeature(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured}); await loadAdminData(); }
-    async function toggleStatus(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; const ns=it.status==='live'?'hidden':'live'; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns}); await loadAdminData(); }
-    async function approveSubmission(id){ const it=allItemsCache.find(i=>i.id===id); if(!it) return; await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'}); await loadAdminData(); }
-    window.deleteItem=deleteItem;
-    window.toggleFeature=toggleFeature;
-    window.toggleStatus=toggleStatus;
-    window.approveSubmission=approveSubmission;
-
-    // image helper
-    function fileToResizedSquareDataURL(file, target=96){
-      return new Promise((resolve,reject)=>{
-        const fr=new FileReader();
-        fr.onerror=reject;
-        fr.onload=()=>{
-          const img=new Image();
-          img.onload=()=>{
-            const s=Math.max(target/img.width,target/img.height);
-            const sw=target/s, sh=target/s, sx=(img.width-sw)/2, sy=(img.height-sh)/2;
-            const c=document.createElement('canvas'); c.width=target; c.height=target;
-            c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,target,target);
-            resolve(c.toDataURL('image/png'));
-          };
-          img.onerror=reject; img.src=fr.result;
-        };
-        fr.readAsDataURL(file);
+  // --- Login
+  document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const pin = document.getElementById('pin').value.trim();
+    const btn = document.getElementById('loginBtn');
+    const msg = document.getElementById('loginMsg');
+    if(!pin) return;
+    btn.disabled = true; msg.textContent = 'Signing in…';
+    try{
+      const res = await fetch(`${API_BASE}/api/login`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ pin })
       });
+      const data = await res.json().catch(()=>({}));
+      if (res.ok && data.success && data.token){
+        AUTH.token = data.token;
+        localStorage.setItem('gptmart_token', AUTH.token);   // persist bearer
+        msg.textContent = '✅ Logged in';
+        await checkAuthAndLoad();
+      } else {
+        msg.textContent = '❌ ' + (data.error || 'Login failed');
+      }
+    }catch{
+      msg.textContent = '❌ Error connecting to server';
+    }finally{
+      btn.disabled = false;
     }
+  });
 
-    // go
-    checkAuthAndLoad();
-  </script>
+  // --- Logout
+  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+    localStorage.removeItem('gptmart_token');
+    AUTH.token = '';
+    try { await fetch(`${API_BASE}/api/logout`, { method:'POST', credentials:'include' }); } catch {}
+    document.getElementById('adminView').classList.add('hide');
+    document.getElementById('loginView').classList.remove('hide');
+    document.getElementById('logoutBtn').style.display='none';
+  });
+
+  // … keep the rest of your admin JS (rendering, modal, actions, etc.) …
+  checkAuthAndLoad();
+</script>
+
 </body>
 </html>
