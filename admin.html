@@ -1,53 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPTMart Admin</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin — GPTMart</title>
 <style>
-  body{background:#050815;color:#e6ecff;font-family:Inter,system-ui;margin:0;padding:20px;}
-  .tab{display:flex;gap:10px;margin-bottom:20px;}
-  button{padding:10px 16px;border:none;border-radius:10px;cursor:pointer;font-weight:600;}
-  button.active{background:#3b82f6;color:white;}
-  .panel{display:none;}
-  table{width:100%;border-collapse:collapse;margin-top:10px;}
-  th,td{border:1px solid #1a2c5c;padding:8px;text-align:left;}
+  :root{--bg:#050815;--panel:#0b1a36;--stroke:#16213a;--text:#e6ecff;--muted:#9eb0d6;--primary:#2c57c7;}
+  body{margin:0;background:linear-gradient(180deg,var(--bg),#091229);color:var(--text);font-family:Inter,system-ui}
+  header{position:sticky;top:0;z-index:5;background:rgba(5,8,21,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke)}
+  .container{width:94%;max-width:1200px;margin:0 auto}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .btn{padding:10px 14px;border-radius:12px;border:1px solid #1a2b5a;background:#1b2a55;color:#e7efff;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--primary);border-color:#2e53b7}
+  .actions{display:flex;gap:10px}
+  main{padding:20px 0}
+  /* Leads modal */
+  dialog{border:1px solid var(--stroke);background:var(--panel);color:var(--text);border-radius:16px;max-width:960px;width:95vw;padding:0}
+  dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+  .dlg-head{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--stroke)}
+  .dlg-body{padding:16px}
+  table{width:100%;border-collapse:collapse}
+  th,td{border:1px solid var(--stroke);padding:8px;text-align:left;vertical-align:top}
+  .muted{color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
-<h2>⚙️ GPTMart Admin Panel</h2>
-<div class="tab">
-  <button id="tabGpts" class="active">GPTs</button>
-  <button id="tabLeads">Leads</button>
-</div>
+  <header>
+    <div class="container top">
+      <h3 style="margin:0">Admin Panel</h3>
+      <div class="actions">
+        <button class="btn" id="btnLeads">Leads</button>
+        <!-- your existing Logout button can remain as-is -->
+        <button class="btn" id="btnLogout">Logout</button>
+      </div>
+    </div>
+  </header>
 
-<div id="panelGpts" class="panel" style="display:block;">
-  <p>Existing GPTs appear here (existing admin functionality remains).</p>
-</div>
+  <main class="container">
+    <!-- 👇 KEEP your existing Admin UI here (items table, create/edit/etc). Nothing changed. -->
+    <section>
+      <h4>All Items</h4>
+      <p class="muted">Your existing items list, feature/hide, edit, delete… remains unchanged.</p>
+      <!-- (Your current admin markup goes here) -->
+    </section>
+  </main>
 
-<div id="panelLeads" class="panel">
-  <h3>📨 User Leads</h3>
-  <table id="leadsTable">
-    <thead><tr><th>Email</th><th>Message</th><th>Date</th></tr></thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <!-- Leads Modal -->
+  <dialog id="leadsModal">
+    <div class="dlg-head">
+      <strong>📨 User Leads</strong>
+      <div>
+        <button class="btn" id="btnExport">Export CSV</button>
+        <button class="btn primary" id="btnCloseLeads">Close</button>
+      </div>
+    </div>
+    <div class="dlg-body">
+      <table id="leadsTable">
+        <thead><tr><th>Email</th><th>Name</th><th>Message</th><th>Timezone</th><th>Date</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="muted" id="leadsHint" style="margin-top:8px">Tip: make sure you’re logged in; Leads uses your existing admin login (cookie or token).</p>
+    </div>
+  </dialog>
 
 <script>
-const API_BASE="https://connector-320f.onrender.com";
-const TOKEN=localStorage.getItem('admintoken');
-const tabG=document.getElementById('tabGpts'),tabL=document.getElementById('tabLeads');
-const panelG=document.getElementById('panelGpts'),panelL=document.getElementById('panelLeads');
+const API_BASE = 'https://connector-320f.onrender.com';
 
-tabG.onclick=()=>{tabG.classList.add('active');tabL.classList.remove('active');panelG.style.display='block';panelL.style.display='none';}
-tabL.onclick=()=>{tabL.classList.add('active');tabG.classList.remove('active');panelL.style.display='block';panelG.style.display='none';loadLeads();}
+// Try to reuse whichever token your page already uses
+function getToken(){
+  return localStorage.getItem('token') || localStorage.getItem('admintoken') || '';
+}
+
+// Logout (leave your existing logic; here’s a safe default)
+document.getElementById('btnLogout').addEventListener('click', ()=> {
+  localStorage.removeItem('token'); localStorage.removeItem('admintoken');
+  alert('Logged out (token cleared). Refresh to re-login.');
+});
+
+// Leads button -> open modal + load
+const leadsModal = document.getElementById('leadsModal');
+document.getElementById('btnLeads').addEventListener('click', async ()=>{
+  leadsModal.showModal();
+  await loadLeads();
+});
+document.getElementById('btnCloseLeads').addEventListener('click', ()=> leadsModal.close());
 
 async function loadLeads(){
-  const r=await fetch(`${API_BASE}/api/leads`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-  if(!r.ok)return alert('Failed to load leads');
-  const data=await r.json();
-  const tbody=document.querySelector('#leadsTable tbody');
-  tbody.innerHTML=data.items.map(x=>`<tr><td>${x.email}</td><td>${x.message}</td><td>${new Date(x.createdAt).toLocaleString()}</td></tr>`).join('');
+  const headers = {};
+  const t = getToken();
+  if (t) headers['Authorization'] = `Bearer ${t}`;
+  const r = await fetch(`${API_BASE}/api/leads`, { headers, credentials:'include' }); // cookie works too
+  if(!r.ok){ alert('Failed to load leads'); return; }
+  const { items = [] } = await r.json();
+  const tbody = document.querySelector('#leadsTable tbody');
+  tbody.innerHTML = items.map(x => `
+    <tr>
+      <td>${escapeHtml(x.email||'')}</td>
+      <td>${escapeHtml(x.name||'')}</td>
+      <td>${escapeHtml(x.message||'')}</td>
+      <td>${escapeHtml(x.tz||'')}</td>
+      <td>${new Date(x.createdAt).toLocaleString()}</td>
+    </tr>
+  `).join('');
+  document.getElementById('btnExport').onclick = () => exportCSV(items);
 }
+
+function exportCSV(items){
+  const csv = ['Email,Name,Message,Timezone,CreatedAt'].concat(
+    items.map(x => [x.email||'', x.name||'', (x.message||'').replaceAll('"','""'), x.tz||'', new Date(x.createdAt).toISOString()]
+      .map(v => `"${v}"`).join(','))
+  ).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'leads.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 </script>
 </body>
 </html>
