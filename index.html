@@ -1,23 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-  
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title id="pageTitle">GPTMart — Curated Custom GPTs</title>
   <meta name="description" content="A lightning-fast, keyboard-driven directory of the best Custom GPTs." />
   <meta name="theme-color" content="#0b0f19" />
   <meta name="color-scheme" content="dark" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6PTBJ3N2DK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-6PTBJ3N2DK');   // your real Measurement ID
-
-    // helper for custom events
+    gtag('config', 'G-6PTBJ3N2DK');
     const track = (event, params = {}) => { try { gtag('event', event, params); } catch(e){} };
   </script>
+
   <style>
     :root{
       --bg:#050815; --bg-2:#080e1f; --card:#0c1327; --panel:#0b1a36;
@@ -52,11 +52,10 @@
     .chip-btn{user-select:none;cursor:pointer;border:1px solid var(--stroke);background:#0e1936;color:#d7e3ff;border-radius:999px;padding:8px 12px;font-size:13px}
     .chip-btn.active{background:#1b2a55;border-color:#2e53b7;box-shadow:0 0 0 2px rgba(59,130,246,.25) inset}
 
-    /* --- NEW WELCOME MODAL STYLES --- */
-    #welcomeModal { max-width: 500px; }
-    /* Darker, un-closable backdrop */
+    /* --- WELCOME MODAL STYLES --- */
+    #welcomeModal { max-width: 520px; }
     #welcomeModal::backdrop { background: rgba(5, 8, 21, 0.8); backdrop-filter: blur(8px); }
-    #welcomeModal h3 { margin-top:0; font-size: 20px; }
+    #welcomeModal h3 { margin-top:0; font-size: 22px; }
     #welcomeModal p { margin-bottom: 20px; color: var(--muted); }
     #welcomeForm .row { margin-bottom: 12px; }
     #welcomeForm .input { background: #070d20; }
@@ -90,6 +89,7 @@
     <div id="grid" class="grid"></div>
   </main>
 
+  <!-- Submit GPT Modal -->
   <dialog id="userAddModal">
     <form id="userAddForm" style="padding:24px;">
       <h3 style="margin:0 0 12px">Add GPT</h3>
@@ -122,21 +122,20 @@
     </form>
   </dialog>
 
+  <!-- Welcome (Leads) Modal -->
   <dialog id="welcomeModal">
     <form id="welcomeForm" style="padding:28px;">
       <h3>Welcome to GPTMart 🚀</h3>
       <p>Discover curated Custom GPTs. Leave your email and a short note so we can send you the best stuff.</p>
-      
       <div class="row">
         <input id="wEmail" class="input big" type="email" placeholder="Your email" required>
       </div>
       <div class="row">
-        <textarea id="wMessage" class="input" placeholder="Your short message (what do you need?)" style="min-height:70px;"></textarea>
+        <textarea id="wMessage" class="input" placeholder="Your short message (what do you need?)" style="min-height:70px;" required></textarea>
       </div>
-
       <small id="welcomeError">Please enter a valid email.</small>
-      
       <div class="row" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px; margin-bottom: 0;">
+        <button class="btn" type="button" id="wSkipBtn">Skip for now</button>
         <button class="btn accent" type="submit" id="wSubmitBtn">Subscribe</button>
       </div>
     </form>
@@ -144,8 +143,8 @@
 
   <script>
     // ===== CONFIG =====
-    // IMPORTANT: Make sure this points to YOUR backend URL
-    const API_BASE = 'https://connector.onrender.com'; // set to your Render URL
+    // Set this to YOUR backend URL (Render/Node server)
+    const API_BASE = 'https://connector-320f.onrender.com'; // <-- CHANGE if needed
 
     // ===== STATE/UTIL =====
     const $ = (s, el=document) => el.querySelector(s);
@@ -162,8 +161,7 @@
     document.addEventListener('DOMContentLoaded', init);
 
     async function init(){
-      // --- NEW: Welcome Modal Logic ---
-      // Check if user has already subscribed
+      // --- Welcome Modal Logic ---
       if (!localStorage.getItem('gptmart_subscribed')) {
         setupWelcomeModal();
         $('#welcomeModal').showModal();
@@ -190,29 +188,39 @@
       $('#uCancel').addEventListener('click', ()=> $('#userAddModal').close());
       setupUserAddModal();
     }
-    
-    // --- NEW: Welcome Modal Setup ---
+
+    // --- Welcome Modal Setup ---
     function setupWelcomeModal() {
       const modal = $('#welcomeModal');
       const form = $('#welcomeForm');
       const emailInput = $('#wEmail');
       const msgInput = $('#wMessage');
       const submitBtn = $('#wSubmitBtn');
+      const skipBtn = $('#wSkipBtn');
       const errorMsg = $('#welcomeError');
-      // Regex for basic email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Prevent closing via 'Esc' key or clicking backdrop
+      // prevent ESC close
       modal.addEventListener('cancel', (e) => e.preventDefault());
+
+      skipBtn.addEventListener('click', ()=>{
+        localStorage.setItem('gptmart_subscribed','skipped');
+        track('welcome_skipped', { category: 'Welcome' });
+        modal.close();
+      });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = emailInput.value.trim();
         const message = msgInput.value.trim();
-        
-        // Validate email
+
         if (!emailRegex.test(email)) {
-          errorMsg.textContent = 'Please enter a valid email format.';
+          errorMsg.textContent = 'Please enter a valid email.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        if (!message) {
+          errorMsg.textContent = 'Please add a short message.';
           errorMsg.style.display = 'block';
           return;
         }
@@ -221,24 +229,26 @@
         submitBtn.textContent = 'Submitting...';
 
         try {
-          const res = await fetch(`${API_BASE}/api/leads/create`, {
+          const r = await fetch(`${API_BASE}/api/leads/create`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ email, message })
+            body: JSON.stringify({
+              email, message,
+              ua: navigator.userAgent,
+              tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+            })
           });
-          
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
+          if (!r.ok) {
+            const err = await r.json().catch(()=>({}));
             throw new Error(err.error || 'Submission failed. Please try again.');
           }
-
-          // Success! Set flag and close modal
-          localStorage.setItem('gptmart_subscribed', 'true');
+          localStorage.setItem('gptmart_subscribed','true');
+          track('lead_submitted', { category: 'Leads', label: email });
           modal.close();
-
         } catch (err) {
           errorMsg.textContent = err.message;
           errorMsg.style.display = 'block';
+          track('lead_submit_error', { category: 'Leads' });
         } finally {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Subscribe';
@@ -281,19 +291,18 @@
           <div style="display:flex;flex-direction:column;gap:10px;position:relative">
             <h3 class="title">${x.title||''}</h3>
             <p class="desc">${x.desc||''}</p>
-            <div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener">Open</a></div>
+            <div><a class="btn accent" href="${x.url}" target="_blank" rel="noopener"
+              onclick="track('gpt_open', {category:'GPT Click', label:'${(x.title||'').replace(/'/g,'’')}'})">Open</a></div>
           </div>
         </article>`;
     }
 
     // ===== End-user Submit =====
     function setupUserAddModal(){
-      // chips
       const wrap = $('#uCatChips');
       wrap.innerHTML = CATEGORY_CHOICES.map(c=>`<button type="button" class="chip-btn" data-val="${c}">${c}</button>`).join('');
       wrap.querySelectorAll('.chip-btn').forEach(btn=>btn.addEventListener('click',()=>btn.classList.toggle('active')));
 
-      // upload
       const iconInput=$('#uIcon'), iconFile=$('#uIconFile'), iconBtn=$('#uIconUploadBtn'), iconPrev=$('#uIconPreview'), iconNote=$('#uIconNote');
       iconBtn.addEventListener('click',()=>iconFile.click());
       iconFile.addEventListener('change', async ()=>{
@@ -307,7 +316,6 @@
         }catch{ alert('Failed to process image.'); }
       });
 
-      // submit
       $('#userAddForm').addEventListener('submit', async (e)=>{
         e.preventDefault(); $('#uSaveBtn').disabled = true;
         const categories = Array.from(document.querySelectorAll('#uCatChips .chip-btn.active')).map(b=>b.dataset.val);
@@ -331,6 +339,7 @@
           const data = await fetchPublic();
           ALL_ITEMS = data.items || [];
           renderCategories(); renderGrid();
+          track('gpt_submitted', {category:'UserAction', label: payload.title});
         }catch(e){
           alert('Could not submit. Please try again later.');
         }finally{
