@@ -6,6 +6,7 @@
   <title>Admin — GPTMart</title>
   <meta name="robots" content="noindex, nofollow" />
   <meta name="gptmart-api" content="https://connector-320f.onrender.com" />
+
   <style>
     :root{
       --bg:#050815;--panel:#0b1a36;--text:#e6ecff;
@@ -43,15 +44,15 @@
     .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid #7c2d12;background:#2b1512;color:#ffedd5}
   </style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="container top-row">
       <div class="brand">Admin Panel</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="btn ghost" id="pendingToggle">Pending (0)</button>
-        <button class="btn accent" id="seedBtn">🌱 Seed All GPTs</button>
+        <button class="btn accent" id="seedBtn">🌱 Seed GPTs</button>
         <button class="btn" id="refreshBtn">⟳ Refresh</button>
-        <button class="btn" id="exportCsvBtn">⇩ Export Leads</button>
         <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
       </div>
     </div>
@@ -61,7 +62,7 @@
     <div id="loginView">
       <div class="panel" style="max-width:420px;margin:40px auto;">
         <h3>Owner Sign-in</h3>
-        <p class="muted">Enter your PIN to manage items.</p>
+        <p class="muted">Enter your PIN to manage GPTs.</p>
         <form id="loginForm" class="row">
           <input id="pin" type="password" placeholder="Enter owner PIN" class="input" required autocomplete="current-password"/>
           <button class="btn accent" type="submit" id="loginBtn">Enter</button>
@@ -72,91 +73,138 @@
 
     <div id="adminView" class="hide">
       <div class="panel">
-        <h3 style="margin-top:0;">GPT Items</h3>
+        <h3>GPT Items</h3>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead>
+              <tr><th>Title</th><th>Cat/Tags</th><th>Featured</th><th>Status</th><th>Actions</th></tr>
+            </thead>
             <tbody id="itemsTable"></tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:24px;">
+        <h3>Collected Leads</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Date</th><th>Email</th><th>Message</th></tr></thead>
+            <tbody id="leadsTable"></tbody>
+          </table>
+          <p id="noLeadsMsg" class="muted" style="display:none;padding:10px;">No leads collected yet.</p>
         </div>
       </div>
     </div>
   </main>
 
 <script>
-const API_BASE=document.querySelector('meta[name="gptmart-api"]').content.replace(/\/+$/,'');
+const API_BASE=(document.querySelector('meta[name="gptmart-api"]')?.content||'').replace(/\/+$/,'');
 const $=s=>document.querySelector(s);
 const loginView=$('#loginView'),adminView=$('#adminView');
 const loginBtn=$('#loginBtn'),loginMsg=$('#loginMsg');
 const pendingToggle=$('#pendingToggle');
-let allItemsCache=[],showOnlyPending=false;
+let allItemsCache=[], showOnlyPending=false, allLeadsCache=[];
 
-async function api(ep,method='GET',body){
+async function api(endpoint,method='GET',body=null){
+  const url=`${API_BASE}${endpoint}`;
   const opts={method,credentials:'include',headers:{}};
   if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
-  const r=await fetch(API_BASE+ep,opts);
-  if(!r.ok)throw new Error(await r.text());
-  if(r.status===204)return null;
-  return r.json();
+  const res=await fetch(url,opts);
+  if(!res.ok)throw new Error(await res.text());
+  if(res.status===204)return null;
+  return res.json();
 }
 
+async function checkAuthAndLoad(){
+  try{
+    await api('/api/gpts/all');
+    loginView.classList.add('hide');adminView.classList.remove('hide');
+    $('#logoutBtn').style.display='block';
+    await loadAdminData();
+  }catch{
+    loginView.classList.remove('hide');adminView.classList.add('hide');
+    $('#logoutBtn').style.display='none';
+  }
+}
+
+// login/logout
 $('#loginForm').addEventListener('submit',async e=>{
   e.preventDefault();const pin=$('#pin').value.trim();if(!pin)return;
-  loginBtn.disabled=true;loginMsg.textContent='Signing in...';
+  loginBtn.disabled=true;loginMsg.textContent='Signing in…';
   try{
     const res=await api('/api/login','POST',{pin});
     if(res.success){loginMsg.textContent='✅ Logged in';await checkAuthAndLoad();}
-    else loginMsg.textContent='❌ '+(res.error||'Login failed');
+    else{loginMsg.textContent='❌ '+(res.error||'Login failed');}
   }catch{loginMsg.textContent='❌ Server error';}
   finally{loginBtn.disabled=false;}
 });
-$('#logoutBtn').addEventListener('click',()=>{adminView.classList.add('hide');loginView.classList.remove('hide');});
+$('#logoutBtn').addEventListener('click',()=>{adminView.classList.add('hide');loginView.classList.remove('hide');$('#logoutBtn').style.display='none';});
 
-$('#refreshBtn').onclick=()=>loadAdminData();
-$('#seedBtn').onclick=async()=>{
-  if(!confirm('Seed all default GPTs?'))return;
-  try{await api('/api/gpts/seed-defaults','POST',{status:'live'});
-    alert('✅ GPTs seeded!');await loadAdminData();
-  }catch(e){alert('Failed to seed.');}
-};
-pendingToggle.onclick=()=>{showOnlyPending=!showOnlyPending;renderTable();};
-
-async function checkAuthAndLoad(){
-  try{await api('/api/gpts/all');loginView.classList.add('hide');adminView.classList.remove('hide');$('#logoutBtn').style.display='block';await loadAdminData();}
-  catch{loginView.classList.remove('hide');adminView.classList.add('hide');$('#logoutBtn').style.display='none';}
-}
+// buttons
+$('#refreshBtn').addEventListener('click',()=>loadAdminData());
+$('#seedBtn').addEventListener('click',async()=>{
+  if(!confirm('Seed all GPTs?'))return;
+  try{await api('/api/gpts/seed-defaults','POST');alert('✅ GPTs seeded successfully!');await loadAdminData();}
+  catch{alert('Failed to seed GPTs.');}
+});
+pendingToggle.addEventListener('click',()=>{showOnlyPending=!showOnlyPending;renderTable();});
 
 async function loadAdminData(){
   try{
-    const db=await api('/api/gpts/all');
-    allItemsCache=db.items||[];
-    renderTable();
-  }catch{alert('Failed to load items');}
+    const data=await api('/api/gpts/all');
+    allItemsCache=data.items||[];
+    updatePendingCount();renderTable();
+    const leads=await api('/api/leads/all').catch(()=>({items:[]}));
+    allLeadsCache=leads.items||[];
+    renderLeadsTable(allLeadsCache);
+  }catch{alert('Failed to load data');}
 }
 
-function renderTable(){
-  const list=showOnlyPending?allItemsCache.filter(i=>i.status==='pending'):allItemsCache;
+function updatePendingCount(){
   const n=allItemsCache.filter(i=>i.status==='pending').length;
   pendingToggle.textContent=`Pending (${n})`;
   pendingToggle.className='btn '+(showOnlyPending?'accent':'ghost');
+}
+
+function renderTable(){
+  updatePendingCount();
+  const list=showOnlyPending?allItemsCache.filter(i=>i.status==='pending'):allItemsCache;
   $('#itemsTable').innerHTML=list.map(i=>`
     <tr>
-      <td><b>${i.title||''}</b><br><a href="${i.url}" target="_blank" class="muted">${i.url}</a></td>
-      <td><small>${(i.categories||[]).join(', ')}</small></td>
+      <td><b>${escapeHtml(i.title||'')}</b><br>
+        <a href="${i.url||'#'}" target="_blank" class="muted">${i.url}</a>
+      </td>
+      <td><small>${(i.categories||[]).join(', ')}</small><br><small style="color:#81a3ff">${(i.tags||[]).join(', ')}</small></td>
       <td>${i.featured?'⭐️':'—'}</td>
       <td>${i.status}</td>
       <td>
-        <button class="btn" onclick="toggle('${i.id}','featured',${!i.featured})">${i.featured?'Unfeature':'Feature'}</button>
-        <button class="btn" onclick="toggle('${i.id}','status','${i.status==='live'?'hidden':'live'}')">${i.status==='live'?'Hide':'Unhide'}</button>
+        ${i.status==='pending'?`<button class="btn accent" onclick="approve('${i.id}')">Approve</button>`:''}
+        <button class="btn" onclick="toggleFeature('${i.id}')">${i.featured?'Unfeature':'Feature'}</button>
+        <button class="btn" onclick="toggleStatus('${i.id}')">${i.status==='live'?'Hide':'Unhide'}</button>
+        <a class="btn" href="${i.url}" target="_blank">Open</a>
+        <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
       </td>
     </tr>`).join('');
 }
-async function toggle(id,field,val){
-  try{const it=allItemsCache.find(i=>i.id===id);if(!it)return;
-    await api(`/api/gpts/update/${id}`,'PUT',{...it,[field]:val});
-    await loadAdminData();
-  }catch{alert('Update failed');}
+
+function renderLeadsTable(leads=[]){
+  const tbody=$('#leadsTable'),noMsg=$('#noLeadsMsg');
+  if(!leads.length){tbody.innerHTML='';noMsg.style.display='block';return;}
+  noMsg.style.display='none';
+  tbody.innerHTML=leads.map(l=>`
+    <tr>
+      <td><small>${new Date(l.createdAt||0).toLocaleString()}</small></td>
+      <td>${escapeHtml(l.email||'')}</td>
+      <td><small>${escapeHtml(l.message||'—')}</small></td>
+    </tr>`).join('');
 }
+
+function escapeHtml(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+async function deleteItem(id){if(!confirm('Delete this GPT?'))return;await api(`/api/gpts/delete/${id}`,'DELETE');await loadAdminData();}
+async function toggleFeature(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;await api(`/api/gpts/update/${id}`,'PUT',{...it,featured:!it.featured});await loadAdminData();}
+async function toggleStatus(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;const ns=it.status==='live'?'hidden':'live';await api(`/api/gpts/update/${id}`,'PUT',{...it,status:ns});await loadAdminData();}
+async function approve(id){const it=allItemsCache.find(i=>i.id===id);if(!it)return;await api(`/api/gpts/update/${id}`,'PUT',{...it,status:'live'});await loadAdminData();}
 checkAuthAndLoad();
 </script>
 </body>
